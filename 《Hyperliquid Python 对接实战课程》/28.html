@@ -1,0 +1,513 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第28章 部署与运维</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="active">第28章 部署与运维</a></li>
+<li><a href="29.html" class="">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第28章：部署与运维：Linux服务器部署、Supervisor进程管理、Docker容器化</h2>
+
+<p>量化交易系统写好了，策略回测跑通了，实盘接口也调通了。然后呢？</p>
+<p>然后就是部署。这一步其实最容易被忽视。我见过太多人，代码写得漂漂亮亮，一上服务器就各种崩。说白了，本地环境和生产环境是两码事。你笔记本上跑得好好的，换到云服务器上可能连数据库都连不上。</p>
+<p>今天我们就聊聊怎么把Hyperliquid的量化机器人稳稳当当地部署到Linux服务器上。我会把我在生产环境中踩过的坑、积累的经验，一次性倒出来。</p>
+
+<h3>28.1 为什么需要专门的部署方案？</h3>
+<p>你可能觉得，直接在服务器上开个终端，<code>python bot.py</code> 跑起来不就完了？</p>
+<p>嗯，短期可以。但你想过这些问题吗：</p>
+<ul>
+    <li>终端一关，程序就停了</li>
+    <li>程序崩溃了没人管，半夜爆仓</li>
+    <li>服务器重启了，你得手动再跑一遍</li>
+    <li>依赖环境搞乱了，整个系统废掉</li>
+</ul>
+<p>我在2022年刚开始做Hyperliquid策略时，就吃过这个亏。当时图省事，直接在服务器上裸跑。结果有一次服务器自动更新重启，我的做市策略停了整整8个小时。醒来一看，仓位全没了。嗯，从那以后我再也不敢偷懒了。</p>
+
+<div class="highlight">
+    <p><strong>核心要点：</strong>量化交易机器人需要7×24小时稳定运行。部署方案必须解决：进程守护、自动重启、环境隔离、日志管理这四个问题。</p>
+</div>
+
+<h3>28.2 Linux服务器基础配置</h3>
+<p>先说说服务器选型。我个人习惯用Ubuntu 20.04或22.04 LTS版本。为什么？稳定，社区活跃，遇到问题好搜解决方案。</p>
+
+<h4>28.2.1 初始环境准备</h4>
+<p>拿到一台新服务器，第一件事不是装Python，而是更新系统和安装基础工具：</p>
+
+<pre><code># 更新系统
+sudo apt update && sudo apt upgrade -y
+
+# 安装基础工具
+sudo apt install -y git curl wget vim htop net-tools
+
+# 安装Python 3.10+
+sudo apt install -y python3.10 python3.10-venv python3.10-dev
+
+# 创建专用用户（不要用root跑交易程序）
+sudo useradd -m -s /bin/bash hyperliquid
+sudo usermod -aG sudo hyperliquid</code></pre>
+
+<div class="tip">
+    <p><strong>我的习惯：</strong>永远创建一个专用系统用户来跑交易程序。这样即使程序被攻破，攻击者也拿不到root权限。安全第一。</p>
+</div>
+
+<h4>28.2.2 Python虚拟环境</h4>
+<p>每个项目都应该有自己的虚拟环境。别把所有依赖装到系统Python里，那是给自己挖坑。</p>
+
+<pre><code># 切换到专用用户
+su - hyperliquid
+
+# 创建项目目录
+mkdir -p ~/hyperliquid_bot
+cd ~/hyperliquid_bot
+
+# 创建虚拟环境
+python3.10 -m venv venv
+
+# 激活虚拟环境
+source venv/bin/activate
+
+# 安装依赖
+pip install --upgrade pip
+pip install hyperliquid-python-sdk
+pip install pandas numpy ccxt
+pip install python-dotenv
+pip install requests websocket-client</code></pre>
+
+<p>你想想看，如果哪天你要升级某个库的版本，或者要跑两个不同依赖版本的项目，虚拟环境就是你的救命稻草。</p>
+
+<h3>28.3 Supervisor进程管理</h3>
+<p>Supervisor是我最常用的进程管理工具。它能把你的Python脚本变成系统服务，自动启动、自动重启、还能看日志。</p>
+
+<h4>28.3.1 安装与配置</h4>
+
+<pre><code># 安装Supervisor
+sudo apt install -y supervisor
+
+# 创建配置文件
+sudo vim /etc/supervisor/conf.d/hyperliquid_bot.conf</code></pre>
+
+<p>配置文件长这样：</p>
+
+<pre><code>[program:hyperliquid_bot]
+command=/home/hyperliquid/hyperliquid_bot/venv/bin/python /home/hyperliquid/hyperliquid_bot/main.py
+directory=/home/hyperliquid/hyperliquid_bot
+user=hyperliquid
+autostart=true
+autorestart=true
+startretries=3
+stopasgroup=true
+killasgroup=true
+stdout_logfile=/var/log/hyperliquid_bot/out.log
+stderr_logfile=/var/log/hyperliquid_bot/err.log
+stdout_logfile_maxbytes=10MB
+stdout_logfile_backups=5
+environment=PYTHONPATH="/home/hyperliquid/hyperliquid_bot"</code></pre>
+
+<div class="warning">
+    <p><strong>注意：</strong>command路径一定要用绝对路径。我遇到过有人用相对路径，结果Supervisor找不到程序，折腾了半天。</p>
+</div>
+
+<h4>28.3.2 常用操作命令</h4>
+
+<pre><code># 重新加载配置
+sudo supervisorctl reread
+sudo supervisorctl update
+
+# 启动/停止/重启
+sudo supervisorctl start hyperliquid_bot
+sudo supervisorctl stop hyperliquid_bot
+sudo supervisorctl restart hyperliquid_bot
+
+# 查看状态
+sudo supervisorctl status
+
+# 查看实时日志
+sudo supervisorctl tail -f hyperliquid_bot</code></pre>
+
+<p>Supervisor最爽的一点是：程序崩溃了，它自动帮你重启。我曾经有一次策略里有个小bug，偶尔会触发空指针异常。Supervisor在一天内帮我自动重启了17次，交易愣是没断过。</p>
+
+<h3>28.4 Docker容器化</h3>
+<p>如果说Supervisor解决了进程管理问题，那Docker解决的就是环境一致性问题。</p>
+
+<h4>28.4.1 为什么用Docker？</h4>
+<p>说白了，Docker把你的整个运行环境打包成一个镜像。你本地能跑，服务器就能跑，换台机器照样跑。再也不用担心「我电脑上明明可以的」这种问题了。</p>
+
+<h4>28.4.2 Dockerfile编写</h4>
+
+<pre><code># 使用Python 3.10作为基础镜像
+FROM python:3.10-slim
+
+# 设置工作目录
+WORKDIR /app
+
+# 安装系统依赖
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# 复制依赖文件
+COPY requirements.txt .
+
+# 安装Python依赖
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 复制项目代码
+COPY . .
+
+# 创建日志目录
+RUN mkdir -p /var/log/hyperliquid_bot
+
+# 设置时区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# 运行命令
+CMD ["python", "main.py"]</code></pre>
+
+<h4>28.4.3 docker-compose.yml</h4>
+<p>我习惯用docker-compose来管理多个容器。比如你的策略需要同时跑数据库、消息队列，用compose一键搞定。</p>
+
+<pre><code>version: '3.8'
+
+services:
+  hyperliquid_bot:
+    build: .
+    container_name: hyperliquid_bot
+    restart: always
+    volumes:
+      - ./logs:/var/log/hyperliquid_bot
+      - ./config:/app/config
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Shanghai
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - trading_net
+
+networks:
+  trading_net:
+    driver: bridge</code></pre>
+
+<div class="tip">
+    <p><strong>经验之谈：</strong>把配置文件通过volume挂载到容器外。这样更新配置时不用重新构建镜像，直接改配置文件然后重启容器就行。</p>
+</div>
+
+<h4>28.4.4 构建与运行</h4>
+
+<pre><code># 构建镜像
+docker build -t hyperliquid_bot:v1.0 .
+
+# 启动容器
+docker-compose up -d
+
+# 查看日志
+docker logs -f hyperliquid_bot
+
+# 进入容器
+docker exec -it hyperliquid_bot /bin/bash
+
+# 停止容器
+docker-compose down</code></pre>
+
+<h3>28.5 部署架构总览</h3>
+<p>下面这张图展示了我推荐的部署架构。你可以看到各个组件之间的关系：</p>
+
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+    <!-- 背景 -->
+    <rect width="800" height="500" fill="#f0f8ff" rx="10"/>
+    
+    <!-- 标题 -->
+    <text x="400" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">Hyperliquid量化机器人部署架构</text>
+    
+    <!-- 第一层：外部数据源 -->
+    <rect x="50" y="70" width="200" height="60" rx="8" fill="#3498db" opacity="0.9"/>
+    <text x="150" y="100" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Hyperliquid API</text>
+    <text x="150" y="118" text-anchor="middle" fill="white" font-size="12">WebSocket / REST</text>
+    
+    <!-- 箭头 -->
+    <line x1="250" y1="100" x2="320" y2="100" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+    
+    <!-- 第二层：Docker容器 -->
+    <rect x="320" y="60" width="200" height="80" rx="8" fill="#27ae60" opacity="0.9"/>
+    <text x="420" y="90" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Docker容器</text>
+    <text x="420" y="110" text-anchor="middle" fill="white" font-size="12">Python策略引擎</text>
+    <text x="420" y="128" text-anchor="middle" fill="white" font-size="12">SDK + 交易逻辑</text>
+    
+    <!-- 箭头 -->
+    <line x1="420" y1="140" x2="420" y2="200" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+    
+    <!-- 第三层：Supervisor -->
+    <rect x="320" y="200" width="200" height="60" rx="8" fill="#e67e22" opacity="0.9"/>
+    <text x="420" y="228" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Supervisor进程管理</text>
+    <text x="420" y="248" text-anchor="middle" fill="white" font-size="12">自动重启 / 日志管理</text>
+    
+    <!-- 箭头 -->
+    <line x1="420" y1="260" x2="420" y2="320" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+    
+    <!-- 第四层：Linux服务器 -->
+    <rect x="320" y="320" width="200" height="60" rx="8" fill="#8e44ad" opacity="0.9"/>
+    <text x="420" y="348" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Ubuntu Linux服务器</text>
+    <text x="420" y="368" text-anchor="middle" fill="white" font-size="12">系统环境 / 网络 / 安全</text>
+    
+    <!-- 右侧：日志存储 -->
+    <rect x="600" y="200" width="150" height="60" rx="8" fill="#95a5a6" opacity="0.9"/>
+    <text x="675" y="228" text-anchor="middle" fill="white" font-size="14" font-weight="bold">日志存储</text>
+    <text x="675" y="248" text-anchor="middle" fill="white" font-size="12">JSON文件 / 轮转</text>
+    
+    <line x1="520" y1="230" x2="600" y2="230" stroke="#2c3e50" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+    
+    <!-- 左侧：配置文件 -->
+    <rect x="50" y="200" width="150" height="60" rx="8" fill="#95a5a6" opacity="0.9"/>
+    <text x="125" y="228" text-anchor="middle" fill="white" font-size="14" font-weight="bold">配置文件</text>
+    <text x="125" y="248" text-anchor="middle" fill="white" font-size="12">Volume挂载</text>
+    
+    <line x1="200" y1="230" x2="320" y2="230" stroke="#2c3e50" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+    
+    <!-- 箭头定义 -->
+    <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="#2c3e50"/>
+        </marker>
+    </defs>
+    
+    <!-- 图例 -->
+    <rect x="50" y="420" width="700" height="60" rx="8" fill="#ecf0f1"/>
+    <text x="70" y="445" font-size="12" fill="#2c3e50">图例：</text>
+    <rect x="120" y="432" width="20" height="20" rx="4" fill="#3498db"/>
+    <text x="145" y="447" font-size="12" fill="#2c3e50">外部API</text>
+    <rect x="220" y="432" width="20" height="20" rx="4" fill="#27ae60"/>
+    <text x="245" y="447" font-size="12" fill="#2c3e50">应用容器</text>
+    <rect x="320" y="432" width="20" height="20" rx="4" fill="#e67e22"/>
+    <text x="345" y="447" font-size="12" fill="#2c3e50">进程管理</text>
+    <rect x="420" y="432" width="20" height="20" rx="4" fill="#8e44ad"/>
+    <text x="445" y="447" font-size="12" fill="#2c3e50">操作系统</text>
+    <rect x="520" y="432" width="20" height="20" rx="4" fill="#95a5a6"/>
+    <text x="545" y="447" font-size="12" fill="#2c3e50">数据/配置</text>
+</svg>
+
+<h3>28.6 生产环境最佳实践</h3>
+<p>最后，分享几个我在生产环境中总结出来的经验：</p>
+
+<h4>28.6.1 日志管理</h4>
+<p>日志是你的第一道防线。程序出问题了，第一件事就是看日志。</p>
+
+<pre><code>import logging
+import logging.handlers
+
+# 配置日志轮转
+handler = logging.handlers.RotatingFileHandler(
+    '/var/log/hyperliquid_bot/trading.log',
+    maxBytes=10*1024*1024,  # 10MB
+    backupCount=5
+)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[handler]
+)</code></pre>
+
+<h4>28.6.2 健康检查</h4>
+<p>我建议在策略里加一个健康检查接口。这样你可以用外部监控工具（比如Prometheus）定期检查程序是否活着。</p>
+
+<pre><code># 简单的健康检查端点
+from flask import Flask, jsonify
+import threading
+
+app = Flask(__name__)
+last_trade_time = None
+
+@app.route('/health')
+def health():
+    return jsonify({
+        'status': 'ok',
+        'last_trade': str(last_trade_time),
+        'uptime': time.time() - start_time
+    })
+
+def run_health_server():
+    app.run(host='0.0.0.0', port=8080)
+
+# 在另一个线程启动
+threading.Thread(target=run_health_server, daemon=True).start()</code></pre>
+
+<div class="warning">
+    <p><strong>曾经踩过的坑：</strong>有一次我忘了在Dockerfile里设置时区，结果日志时间全是UTC。凌晨3点的交易记录显示的是晚上7点，排查问题的时候差点被搞疯。记得一定要设置 <code>TZ=Asia/Shanghai</code>。</p>
+</div>
+
+<h4>28.6.3 安全加固</h4>
+<ul>
+    <li>API密钥不要硬编码在代码里，用环境变量或配置文件</li>
+    <li>配置文件权限设为600，只有程序用户能读</li>
+    <li>开启防火墙，只开放必要的端口</li>
+    <li>定期更新系统和依赖包</li>
+</ul>
+
+<p>好了，部署这块就聊这么多。记住一个原则：<strong>自动化一切能自动化的东西</strong>。手动操作越少，出错的概率就越低。你的量化机器人应该像一台精密的瑞士钟表，默默地在服务器里运转，你只需要偶尔看看日志，确认一切正常就好。</p>
+
+<div class="footer" style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+    <p>公众号:蓝海资料掘金营，微信deep3321</p>
+</div>
+        <div class="footer-nav">
+            <a href="27.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="29.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

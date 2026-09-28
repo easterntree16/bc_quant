@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第6章 永续合约入门</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 认识Hyperliquid</a></li>
+<li><a href="02.html" class="">第2章 钱包准备与安全</a></li>
+<li><a href="03.html" class="">第3章 跨链入金</a></li>
+<li><a href="04.html" class="">第4章 账户与API设置</a></li>
+<li><a href="05.html" class="">第5章 现货交易基础</a></li>
+<li><a href="06.html" class="active">第6章 永续合约入门</a></li>
+<li><a href="07.html" class="">第7章 做多与做空</a></li>
+<li><a href="08.html" class="">第8章 订单类型详解</a></li>
+<li><a href="09.html" class="">第9章 杠杆与风险管理</a></li>
+<li><a href="10.html" class="">第10章 资金费率详解</a></li>
+<li><a href="11.html" class="">第11章 K线图与指标</a></li>
+<li><a href="12.html" class="">第12章 交易策略入门</a></li>
+<li><a href="13.html" class="">第13章 模拟交易</a></li>
+<li><a href="14.html" class="">第14章 Gas费优化</a></li>
+<li><a href="15.html" class="">第15章 滑点控制</a></li>
+<li><a href="16.html" class="">第16章 流动性陷阱</a></li>
+<li><a href="17.html" class="">第17章 合约参数检查</a></li>
+<li><a href="18.html" class="">第18章 钓鱼与假网站</a></li>
+<li><a href="19.html" class="">第19章 授权与合约风险</a></li>
+<li><a href="20.html" class="">第20章 提现注意事项</a></li>
+<li><a href="21.html" class="">第21章 API安全</a></li>
+<li><a href="22.html" class="">第22章 行情波动应对</a></li>
+<li><a href="23.html" class="">第23章 仓位管理</a></li>
+<li><a href="24.html" class="">第24章 情绪管理</a></li>
+<li><a href="25.html" class="">第25章 税务与合规</a></li>
+<li><a href="26.html" class="">第26章 社区与信息源</a></li>
+<li><a href="27.html" class="">第27章 常见错误代码</a></li>
+<li><a href="28.html" class="">第28章 客服与申诉</a></li>
+<li><a href="29.html" class="">第29章 进阶工具</a></li>
+<li><a href="30.html" class="">第30章 总结与行动计划</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第六章：永续合约入门</h2>
+
+<p>永续合约，说白了就是没有到期日的期货合约。你想想看，传统期货到了交割日就得平仓，但永续合约可以一直持有下去。我第一次接触这个概念时也觉得挺神奇的——怎么做到永远不平仓？</p>
+
+<p>嗯，这里的关键就在于资金费率机制。让我从最基础的说起。</p>
+
+<h3>什么是永续合约</h3>
+
+<p>永续合约是一种衍生品，它跟踪某个资产的价格（比如BTC、ETH）。你可以做多，也可以做空。没有到期日，想持有多久就持多久。</p>
+
+<p>我在Hyperliquid上做过不少永续合约交易，它的设计其实很巧妙。核心就两点：</p>
+
+<ul>
+  <li><strong>价格锚定</strong>：合约价格会始终贴近现货价格</li>
+  <li><strong>资金费率</strong>：这是让价格锚定的关键机制</li>
+</ul>
+
+<p>为什么需要资金费率？因为如果没有它，合约价格可能会大幅偏离现货。我记得2021年有一次，BTC永续合约的溢价高达0.5%，那时候做空的人光吃资金费率就赚了不少。</p>
+
+<h3>资金费率机制</h3>
+
+<p>资金费率是永续合约的核心。它每隔一段时间（Hyperliquid上是每小时）在多头和空头之间交换一次。</p>
+
+<p>具体怎么算？看这个公式：</p>
+
+<pre><code>资金费率 = 溢价指数 + 利率
+</code></pre>
+
+<p>其中：</p>
+
+<ul>
+  <li><strong>溢价指数</strong>：反映合约价格与现货价格的偏离程度</li>
+  <li><strong>利率</strong>：通常为0.01%（年化约3.65%）</li>
+</ul>
+
+<p>当资金费率为正时，多头付钱给空头。为负时，空头付钱给多头。</p>
+
+<div class="highlight">
+  <p><strong>重要概念</strong>：资金费率不是交易所收的手续费，它是交易者之间的资金转移。交易所只赚交易手续费。</p>
+</div>
+
+<p>我个人的习惯是，每次开仓前先看一眼资金费率。如果费率特别高（比如年化超过50%），说明市场极度看多，这时候做空反而有不错的资金费收益。当然，方向判断错了也会亏钱。</p>
+
+<h3>杠杆与保证金</h3>
+
+<p>杠杆就是借钱交易。Hyperliquid上最高支持50倍杠杆。你想想看，10倍杠杆意味着你只需要10%的保证金就能开仓。</p>
+
+<p>保证金分两种：</p>
+
+<table>
+  <tr>
+    <th>类型</th>
+    <th>说明</th>
+    <th>我的建议</th>
+  </tr>
+  <tr>
+    <td>逐仓保证金</td>
+    <td>只影响该仓位，不会爆掉其他仓位</td>
+    <td>新手首选，风险可控</td>
+  </tr>
+  <tr>
+    <td>全仓保证金</td>
+    <td>用账户所有资金作为保证金</td>
+    <td>老手使用，效率更高</td>
+  </tr>
+</table>
+
+<p>我曾经见过一个新手，开了全仓模式，50倍杠杆做多。结果行情回调5%，账户直接归零。嗯，这就是典型的保证金管理失败案例。</p>
+
+<div class="warning">
+  <p><strong>避坑指南</strong>：我曾经因为没设止损，在Hyperliquid上爆过一次仓。那次ETH从1800跌到1750，我50倍杠杆做多，5分钟就没了。从那以后，我每笔交易必设止损。</p>
+</div>
+
+<h3>清算价格怎么算</h3>
+
+<p>清算价格就是你亏到保证金不足时，系统强制平仓的价格。公式其实很简单：</p>
+
+<pre><code>清算价格 = 开仓价格 × (1 ± 1/杠杆倍数)
+
+做多时用减号：清算价 = 开仓价 × (1 - 1/杠杆)
+做空时用加号：清算价 = 开仓价 × (1 + 1/杠杆)
+</code></pre>
+
+<p>举个例子：你用10倍杠杆在20000美元做多BTC，清算价就是：</p>
+
+<pre><code>清算价 = 20000 × (1 - 1/10) = 20000 × 0.9 = 18000美元
+</code></pre>
+
+<p>也就是说，BTC跌到18000你就爆仓了。但实际清算价会略高一点，因为还有手续费和资金费率的影响。</p>
+
+<div class="tip">
+  <p><strong>实用技巧</strong>：我建议新手把杠杆控制在3-5倍以内。别觉得赚得慢，活得久才是王道。我在Hyperliquid上见过太多高杠杆爆仓的案例了。</p>
+</div>
+
+<h3>知识体系图</h3>
+
+<p>下面这张图展示了永续合约的核心知识结构：</p>
+
+<svg width="800" height="500" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="500" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 中心节点 -->
+  <rect x="300" y="20" width="200" height="50" rx="25" fill="#4a90d9" stroke="#2c5f8a" stroke-width="2"/>
+  <text x="400" y="50" text-anchor="middle" fill="white" font-size="18" font-weight="bold">永续合约</text>
+  
+  <!-- 三条主线 -->
+  <line x1="400" y1="70" x2="400" y2="120" stroke="#4a90d9" stroke-width="2"/>
+  <line x1="400" y1="120" x2="150" y2="180" stroke="#4a90d9" stroke-width="2"/>
+  <line x1="400" y1="120" x2="400" y2="180" stroke="#4a90d9" stroke-width="2"/>
+  <line x1="400" y1="120" x2="650" y2="180" stroke="#4a90d9" stroke-width="2"/>
+  
+  <!-- 三个核心概念 -->
+  <rect x="80" y="180" width="140" height="45" rx="10" fill="#5cb85c" stroke="#3d8b3d" stroke-width="2"/>
+  <text x="150" y="208" text-anchor="middle" fill="white" font-size="15" font-weight="bold">永续机制</text>
+  
+  <rect x="330" y="180" width="140" height="45" rx="10" fill="#f0ad4e" stroke="#d58512" stroke-width="2"/>
+  <text x="400" y="208" text-anchor="middle" fill="white" font-size="15" font-weight="bold">资金费率</text>
+  
+  <rect x="580" y="180" width="140" height="45" rx="10" fill="#d9534f" stroke="#b52b27" stroke-width="2"/>
+  <text x="650" y="208" text-anchor="middle" fill="white" font-size="15" font-weight="bold">杠杆保证金</text>
+  
+  <!-- 子节点连线 -->
+  <line x1="150" y1="225" x2="150" y2="270" stroke="#5cb85c" stroke-width="1.5"/>
+  <line x1="400" y1="225" x2="400" y2="270" stroke="#f0ad4e" stroke-width="1.5"/>
+  <line x1="650" y1="225" x2="650" y2="270" stroke="#d9534f" stroke-width="1.5"/>
+  
+  <!-- 子节点 -->
+  <rect x="60" y="270" width="180" height="35" rx="8" fill="#e8f5e9" stroke="#5cb85c" stroke-width="1.5"/>
+  <text x="150" y="293" text-anchor="middle" fill="#2e7d32" font-size="13">无到期日</text>
+  
+  <rect x="60" y="315" width="180" height="35" rx="8" fill="#e8f5e9" stroke="#5cb85c" stroke-width="1.5"/>
+  <text x="150" y="338" text-anchor="middle" fill="#2e7d32" font-size="13">价格锚定现货</text>
+  
+  <rect x="310" y="270" width="180" height="35" rx="8" fill="#fff8e1" stroke="#f0ad4e" stroke-width="1.5"/>
+  <text x="400" y="293" text-anchor="middle" fill="#e65100" font-size="13">溢价指数</text>
+  
+  <rect x="310" y="315" width="180" height="35" rx="8" fill="#fff8e1" stroke="#f0ad4e" stroke-width="1.5"/>
+  <text x="400" y="338" text-anchor="middle" fill="#e65100" font-size="13">利率（0.01%）</text>
+  
+  <rect x="310" y="360" width="180" height="35" rx="8" fill="#fff8e1" stroke="#f0ad4e" stroke-width="1.5"/>
+  <text x="400" y="383" text-anchor="middle" fill="#e65100" font-size="13">多空资金交换</text>
+  
+  <rect x="560" y="270" width="180" height="35" rx="8" fill="#fbe9e7" stroke="#d9534f" stroke-width="1.5"/>
+  <text x="650" y="293" text-anchor="middle" fill="#b71c1c" font-size="13">逐仓/全仓</text>
+  
+  <rect x="560" y="315" width="180" height="35" rx="8" fill="#fbe9e7" stroke="#d9534f" stroke-width="1.5"/>
+  <text x="650" y="338" text-anchor="middle" fill="#b71c1c" font-size="13">清算价格计算</text>
+  
+  <rect x="560" y="360" width="180" height="35" rx="8" fill="#fbe9e7" stroke="#d9534f" stroke-width="1.5"/>
+  <text x="650" y="383" text-anchor="middle" fill="#b71c1c" font-size="13">止损设置</text>
+  
+  <!-- 底部总结 -->
+  <rect x="250" y="430" width="300" height="40" rx="20" fill="#7c4dff" stroke="#5a2dbe" stroke-width="2"/>
+  <text x="400" y="456" text-anchor="middle" fill="white" font-size="14">三者共同构成永续合约交易体系</text>
+</svg>
+
+<h3>实战中的注意事项</h3>
+
+<p>我在Hyperliquid上交易了快两年，总结了几条经验：</p>
+
+<ol>
+  <li><strong>资金费率不是成本</strong>：它只是多空之间的转移。如果你方向判断对了，费率反而是额外收益。</li>
+  <li><strong>高杠杆不等于高收益</strong>：50倍杠杆下，2%的波动就爆仓了。你想想看，BTC一天波动5%都很正常。</li>
+  <li><strong>永远设止损</strong>：这是我在爆仓后养成的习惯。没有止损的交易，就像没有刹车的车。</li>
+  <li><strong>关注资金费率变化</strong>：如果费率持续为正且很高，说明市场过热，这时候做空可能更安全。</li>
+</ol>
+
+<div class="highlight">
+  <p><strong>核心要点</strong>：永续合约不是赌博工具，它是风险管理工具。我见过太多人把它当赌场，结果输得很惨。记住，活得久比赚得快更重要。</p>
+</div>
+
+<p>嗯，永续合约的基础知识就这些。说白了就是三个东西：永续机制让你可以一直持有，资金费率让价格不偏离，杠杆让你用小资金撬动大仓位。理解这三者的关系，你就能在Hyperliquid上安全交易了。</p>
+
+<footer>
+  <p>公众号:蓝海资料掘金营，微信deep3321</p>
+</footer>
+        <div class="footer-nav">
+            <a href="05.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="07.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

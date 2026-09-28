@@ -1,0 +1,515 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第15章 WebSocket 实战（三）</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="active">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="">第28章 部署与运维</a></li>
+<li><a href="29.html" class="">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>WebSocket 实战（三）：实时账户余额与持仓更新、资金费率推送</h2>
+
+<p>好，咱们继续深入 WebSocket。</p>
+<p>前两章我们搞定了行情数据，现在该碰真正的核心了——<strong>账户资金</strong>。说白了，就是你的钱包和仓位。</p>
+<p>我个人习惯把这类数据叫做「命根子数据」。为什么？因为行情看错了可以止损，但账户数据如果没实时跟上，轻则错过平仓时机，重则爆仓了还不知道。我在早期做高频交易时，就吃过这个亏——WebSocket 断连了 3 秒，持仓没更新，结果止损单没触发。嗯，从那以后我对账户推送的稳定性要求极高。</p>
+
+<h3>一、账户数据订阅的核心逻辑</h3>
+
+<p>Hyperliquid 的 WebSocket 账户推送，和行情推送有个本质区别：<strong>需要鉴权</strong>。</p>
+<p>你想想看，谁都能订阅你的余额？那不乱套了。所以订阅账户数据时，必须带上签名。具体流程是：</p>
+
+<ol>
+  <li>用你的私钥对特定消息签名</li>
+  <li>把签名结果作为订阅参数发送</li>
+  <li>服务端验证通过后，才开始推送你的账户数据</li>
+</ol>
+
+<p>这里有个坑：<strong>签名有效期</strong>。我曾经遇到过签名过期导致推送中断的情况，排查了半天才发现是时间戳偏差。所以建议每次订阅前都重新生成签名，别复用旧的。</p>
+
+<h3>二、订阅账户余额与持仓更新</h3>
+
+<p>先看订阅消息的格式。我个人习惯把这类消息封装成一个函数，方便复用：</p>
+
+<pre><code>import time
+import hashlib
+import hmac
+from eth_account.messages import encode_defunct
+from web3 import Web3
+
+def build_account_subscription(wallet_address, private_key):
+    """
+    构建账户订阅消息
+    """
+    # 时间戳，注意要用毫秒
+    timestamp = int(time.time() * 1000)
+    
+    # 构造待签名的消息
+    message = {
+        "type": "subscribe",
+        "channel": "account",
+        "user": wallet_address,
+        "timestamp": timestamp
+    }
+    
+    # 签名过程
+    message_str = str(message)
+    message_hash = encode_defunct(text=message_str)
+    signed_message = Web3().eth.account.sign_message(
+        message_hash, 
+        private_key=private_key
+    )
+    
+    # 最终发送的订阅消息
+    subscription = {
+        "type": "subscribe",
+        "channel": "account",
+        "user": wallet_address,
+        "signature": signed_message.signature.hex(),
+        "timestamp": timestamp
+    }
+    
+    return subscription
+</code></pre>
+
+<p>发送之后，服务端会返回确认消息。如果签名不对，会直接断开连接。嗯，这里要注意：<strong>签名用的私钥必须和钱包地址匹配</strong>，别搞混了测试网和主网的密钥。</p>
+
+<h3>三、解析账户推送数据</h3>
+
+<p>一旦订阅成功，你会收到类似这样的数据：</p>
+
+<pre><code>{
+    "channel": "account",
+    "data": {
+        "user": "0x1234...",
+        "balances": [
+            {
+                "coin": "USDC",
+                "total": "10000.0",
+                "hold": "2000.0",
+                "withdrawable": "8000.0"
+            },
+            {
+                "coin": "BTC",
+                "total": "0.5",
+                "hold": "0.2",
+                "withdrawable": "0.3"
+            }
+        ],
+        "positions": [
+            {
+                "coin": "BTC",
+                "size": "1.0",
+                "entryPx": "50000.0",
+                "positionValue": "50000.0",
+                "unrealizedPnl": "1000.0",
+                "liquidationPx": "45000.0"
+            }
+        ],
+        "time": 1699000000000
+    }
+}
+</code></pre>
+
+<p>字段说明：</p>
+
+<table>
+  <tr>
+    <th>字段</th>
+    <th>含义</th>
+    <th>注意点</th>
+  </tr>
+  <tr>
+    <td>total</td>
+    <td>总余额</td>
+    <td>包含冻结部分</td>
+  </tr>
+  <tr>
+    <td>hold</td>
+    <td>冻结余额</td>
+    <td>挂单占用的资金</td>
+  </tr>
+  <tr>
+    <td>withdrawable</td>
+    <td>可提现余额</td>
+    <td>total - hold</td>
+  </tr>
+  <tr>
+    <td>size</td>
+    <td>持仓数量</td>
+    <td>正数为多，负数为空</td>
+  </tr>
+  <tr>
+    <td>entryPx</td>
+    <td>开仓均价</td>
+    <td>加权平均计算</td>
+  </tr>
+  <tr>
+    <td>unrealizedPnl</td>
+    <td>未实现盈亏</td>
+    <td>按标记价格计算</td>
+  </tr>
+  <tr>
+    <td>liquidationPx</td>
+    <td>清算价格</td>
+    <td>接近时要警惕</td>
+  </tr>
+</table>
+
+<p>我在项目中遇到过一个问题：<strong>持仓数据更新频率比余额高</strong>。因为行情波动时，未实现盈亏一直在变，但余额只有成交时才变。所以写代码时，建议把余额和持仓分开处理，别混在一起。</p>
+
+<h3>四、资金费率推送</h3>
+
+<p>资金费率是永续合约特有的机制。说白了，就是多头和空头之间定期结算的费用。Hyperliquid 的资金费率推送频率是 <strong>每小时一次</strong>，但实际结算可能更频繁。</p>
+
+<p>订阅资金费率的消息比较简单，不需要签名：</p>
+
+<pre><code>{
+    "type": "subscribe",
+    "channel": "funding",
+    "coin": "BTC"
+}
+</code></pre>
+
+<p>返回的数据格式：</p>
+
+<pre><code>{
+    "channel": "funding",
+    "data": {
+        "coin": "BTC",
+        "fundingRate": "0.0001",
+        "fundingTime": 1699000000000,
+        "premium": "0.0002"
+    }
+}
+</code></pre>
+
+<p>这里有个关键点：<strong>fundingRate 是正值还是负值</strong>。正值表示多头付钱给空头，负值相反。我建议在策略中加一个判断：如果资金费率绝对值超过 0.1%，就要警惕了，说明市场情绪极度一边倒。</p>
+
+<div class="highlight">
+  <p><strong>核心要点：</strong></p>
+  <ul>
+    <li>账户订阅必须签名，且签名有时效性</li>
+    <li>余额和持仓分开处理，更新频率不同</li>
+    <li>资金费率每小时推送一次，但结算可能更频繁</li>
+    <li>资金费率绝对值 > 0.1% 时需警惕</li>
+  </ul>
+</div>
+
+<h3>五、实战：构建实时账户监控器</h3>
+
+<p>咱们写一个简单的监控器，把账户数据和资金费率整合在一起：</p>
+
+<pre><code>import asyncio
+import websockets
+import json
+
+class AccountMonitor:
+    def __init__(self, wallet, private_key):
+        self.wallet = wallet
+        self.private_key = private_key
+        self.balances = {}
+        self.positions = {}
+        self.funding_rates = {}
+        
+    async def connect(self):
+        uri = "wss://api.hyperliquid.xyz/ws"
+        async with websockets.connect(uri) as ws:
+            # 订阅账户
+            sub = build_account_subscription(self.wallet, self.private_key)
+            await ws.send(json.dumps(sub))
+            
+            # 订阅资金费率
+            funding_sub = {
+                "type": "subscribe",
+                "channel": "funding",
+                "coin": "BTC"
+            }
+            await ws.send(json.dumps(funding_sub))
+            
+            # 持续接收
+            async for message in ws:
+                data = json.loads(message)
+                self._handle_message(data)
+                
+    def _handle_message(self, data):
+        channel = data.get("channel")
+        if channel == "account":
+            self._update_account(data["data"])
+        elif channel == "funding":
+            self._update_funding(data["data"])
+            
+    def _update_account(self, data):
+        # 更新余额
+        for bal in data["balances"]:
+            self.balances[bal["coin"]] = bal
+            
+        # 更新持仓
+        for pos in data["positions"]:
+            self.positions[pos["coin"]] = pos
+            
+        # 检查清算风险
+        for coin, pos in self.positions.items():
+            if pos["liquidationPx"]:
+                # 这里可以加报警逻辑
+                pass
+                
+    def _update_funding(self, data):
+        coin = data["coin"]
+        rate = float(data["fundingRate"])
+        self.funding_rates[coin] = rate
+        
+        # 资金费率过高时报警
+        if abs(rate) > 0.001:
+            print(f"⚠️ {coin} 资金费率异常: {rate}")
+</code></pre>
+
+<p>这段代码虽然简单，但已经能覆盖大部分场景了。我个人习惯在 <code>_update_account</code> 里加一个缓存机制——如果 5 秒内没收到更新，就主动重连。因为 WebSocket 偶尔会静默断开，你不主动检查根本不知道。</p>
+
+<div class="tip">
+  <p><strong>小技巧：</strong> 资金费率推送的 premium 字段可以帮你判断当前市场是升水还是贴水。如果 premium 持续为正，说明多头强势，资金费率大概率也会转正。</p>
+</div>
+
+<h3>六、避坑指南</h3>
+
+<p>最后分享几个我踩过的坑：</p>
+
+<ul>
+  <li><strong>签名过期问题</strong>：我曾经用了一个旧的签名，结果订阅后 10 分钟就断连了。后来改成每次订阅前重新生成签名，问题解决。</li>
+  <li><strong>持仓数据延迟</strong>：有一次我发现持仓更新比实际成交慢了 2 秒，排查后发现是本地时间戳和服务端不一致。建议用服务端返回的 time 字段校准。</li>
+  <li><strong>资金费率推送丢失</strong>：如果网络波动，可能会漏掉某次推送。建议每小时主动拉一次资金费率做校验。</li>
+</ul>
+
+<div class="warning">
+  <p><strong>重要提醒：</strong> 账户数据涉及资金安全，绝对不要在日志中打印私钥或签名原文。我曾经见过有人把签名打印到控制台，结果被截屏泄露了。建议使用环境变量管理密钥。</p>
+</div>
+
+<h3>七、知识体系图</h3>
+
+<p>下面这张图展示了本章的核心逻辑：</p>
+
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="500" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">WebSocket 账户与资金费率推送架构</text>
+  
+  <!-- 客户端 -->
+  <rect x="50" y="80" width="180" height="60" rx="8" fill="#3498db" opacity="0.9"/>
+  <text x="140" y="115" text-anchor="middle" font-size="16" fill="white" font-weight="bold">客户端</text>
+  
+  <!-- WebSocket 连接 -->
+  <line x1="230" y1="110" x2="350" y2="110" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="290" y="100" text-anchor="middle" font-size="12" fill="#7f8c8d">WebSocket</text>
+  
+  <!-- 鉴权模块 -->
+  <rect x="350" y="80" width="180" height="60" rx="8" fill="#e74c3c" opacity="0.9"/>
+  <text x="440" y="115" text-anchor="middle" font-size="16" fill="white" font-weight="bold">鉴权模块</text>
+  
+  <!-- 签名 -->
+  <rect x="350" y="170" width="180" height="50" rx="8" fill="#f39c12" opacity="0.9"/>
+  <text x="440" y="200" text-anchor="middle" font-size="14" fill="white">签名验证</text>
+  
+  <line x1="440" y1="140" x2="440" y2="170" stroke="#2c3e50" stroke-width="2"/>
+  
+  <!-- 数据分发 -->
+  <rect x="600" y="80" width="180" height="60" rx="8" fill="#2ecc71" opacity="0.9"/>
+  <text x="690" y="115" text-anchor="middle" font-size="16" fill="white" font-weight="bold">数据分发</text>
+  
+  <line x1="530" y1="110" x2="600" y2="110" stroke="#2c3e50" stroke-width="2"/>
+  
+  <!-- 三个数据流 -->
+  <line x1="690" y1="140" x2="690" y2="200" stroke="#2c3e50" stroke-width="2"/>
+  
+  <!-- 余额 -->
+  <rect x="580" y="200" width="200" height="50" rx="8" fill="#1abc9c" opacity="0.8"/>
+  <text x="680" y="230" text-anchor="middle" font-size="14" fill="white">余额更新</text>
+  
+  <!-- 持仓 -->
+  <rect x="580" y="270" width="200" height="50" rx="8" fill="#9b59b6" opacity="0.8"/>
+  <text x="680" y="300" text-anchor="middle" font-size="14" fill="white">持仓更新</text>
+  
+  <!-- 资金费率 -->
+  <rect x="580" y="340" width="200" height="50" rx="8" fill="#e67e22" opacity="0.8"/>
+  <text x="680" y="370" text-anchor="middle" font-size="14" fill="white">资金费率推送</text>
+  
+  <line x1="690" y1="200" x2="690" y2="250" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="690" y1="250" x2="690" y2="320" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="690" y1="320" x2="690" y2="390" stroke="#2c3e50" stroke-width="2"/>
+  
+  <!-- 箭头标记 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2c3e50"/>
+    </marker>
+  </defs>
+  
+  <!-- 说明 -->
+  <text x="400" y="450" text-anchor="middle" font-size="14" fill="#7f8c8d">账户数据需要签名鉴权，资金费率无需鉴权</text>
+  <text x="400" y="475" text-anchor="middle" font-size="14" fill="#7f8c8d">三个数据流独立推送，互不干扰</text>
+</svg>
+
+<p>从图中可以看出，账户数据和资金费率是两条独立的推送通道。账户数据需要先经过鉴权模块，而资金费率可以直接订阅。我个人建议在代码中把这两个通道分开管理，这样即使一个通道出问题，另一个还能正常工作。</p>
+
+<p>好了，这一章的内容就到这里。账户数据是交易系统的核心，一定要确保稳定可靠。下一章我们会聊更高级的话题——如何用 WebSocket 实现自动化交易策略。</p>
+
+<hr>
+<p style="text-align:center; color:#7f8c8d; font-size:12px;">公众号:蓝海资料掘金营，微信deep3321</p>
+        <div class="footer-nav">
+            <a href="14.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="16.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

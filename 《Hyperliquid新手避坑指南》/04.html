@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第4章 账户与API设置</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 认识Hyperliquid</a></li>
+<li><a href="02.html" class="">第2章 钱包准备与安全</a></li>
+<li><a href="03.html" class="">第3章 跨链入金</a></li>
+<li><a href="04.html" class="active">第4章 账户与API设置</a></li>
+<li><a href="05.html" class="">第5章 现货交易基础</a></li>
+<li><a href="06.html" class="">第6章 永续合约入门</a></li>
+<li><a href="07.html" class="">第7章 做多与做空</a></li>
+<li><a href="08.html" class="">第8章 订单类型详解</a></li>
+<li><a href="09.html" class="">第9章 杠杆与风险管理</a></li>
+<li><a href="10.html" class="">第10章 资金费率详解</a></li>
+<li><a href="11.html" class="">第11章 K线图与指标</a></li>
+<li><a href="12.html" class="">第12章 交易策略入门</a></li>
+<li><a href="13.html" class="">第13章 模拟交易</a></li>
+<li><a href="14.html" class="">第14章 Gas费优化</a></li>
+<li><a href="15.html" class="">第15章 滑点控制</a></li>
+<li><a href="16.html" class="">第16章 流动性陷阱</a></li>
+<li><a href="17.html" class="">第17章 合约参数检查</a></li>
+<li><a href="18.html" class="">第18章 钓鱼与假网站</a></li>
+<li><a href="19.html" class="">第19章 授权与合约风险</a></li>
+<li><a href="20.html" class="">第20章 提现注意事项</a></li>
+<li><a href="21.html" class="">第21章 API安全</a></li>
+<li><a href="22.html" class="">第22章 行情波动应对</a></li>
+<li><a href="23.html" class="">第23章 仓位管理</a></li>
+<li><a href="24.html" class="">第24章 情绪管理</a></li>
+<li><a href="25.html" class="">第25章 税务与合规</a></li>
+<li><a href="26.html" class="">第26章 社区与信息源</a></li>
+<li><a href="27.html" class="">第27章 常见错误代码</a></li>
+<li><a href="28.html" class="">第28章 客服与申诉</a></li>
+<li><a href="29.html" class="">第29章 进阶工具</a></li>
+<li><a href="30.html" class="">第30章 总结与行动计划</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>4. 账户与API设置：创建子账户、API密钥生成、权限管理</h2>
+
+<p>说实话，账户和API这块，是新手最容易翻车的地方。</p>
+<p>我自己刚接触Hyperliquid那会儿，就因为API权限没设对，差点把主账户的仓位给搞没了。嗯，今天咱们就把这块彻底讲明白。</p>
+
+<h3>4.1 为什么要用子账户？</h3>
+
+<p>你想想看，如果你只有一个主账户，所有资金都在里面。万一API密钥泄露，或者某个策略写了个bug，后果是什么？</p>
+<p>我见过最惨的案例——有人把主账户的API密钥直接硬编码在公开的GitHub仓库里。结果呢？几分钟内资产被洗劫一空。</p>
+<p>所以，<strong>子账户不是可选项，是必需品</strong>。</p>
+
+<div class="highlight">
+  <p><strong>核心原则：</strong>主账户只做资金管理，子账户负责具体交易。</p>
+</div>
+
+<p>Hyperliquid支持创建多个子账户。每个子账户有独立的余额、仓位和API密钥。说白了，就是给你一个「隔离沙箱」。</p>
+
+<h3>4.2 创建子账户的步骤</h3>
+
+<p>操作其实很简单，但我还是把关键点列出来：</p>
+
+<ol>
+  <li>登录Hyperliquid Dashboard，进入「Account」页面</li>
+  <li>找到「Sub-accounts」区域，点击「Create Sub-account」</li>
+  <li>输入子账户名称（建议用策略名，比如「grid_bot_01」）</li>
+  <li>设置初始资金分配（从主账户划转）</li>
+</ol>
+
+<div class="tip">
+  <p><strong>我的习惯：</strong>每个子账户只放该策略最大亏损额度的2倍资金。比如策略最大回撤是1000U，我就放2000U。这样即使策略崩了，也不至于伤筋动骨。</p>
+</div>
+
+<h3>4.3 API密钥生成——别踩这些坑</h3>
+
+<p>生成API密钥时，Hyperliquid会让你选择权限。这里我重点讲一下。</p>
+
+<p>进入子账户的「API Management」页面，点击「Generate API Key」。你会看到三个权限选项：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>权限类型</th>
+      <th>允许操作</th>
+      <th>典型用途</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>只读（Read-only）</td>
+      <td>查询余额、仓位、订单状态</td>
+      <td>监控面板、数据分析</td>
+    </tr>
+    <tr>
+      <td>交易（Trading）</td>
+      <td>下单、撤单、查询</td>
+      <td>交易机器人</td>
+    </tr>
+    <tr>
+      <td>提现（Withdrawal）</td>
+      <td>划转资金到其他地址</td>
+      <td>极少使用，建议禁用</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warning">
+  <p><strong>警告：</strong>我曾经见过有人给交易机器人开了「提现」权限。结果机器人被黑客利用，直接提走了所有资金。记住：<strong>交易机器人永远不需要提现权限</strong>。</p>
+</div>
+
+<p>生成密钥后，你会得到两样东西：</p>
+<ul>
+  <li><strong>API Key</strong>（公钥）—— 可以暴露，但建议还是保密</li>
+  <li><strong>API Secret</strong>（私钥）—— 打死也不能给别人看</li>
+</ul>
+
+<p>嗯，这里有个细节：Hyperliquid的API Secret只在生成时显示一次。如果你关掉页面，就再也看不到了。所以，<strong>生成后立刻保存到密码管理器</strong>，比如1Password或Bitwarden。</p>
+
+<h3>4.4 权限管理的最佳实践</h3>
+
+<p>说白了，权限管理就一句话：<strong>最小权限原则</strong>。</p>
+
+<p>我自己的配置方案是这样的：</p>
+
+<ul>
+  <li><strong>监控脚本</strong>：只用只读权限。查查资金费率、持仓量什么的，不需要交易能力。</li>
+  <li><strong>网格交易机器人</strong>：只用交易权限。能下单能撤单，但动不了你的本金。</li>
+  <li><strong>套利机器人</strong>：交易权限 + 有限的提现权限（如果需要在不同交易所间搬砖）。但提现地址要白名单。</li>
+</ul>
+
+<div class="highlight">
+  <p><strong>一个实用技巧：</strong>为每个API密钥设置备注。比如「grid_bot_v2_eth_usdt」。这样万一某个密钥出问题，你能快速定位是哪个策略在搞鬼。</p>
+</div>
+
+<h3>4.5 密钥轮换与安全审计</h3>
+
+<p>我每3个月会做一次密钥轮换。流程很简单：</p>
+
+<ol>
+  <li>生成新密钥</li>
+  <li>更新到你的策略配置里</li>
+  <li>确认新密钥正常工作</li>
+  <li>删除旧密钥</li>
+</ol>
+
+<p>为什么要这么麻烦？因为密钥在传输和存储过程中，总有可能泄露。定期轮换能把风险窗口缩到最小。</p>
+
+<p>另外，我建议你定期检查API使用记录。Hyperliquid提供了API调用日志，看看有没有异常的请求频率或来源IP。如果有，立刻吊销密钥。</p>
+
+<h3>4.6 核心逻辑流程图</h3>
+
+<p>下面这张图，概括了账户与API设置的整体逻辑：</p>
+
+<svg width="720" height="420" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="720" height="420" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 主账户 -->
+  <rect x="260" y="20" width="200" height="50" rx="8" fill="#4a90d9" stroke="#2c5f8a" stroke-width="2"/>
+  <text x="360" y="50" text-anchor="middle" fill="white" font-size="16" font-weight="bold">主账户</text>
+  
+  <!-- 箭头 -->
+  <line x1="360" y1="70" x2="360" y2="110" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 子账户区域 -->
+  <rect x="60" y="110" width="600" height="120" rx="8" fill="#e6f7ff" stroke="#91d5ff" stroke-width="2" stroke-dasharray="5,5"/>
+  <text x="360" y="135" text-anchor="middle" fill="#1890ff" font-size="14" font-weight="bold">子账户（隔离沙箱）</text>
+  
+  <rect x="90" y="150" width="160" height="60" rx="6" fill="#fff" stroke="#4a90d9" stroke-width="1.5"/>
+  <text x="170" y="175" text-anchor="middle" fill="#333" font-size="13">子账户 A</text>
+  <text x="170" y="195" text-anchor="middle" fill="#999" font-size="11">网格策略</text>
+  
+  <rect x="280" y="150" width="160" height="60" rx="6" fill="#fff" stroke="#4a90d9" stroke-width="1.5"/>
+  <text x="360" y="175" text-anchor="middle" fill="#333" font-size="13">子账户 B</text>
+  <text x="360" y="195" text-anchor="middle" fill="#999" font-size="11">套利策略</text>
+  
+  <rect x="470" y="150" width="160" height="60" rx="6" fill="#fff" stroke="#4a90d9" stroke-width="1.5"/>
+  <text x="550" y="175" text-anchor="middle" fill="#333" font-size="13">子账户 C</text>
+  <text x="550" y="195" text-anchor="middle" fill="#999" font-size="11">监控脚本</text>
+  
+  <!-- 箭头 -->
+  <line x1="170" y1="210" x2="170" y2="260" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="360" y1="210" x2="360" y2="260" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="550" y1="210" x2="550" y2="260" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- API密钥区域 -->
+  <rect x="60" y="260" width="600" height="120" rx="8" fill="#fff7e6" stroke="#ffd591" stroke-width="2" stroke-dasharray="5,5"/>
+  <text x="360" y="285" text-anchor="middle" fill="#fa8c16" font-size="14" font-weight="bold">API密钥（按权限分配）</text>
+  
+  <rect x="90" y="300" width="160" height="60" rx="6" fill="#fff" stroke="#52c41a" stroke-width="1.5"/>
+  <text x="170" y="325" text-anchor="middle" fill="#333" font-size="13">只读权限</text>
+  <text x="170" y="345" text-anchor="middle" fill="#999" font-size="11">查询余额/仓位</text>
+  
+  <rect x="280" y="300" width="160" height="60" rx="6" fill="#fff" stroke="#1890ff" stroke-width="1.5"/>
+  <text x="360" y="325" text-anchor="middle" fill="#333" font-size="13">交易权限</text>
+  <text x="360" y="345" text-anchor="middle" fill="#999" font-size="11">下单/撤单</text>
+  
+  <rect x="470" y="300" width="160" height="60" rx="6" fill="#fff" stroke="#ff4d4f" stroke-width="1.5"/>
+  <text x="550" y="325" text-anchor="middle" fill="#333" font-size="13">提现权限</text>
+  <text x="550" y="345" text-anchor="middle" fill="#999" font-size="11">❌ 建议禁用</text>
+  
+  <!-- 箭头标记定义 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+  </defs>
+  
+  <!-- 底部说明 -->
+  <text x="360" y="405" text-anchor="middle" fill="#999" font-size="12">图：账户与API权限管理架构</text>
+</svg>
+
+<h3>4.7 常见问题与避坑</h3>
+
+<p><strong>Q：API密钥泄露了怎么办？</strong></p>
+<p>立刻吊销！别犹豫。去API Management页面，找到对应的密钥，点「Revoke」。然后生成新的。</p>
+
+<p><strong>Q：子账户之间能共享API密钥吗？</strong></p>
+<p>不能。每个子账户的API密钥是独立的。这也是安全设计的一部分。</p>
+
+<p><strong>Q：我该把API密钥存在哪里？</strong></p>
+<p>千万别存文本文件里。用环境变量，或者专门的密钥管理服务。我个人习惯用<code>.env</code>文件，但记得加到<code>.gitignore</code>里。</p>
+
+<div class="warning">
+  <p><strong>血的教训：</strong>我曾经把API密钥写在一个Jupyter Notebook里，然后不小心把Notebook上传到了公开的GitHub仓库。虽然5分钟内就发现了，但已经有人用我的密钥下了几笔奇怪的单子。还好我设的是只读权限，没造成损失。从那以后，我所有密钥都走环境变量。</p>
+</div>
+
+<p>好了，账户和API设置这块，核心就是这些。记住：<strong>子账户隔离 + 最小权限 + 定期轮换</strong>，这三板斧能帮你避开90%的安全问题。</p>
+
+<hr>
+<p style="text-align:center; color:#999; font-size:12px;">公众号:蓝海资料掘金营，微信deep3321</p>
+        <div class="footer-nav">
+            <a href="03.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="05.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

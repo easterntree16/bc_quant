@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第2章 钱包准备与安全</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 认识Hyperliquid</a></li>
+<li><a href="02.html" class="active">第2章 钱包准备与安全</a></li>
+<li><a href="03.html" class="">第3章 跨链入金</a></li>
+<li><a href="04.html" class="">第4章 账户与API设置</a></li>
+<li><a href="05.html" class="">第5章 现货交易基础</a></li>
+<li><a href="06.html" class="">第6章 永续合约入门</a></li>
+<li><a href="07.html" class="">第7章 做多与做空</a></li>
+<li><a href="08.html" class="">第8章 订单类型详解</a></li>
+<li><a href="09.html" class="">第9章 杠杆与风险管理</a></li>
+<li><a href="10.html" class="">第10章 资金费率详解</a></li>
+<li><a href="11.html" class="">第11章 K线图与指标</a></li>
+<li><a href="12.html" class="">第12章 交易策略入门</a></li>
+<li><a href="13.html" class="">第13章 模拟交易</a></li>
+<li><a href="14.html" class="">第14章 Gas费优化</a></li>
+<li><a href="15.html" class="">第15章 滑点控制</a></li>
+<li><a href="16.html" class="">第16章 流动性陷阱</a></li>
+<li><a href="17.html" class="">第17章 合约参数检查</a></li>
+<li><a href="18.html" class="">第18章 钓鱼与假网站</a></li>
+<li><a href="19.html" class="">第19章 授权与合约风险</a></li>
+<li><a href="20.html" class="">第20章 提现注意事项</a></li>
+<li><a href="21.html" class="">第21章 API安全</a></li>
+<li><a href="22.html" class="">第22章 行情波动应对</a></li>
+<li><a href="23.html" class="">第23章 仓位管理</a></li>
+<li><a href="24.html" class="">第24章 情绪管理</a></li>
+<li><a href="25.html" class="">第25章 税务与合规</a></li>
+<li><a href="26.html" class="">第26章 社区与信息源</a></li>
+<li><a href="27.html" class="">第27章 常见错误代码</a></li>
+<li><a href="28.html" class="">第28章 客服与申诉</a></li>
+<li><a href="29.html" class="">第29章 进阶工具</a></li>
+<li><a href="30.html" class="">第30章 总结与行动计划</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第二章：钱包准备与安全——你的链上第一道防线</h2>
+
+<p>说实话，我见过太多新手在钱包这一步栽跟头了。有人把私钥截图存在手机里，有人授权了来路不明的合约，还有人把助记词直接发到了微信群里……嗯，这些操作我看着都心疼。今天咱们就把钱包这件事彻底聊透。</p>
+
+<div class="highlight">
+  <p><strong>核心观点：</strong>在Hyperliquid上，你的钱包就是你的银行账户。私钥丢了，钱就没了。授权错了，钱也可能没了。</p>
+</div>
+
+<h3>2.1 支持哪些钱包？</h3>
+
+<p>Hyperliquid目前主要支持两类钱包：<strong>MetaMask</strong> 和 <strong>OKX Wallet</strong>。我个人习惯两个都备着，但日常用MetaMask多一些。</p>
+
+<table>
+  <tr>
+    <th>钱包</th>
+    <th>优点</th>
+    <th>缺点</th>
+    <th>我的建议</th>
+  </tr>
+  <tr>
+    <td>MetaMask</td>
+    <td>生态最广、插件成熟、社区支持强</td>
+    <td>界面稍显老旧、偶尔卡顿</td>
+    <td>主力钱包，推荐</td>
+  </tr>
+  <tr>
+    <td>OKX Wallet</td>
+    <td>原生支持多链、内置DApp浏览器</td>
+    <td>相对较新、部分功能不够完善</td>
+    <td>备用钱包，适合多链操作</td>
+  </tr>
+</table>
+
+<p>为什么只有这两个？其实Hyperliquid用的是Arbitrum链，而这两个钱包对Arbitrum的支持最稳定。我在项目中遇到过有人用其他小众钱包，结果连不上Hyperliquid，折腾了半天才发现是钱包兼容性问题。</p>
+
+<h3>2.2 私钥管理——命根子</h3>
+
+<p>私钥是什么？说白了就是你对钱包的绝对控制权。谁拿到私钥，谁就能转走你所有的钱。我见过最离谱的事：有人把私钥写在便利贴上，贴在电脑屏幕旁边……</p>
+
+<div class="warning">
+  <p><strong>⚠️ 绝对不要做的事：</strong></p>
+  <ul>
+    <li>不要截图私钥或助记词</li>
+    <li>不要存在云盘、微信收藏、备忘录里</li>
+    <li>不要发给任何人，包括自称"客服"的人</li>
+    <li>不要用联网设备存储明文私钥</li>
+  </ul>
+</div>
+
+<p>那应该怎么存？我自己的做法是：</p>
+<ol>
+  <li><strong>硬件钱包</strong>：Ledger或Trezor，冷存储最安全。我大概有80%的资产放在硬件钱包里。</li>
+  <li><strong>纸质备份</strong>：助记词手写下来，放在防火防水的保险柜里。记得多抄一份放不同地方。</li>
+  <li><strong>密码管理器</strong>：比如Bitwarden或1Password，但只适合存热钱包的私钥，别存大额资产。</li>
+</ol>
+
+<div class="tip">
+  <p><strong>💡 小技巧：</strong>助记词可以拆成三份，分别放在三个不同的安全地点。这样即使丢了一份，也能恢复。但别拆得太碎，否则自己都拼不回来……</p>
+</div>
+
+<h3>2.3 授权风险——隐形杀手</h3>
+
+<p>授权，是新手最容易忽略的坑。你想想看，当你第一次连接Hyperliquid时，钱包会弹出一个授权窗口。很多人看都不看就点了"确认"。嗯，这就是问题所在。</p>
+
+<p>授权分两种：</p>
+<ul>
+  <li><strong>签名授权</strong>：只是证明你是钱包主人，不涉及资产转移。相对安全。</li>
+  <li><strong>代币授权</strong>：允许合约动用你钱包里的特定代币。这个要小心！</li>
+</ul>
+
+<p>我曾经见过一个案例：有人授权了一个假的Hyperliquid合约，结果对方把他钱包里的USDC全部转走了。为什么？因为他授权了无限额度——合约可以花光他所有的USDC。</p>
+
+<div class="highlight">
+  <p><strong>授权安全三原则：</strong></p>
+  <ol>
+    <li><strong>只授权需要的额度</strong>：比如你只存1000 USDC，就授权1000，别给无限额度。</li>
+    <li><strong>定期清理授权</strong>：用 revoke.cash 或 Etherscan 的Token Approval工具，把不用的授权撤销掉。</li>
+    <li><strong>核对合约地址</strong>：Hyperliquid的官方合约地址一定要从官网或官方文档获取，别信Google搜索的前几个结果。</li>
+  </ol>
+</div>
+
+<p>怎么检查授权？我一般用这个流程：</p>
+<pre><code>1. 打开 revoke.cash
+2. 连接你的钱包
+3. 查看所有已授权的合约
+4. 找到Hyperliquid相关的授权
+5. 确认额度是否合理
+6. 撤销不需要的授权</code></pre>
+
+<h3>2.4 知识体系总览</h3>
+
+<p>下面这张图是我自己整理的，把钱包安全的核心逻辑串起来了。你一看就明白：</p>
+
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="500" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#2c3e50">钱包安全知识体系</text>
+  
+  <!-- 中心节点 -->
+  <rect x="300" y="70" width="200" height="50" rx="25" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="400" y="100" text-anchor="middle" font-size="16" fill="white" font-weight="bold">你的钱包</text>
+  
+  <!-- 三条主线 -->
+  <!-- 线1：钱包选择 -->
+  <line x1="350" y1="120" x2="150" y2="200" stroke="#e74c3c" stroke-width="2"/>
+  <rect x="80" y="190" width="140" height="40" rx="8" fill="#e74c3c" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="150" y="215" text-anchor="middle" font-size="14" fill="white">钱包选择</text>
+  
+  <!-- 线2：私钥管理 -->
+  <line x1="400" y1="120" x2="400" y2="200" stroke="#27ae60" stroke-width="2"/>
+  <rect x="330" y="190" width="140" height="40" rx="8" fill="#27ae60" stroke="#1e8449" stroke-width="1.5"/>
+  <text x="400" y="215" text-anchor="middle" font-size="14" fill="white">私钥管理</text>
+  
+  <!-- 线3：授权风险 -->
+  <line x1="450" y1="120" x2="650" y2="200" stroke="#f39c12" stroke-width="2"/>
+  <rect x="580" y="190" width="140" height="40" rx="8" fill="#f39c12" stroke="#d68910" stroke-width="1.5"/>
+  <text x="650" y="215" text-anchor="middle" font-size="14" fill="white">授权风险</text>
+  
+  <!-- 子节点 - 钱包选择 -->
+  <line x1="120" y1="230" x2="80" y2="300" stroke="#e74c3c" stroke-width="1.5"/>
+  <rect x="30" y="290" width="100" height="35" rx="6" fill="#fadbd8" stroke="#e74c3c" stroke-width="1"/>
+  <text x="80" y="312" text-anchor="middle" font-size="12" fill="#c0392b">MetaMask</text>
+  
+  <line x1="180" y1="230" x2="220" y2="300" stroke="#e74c3c" stroke-width="1.5"/>
+  <rect x="170" y="290" width="100" height="35" rx="6" fill="#fadbd8" stroke="#e74c3c" stroke-width="1"/>
+  <text x="220" y="312" text-anchor="middle" font-size="12" fill="#c0392b">OKX Wallet</text>
+  
+  <!-- 子节点 - 私钥管理 -->
+  <line x1="370" y1="230" x2="330" y2="300" stroke="#27ae60" stroke-width="1.5"/>
+  <rect x="280" y="290" width="100" height="35" rx="6" fill="#d5f5e3" stroke="#27ae60" stroke-width="1"/>
+  <text x="330" y="312" text-anchor="middle" font-size="12" fill="#1e8449">硬件钱包</text>
+  
+  <line x1="400" y1="230" x2="400" y2="300" stroke="#27ae60" stroke-width="1.5"/>
+  <rect x="350" y="290" width="100" height="35" rx="6" fill="#d5f5e3" stroke="#27ae60" stroke-width="1"/>
+  <text x="400" y="312" text-anchor="middle" font-size="12" fill="#1e8449">纸质备份</text>
+  
+  <line x1="430" y1="230" x2="470" y2="300" stroke="#27ae60" stroke-width="1.5"/>
+  <rect x="420" y="290" width="100" height="35" rx="6" fill="#d5f5e3" stroke="#27ae60" stroke-width="1"/>
+  <text x="470" y="312" text-anchor="middle" font-size="12" fill="#1e8449">密码管理器</text>
+  
+  <!-- 子节点 - 授权风险 -->
+  <line x1="620" y1="230" x2="580" y2="300" stroke="#f39c12" stroke-width="1.5"/>
+  <rect x="530" y="290" width="100" height="35" rx="6" fill="#fdebd0" stroke="#f39c12" stroke-width="1"/>
+  <text x="580" y="312" text-anchor="middle" font-size="12" fill="#d68910">签名授权</text>
+  
+  <line x1="680" y1="230" x2="720" y2="300" stroke="#f39c12" stroke-width="1.5"/>
+  <rect x="670" y="290" width="100" height="35" rx="6" fill="#fdebd0" stroke="#f39c12" stroke-width="1"/>
+  <text x="720" y="312" text-anchor="middle" font-size="12" fill="#d68910">代币授权</text>
+  
+  <!-- 底部建议 -->
+  <rect x="100" y="380" width="600" height="90" rx="10" fill="#eaf2f8" stroke="#3498db" stroke-width="1.5" stroke-dasharray="5,5"/>
+  <text x="400" y="410" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">✅ 安全操作建议</text>
+  <text x="400" y="435" text-anchor="middle" font-size="12" fill="#34495e">1. 大额资产用硬件钱包  2. 定期清理授权  3. 核对合约地址</text>
+  <text x="400" y="455" text-anchor="middle" font-size="12" fill="#34495e">4. 不要截图私钥  5. 不要点击不明链接  6. 使用独立浏览器操作DeFi</text>
+</svg>
+
+<h3>2.5 实战避坑指南</h3>
+
+<p>最后，分享几个我亲身踩过的坑：</p>
+
+<div class="warning">
+  <p><strong>⚠️ 我曾经……</strong></p>
+  <ul>
+    <li>在公共WiFi下连接了MetaMask，结果被中间人攻击，差点丢币。从那以后我只用手机热点或家庭网络操作DeFi。</li>
+    <li>授权了一个看起来像Hyperliquid的合约，结果发现地址里有个字母是"l"而不是"1"。嗯，这种钓鱼手法太常见了。</li>
+    <li>把助记词存在了iCloud里，后来手机被黑，虽然没丢钱，但吓得我连夜把所有资产转移了。</li>
+  </ul>
+</div>
+
+<p>记住一句话：<strong>在链上，安全永远比收益重要</strong>。你赚再多，如果钱包不安全，最后都是给别人赚的。</p>
+
+<div class="tip">
+  <p><strong>💡 我的日常习惯：</strong></p>
+  <p>每次操作前，我都会做三件事：</p>
+  <ol>
+    <li>检查当前网络是不是Arbitrum（别连到其他链上）</li>
+    <li>核对合约地址的前后8位字符</li>
+    <li>确认授权额度是不是我想要的</li>
+  </ol>
+  <p>整个过程不超过30秒，但能避免99%的坑。</p>
+</div>
+
+<hr>
+<p style="text-align:center; color:#7f8c8d; font-size:12px;">公众号:蓝海资料掘金营，微信deep3321</p>
+        <div class="footer-nav">
+            <a href="01.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="03.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

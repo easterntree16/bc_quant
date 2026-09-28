@@ -1,0 +1,462 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第6章 REST API 实战（一）</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="active">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="">第28章 部署与运维</a></li>
+<li><a href="29.html" class="">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第六章 REST API 实战（一）：获取订单簿深度、获取 K 线数据、获取交易历史</h2>
+
+<p>好，咱们今天直接上手干活。REST API 这东西，说白了就是你和 Hyperliquid 服务器之间的一条「数据管道」。你发个请求过去，它把数据扔回来。就这么简单。</p>
+
+<p>我个人习惯，刚开始接触一个新交易所的 API 时，先别急着写策略。先拿三个最基础的数据接口练练手：<strong>订单簿深度</strong>、<strong>K 线</strong>、<strong>交易历史</strong>。这三个搞明白了，后面什么下单、撤单、查持仓，都是换汤不换药。</p>
+
+<div class="highlight">
+  <p><strong>核心知识点：</strong> 本章你将掌握如何用 Python 调用 Hyperliquid 的 REST 接口，并解析返回的 JSON 数据。这是所有量化交易的第一步。</p>
+</div>
+
+<h3>6.1 准备工作：你的第一个请求</h3>
+
+<p>先别管什么深度、K 线，咱们先确认一件事：你的 Python 环境能不能和 Hyperliquid 说上话。</p>
+
+<p>我建议你直接用 <code>requests</code> 库，轻量、简单。别一上来就上什么 aiohttp、websocket，那是后面的事。</p>
+
+<pre><code>import requests
+
+# Hyperliquid 的 REST API 基础地址
+BASE_URL = "https://api.hyperliquid.xyz"
+
+# 测试一下能不能通
+def test_connection():
+    try:
+        resp = requests.get(f"{BASE_URL}/info", timeout=5)
+        print(f"状态码: {resp.status_code}")
+        print(f"返回数据: {resp.json()[:200]}...")  # 只打印前200字符
+    except Exception as e:
+        print(f"连接失败: {e}")
+
+test_connection()</code></pre>
+
+<p>嗯，这里要注意：<code>/info</code> 接口返回的是交易所的元信息，比如支持的币种、合约参数等。如果这个能通，说明你的网络没问题，API 地址也没写错。</p>
+
+<div class="tip">
+  <p><strong>小技巧：</strong> 我在项目中遇到过好几次，明明代码没问题，就是拿不到数据。最后发现是代理或者防火墙把请求拦了。建议你在公司或者家里都先跑一下这个测试脚本，排除网络问题。</p>
+</div>
+
+<h3>6.2 获取订单簿深度（Order Book Depth）</h3>
+
+<p>订单簿深度，说白了就是「当前市场上，在什么价格有多少人想买、多少人想卖」。这是做市商和短线交易员最常看的数据。</p>
+
+<p>Hyperliquid 的订单簿接口路径是：<code>/info/l2Book</code>。你需要传一个参数：<code>coin</code>，也就是币种名称。</p>
+
+<pre><code>def get_order_book(coin: str):
+    url = f"{BASE_URL}/info/l2Book"
+    params = {"coin": coin}
+    
+    resp = requests.get(url, params=params)
+    data = resp.json()
+    
+    # 解析返回数据
+    bids = data['levels'][0]  # 买单
+    asks = data['levels'][1]  # 卖单
+    
+    print(f"=== {coin} 订单簿深度 ===")
+    print(f"前5档买单:")
+    for level in bids[:5]:
+        print(f"  价格: {level['px']}, 数量: {level['sz']}")
+    
+    print(f"前5档卖单:")
+    for level in asks[:5]:
+        print(f"  价格: {level['px']}, 数量: {level['sz']}")
+
+# 试试看
+get_order_book("BTC")</code></pre>
+
+<p>返回的数据结构是这样的：</p>
+
+<table>
+  <tr>
+    <th>字段</th>
+    <th>含义</th>
+    <th>示例值</th>
+  </tr>
+  <tr>
+    <td>px</td>
+    <td>价格</td>
+    <td>"65000.0"</td>
+  </tr>
+  <tr>
+    <td>sz</td>
+    <td>数量（张数）</td>
+    <td>"1.5"</td>
+  </tr>
+  <tr>
+    <td>n</td>
+    <td>该价位挂单笔数</td>
+    <td>3</td>
+  </tr>
+</table>
+
+<div class="warning">
+  <p><strong>避坑指南：</strong> 我曾经踩过一个坑——Hyperliquid 的订单簿数据里，价格和数量都是字符串，不是浮点数。如果你直接拿去做数学运算，Python 会报错。记得先转成 float：<code>float(level['px'])</code>。</p>
+</div>
+
+<h3>6.3 获取 K 线数据（Candlestick Data）</h3>
+
+<p>K 线数据，也叫蜡烛图。每个 K 线代表一段时间内的开盘价、最高价、最低价、收盘价和成交量。这是技术分析的基础。</p>
+
+<p>Hyperliquid 的 K 线接口是：<code>/info/candles</code>。你需要传三个参数：<code>coin</code>、<code>interval</code>（时间周期）、<code>limit</code>（返回条数）。</p>
+
+<pre><code>def get_candles(coin: str, interval: str = "1h", limit: int = 10):
+    url = f"{BASE_URL}/info/candles"
+    params = {
+        "coin": coin,
+        "interval": interval,
+        "limit": limit
+    }
+    
+    resp = requests.get(url, params=params)
+    data = resp.json()
+    
+    print(f"=== {coin} {interval} K线数据（最近{limit}条）===")
+    for candle in data:
+        print(f"时间: {candle['t']}, 开: {candle['o']}, 高: {candle['h']}, "
+              f"低: {candle['l']}, 收: {candle['c']}, 成交量: {candle['v']}")
+
+# 试试看
+get_candles("ETH", "15m", 5)</code></pre>
+
+<p>返回的每个 K 线对象包含这些字段：</p>
+
+<table>
+  <tr>
+    <th>字段</th>
+    <th>含义</th>
+    <th>示例值</th>
+  </tr>
+  <tr>
+    <td>t</td>
+    <td>时间戳（毫秒）</td>
+    <td>1696000000000</td>
+  </tr>
+  <tr>
+    <td>o</td>
+    <td>开盘价</td>
+    <td>"3200.5"</td>
+  </tr>
+  <tr>
+    <td>h</td>
+    <td>最高价</td>
+    <td>"3250.0"</td>
+  </tr>
+  <tr>
+    <td>l</td>
+    <td>最低价</td>
+    <td>"3180.2"</td>
+  </tr>
+  <tr>
+    <td>c</td>
+    <td>收盘价</td>
+    <td>"3220.8"</td>
+  </tr>
+  <tr>
+    <td>v</td>
+    <td>成交量</td>
+    <td>"150.3"</td>
+  </tr>
+</table>
+
+<div class="tip">
+  <p><strong>小技巧：</strong> 时间戳 <code>t</code> 是毫秒级的，如果你想转成人类可读的时间，用 Python 的 <code>datetime</code> 模块：<code>from datetime import datetime; datetime.fromtimestamp(t/1000)</code>。我刚开始做的时候忘了除以1000，结果时间对不上，排查了半天。</p>
+</div>
+
+<h3>6.4 获取交易历史（Trade History）</h3>
+
+<p>交易历史，就是最近发生的每一笔成交记录。谁在什么价格买了多少，一目了然。这个数据对分析市场微观结构很有用。</p>
+
+<p>接口路径是：<code>/info/trades</code>。参数只需要 <code>coin</code>。</p>
+
+<pre><code>def get_trades(coin: str, limit: int = 10):
+    url = f"{BASE_URL}/info/trades"
+    params = {"coin": coin}
+    
+    resp = requests.get(url, params=params)
+    data = resp.json()
+    
+    print(f"=== {coin} 最近{limit}笔交易 ===")
+    for trade in data[:limit]:
+        print(f"时间: {trade['time']}, 价格: {trade['px']}, "
+              f"数量: {trade['sz']}, 方向: {trade['side']}")
+
+# 试试看
+get_trades("BTC", 5)</code></pre>
+
+<p>交易历史的数据结构：</p>
+
+<table>
+  <tr>
+    <th>字段</th>
+    <th>含义</th>
+    <th>示例值</th>
+  </tr>
+  <tr>
+    <td>time</td>
+    <td>成交时间（毫秒）</td>
+    <td>1696000000000</td>
+  </tr>
+  <tr>
+    <td>px</td>
+    <td>成交价格</td>
+    <td>"65000.0"</td>
+  </tr>
+  <tr>
+    <td>sz</td>
+    <td>成交数量</td>
+    <td>"0.5"</td>
+  </tr>
+  <tr>
+    <td>side</td>
+    <td>吃单方向（Bid/Ask）</td>
+    <td>"Bid"</td>
+  </tr>
+</table>
+
+<div class="warning">
+  <p><strong>避坑指南：</strong> 我曾经以为 <code>side</code> 字段的 "Bid" 和 "Ask" 是「买方主动」和「卖方主动」的意思。其实不是。Bid 表示这笔交易是由买单吃掉的（卖方挂单，买方主动吃），Ask 则相反。这个搞反了，你的交易策略分析就会出大问题。</p>
+</div>
+
+<h3>6.5 知识体系总览</h3>
+
+<p>为了让你更直观地理解这三个接口的关系，我画了一张图：</p>
+
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="400" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">Hyperliquid REST API 数据接口体系</text>
+  
+  <!-- 中心节点 -->
+  <rect x="300" y="70" width="200" height="50" rx="25" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="400" y="100" text-anchor="middle" font-size="16" fill="white" font-weight="bold">REST API 入口</text>
+  
+  <!-- 三个子节点 -->
+  <!-- 订单簿 -->
+  <rect x="50" y="180" width="200" height="50" rx="10" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+  <text x="150" y="210" text-anchor="middle" font-size="14" fill="white" font-weight="bold">订单簿深度</text>
+  
+  <!-- K线 -->
+  <rect x="300" y="180" width="200" height="50" rx="10" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="400" y="210" text-anchor="middle" font-size="14" fill="white" font-weight="bold">K 线数据</text>
+  
+  <!-- 交易历史 -->
+  <rect x="550" y="180" width="200" height="50" rx="10" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+  <text x="650" y="210" text-anchor="middle" font-size="14" fill="white" font-weight="bold">交易历史</text>
+  
+  <!-- 连线 -->
+  <line x1="400" y1="120" x2="150" y2="180" stroke="#bdc3c7" stroke-width="2"/>
+  <line x1="400" y1="120" x2="400" y2="180" stroke="#bdc3c7" stroke-width="2"/>
+  <line x1="400" y1="120" x2="650" y2="180" stroke="#bdc3c7" stroke-width="2"/>
+  
+  <!-- 子节点说明 -->
+  <rect x="50" y="260" width="200" height="100" rx="5" fill="#fff" stroke="#e74c3c" stroke-width="1"/>
+  <text x="150" y="285" text-anchor="middle" font-size="12" fill="#e74c3c" font-weight="bold">用途</text>
+  <text x="150" y="305" text-anchor="middle" font-size="11" fill="#333">查看买卖盘口深度</text>
+  <text x="150" y="325" text-anchor="middle" font-size="11" fill="#333">判断市场流动性</text>
+  <text x="150" y="345" text-anchor="middle" font-size="11" fill="#333">识别支撑/阻力位</text>
+  
+  <rect x="300" y="260" width="200" height="100" rx="5" fill="#fff" stroke="#2ecc71" stroke-width="1"/>
+  <text x="400" y="285" text-anchor="middle" font-size="12" fill="#2ecc71" font-weight="bold">用途</text>
+  <text x="400" y="305" text-anchor="middle" font-size="11" fill="#333">技术指标计算</text>
+  <text x="400" y="325" text-anchor="middle" font-size="11" fill="#333">趋势分析</text>
+  <text x="400" y="345" text-anchor="middle" font-size="11" fill="#333">回测数据源</text>
+  
+  <rect x="550" y="260" width="200" height="100" rx="5" fill="#fff" stroke="#f39c12" stroke-width="1"/>
+  <text x="650" y="285" text-anchor="middle" font-size="12" fill="#f39c12" font-weight="bold">用途</text>
+  <text x="650" y="305" text-anchor="middle" font-size="11" fill="#333">分析市场微观结构</text>
+  <text x="650" y="325" text-anchor="middle" font-size="11" fill="#333">检测大额成交</text>
+  <text x="650" y="345" text-anchor="middle" font-size="11" fill="#333">判断买卖力量</text>
+</svg>
+
+<p>这三个接口，说白了就是三个不同的视角看市场：订单簿告诉你「现在能买/卖到什么价格」，K 线告诉你「过去一段时间价格怎么走的」，交易历史告诉你「每一笔成交是怎么发生的」。三者结合，你才能对市场有个完整的认识。</p>
+
+<h3>6.6 实战小练习</h3>
+
+<p>光看不练假把式。我给你留个小任务：</p>
+
+<ol>
+  <li>写一个函数，同时获取 BTC 的订单簿、K 线、交易历史数据</li>
+  <li>把订单簿的买卖价差（卖一价 - 买一价）算出来</li>
+  <li>把最近10笔交易的平均价格算出来</li>
+  <li>对比一下：当前买一价和最近10笔交易的平均价，哪个更高？</li>
+</ol>
+
+<p>这个练习做完了，你对这三个接口的理解就能上一个台阶。我在项目里就是这么带新人的，效果不错。</p>
+
+<div class="highlight">
+  <p><strong>核心总结：</strong> 订单簿深度、K 线、交易历史，是 Hyperliquid REST API 最基础也最重要的三个数据接口。掌握它们，你就拿到了进入量化交易世界的第一把钥匙。</p>
+</div>
+
+<footer>
+  <p>公众号:蓝海资料掘金营，微信deep3321</p>
+</footer>
+        <div class="footer-nav">
+            <a href="05.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="07.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

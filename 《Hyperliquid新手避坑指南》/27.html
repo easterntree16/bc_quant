@@ -1,0 +1,416 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第27章 常见错误代码</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 认识Hyperliquid</a></li>
+<li><a href="02.html" class="">第2章 钱包准备与安全</a></li>
+<li><a href="03.html" class="">第3章 跨链入金</a></li>
+<li><a href="04.html" class="">第4章 账户与API设置</a></li>
+<li><a href="05.html" class="">第5章 现货交易基础</a></li>
+<li><a href="06.html" class="">第6章 永续合约入门</a></li>
+<li><a href="07.html" class="">第7章 做多与做空</a></li>
+<li><a href="08.html" class="">第8章 订单类型详解</a></li>
+<li><a href="09.html" class="">第9章 杠杆与风险管理</a></li>
+<li><a href="10.html" class="">第10章 资金费率详解</a></li>
+<li><a href="11.html" class="">第11章 K线图与指标</a></li>
+<li><a href="12.html" class="">第12章 交易策略入门</a></li>
+<li><a href="13.html" class="">第13章 模拟交易</a></li>
+<li><a href="14.html" class="">第14章 Gas费优化</a></li>
+<li><a href="15.html" class="">第15章 滑点控制</a></li>
+<li><a href="16.html" class="">第16章 流动性陷阱</a></li>
+<li><a href="17.html" class="">第17章 合约参数检查</a></li>
+<li><a href="18.html" class="">第18章 钓鱼与假网站</a></li>
+<li><a href="19.html" class="">第19章 授权与合约风险</a></li>
+<li><a href="20.html" class="">第20章 提现注意事项</a></li>
+<li><a href="21.html" class="">第21章 API安全</a></li>
+<li><a href="22.html" class="">第22章 行情波动应对</a></li>
+<li><a href="23.html" class="">第23章 仓位管理</a></li>
+<li><a href="24.html" class="">第24章 情绪管理</a></li>
+<li><a href="25.html" class="">第25章 税务与合规</a></li>
+<li><a href="26.html" class="">第26章 社区与信息源</a></li>
+<li><a href="27.html" class="active">第27章 常见错误代码</a></li>
+<li><a href="28.html" class="">第28章 客服与申诉</a></li>
+<li><a href="29.html" class="">第29章 进阶工具</a></li>
+<li><a href="30.html" class="">第30章 总结与行动计划</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>27、常见错误代码：错误码解读（如-2011、-1013）、处理流程</h2>
+
+<p>做Hyperliquid交易，最烦人的就是突然弹出一个错误码。我刚开始接触时，看到-2011、-1013这些数字，第一反应是「完了，是不是账户出问题了？」后来踩的坑多了，才发现大部分错误码其实都是「纸老虎」——只要知道它想说什么，处理起来很简单。</p>
+
+<p>今天我就把Hyperliquid上最常见的几个错误码，连同我自己的处理经验，一次性讲清楚。你想想看，与其等出错了再手忙脚乱，不如提前把这些「暗号」背下来。</p>
+
+<h3>错误码速查表</h3>
+
+<p>先给一张总表，方便你以后直接查。我把它按严重程度分了类：</p>
+
+<table>
+  <tr>
+    <th>错误码</th>
+    <th>含义</th>
+    <th>严重程度</th>
+    <th>常见场景</th>
+  </tr>
+  <tr>
+    <td>-2011</td>
+    <td>订单被拒绝（价格/数量违规）</td>
+    <td>中</td>
+    <td>限价单价格超出范围</td>
+  </tr>
+  <tr>
+    <td>-1013</td>
+    <td>交易对不存在或已下架</td>
+    <td>低</td>
+    <td>输入了错误的币种名称</td>
+  </tr>
+  <tr>
+    <td>-2010</td>
+    <td>余额不足</td>
+    <td>高</td>
+    <td>保证金不够开仓</td>
+  </tr>
+  <tr>
+    <td>-2012</td>
+    <td>订单数量超过限制</td>
+    <td>中</td>
+    <td>单笔下单量过大</td>
+  </tr>
+  <tr>
+    <td>-1001</td>
+    <td>内部系统错误</td>
+    <td>高</td>
+    <td>网络波动或服务器异常</td>
+  </tr>
+  <tr>
+    <td>-2015</td>
+    <td>API密钥权限不足</td>
+    <td>高</td>
+    <td>只读密钥尝试交易</td>
+  </tr>
+</table>
+
+<h3>错误码详解：-2011</h3>
+
+<p><strong>-2011</strong> 是我个人遇到最多的错误码。说白了，就是交易所告诉你：「你这个订单我不接。」</p>
+
+<p>为什么会这样？通常有几种情况：</p>
+
+<ul>
+  <li><strong>价格超出范围</strong>：比如当前市价是100 USDC，你挂了一个50 USDC的买单。Hyperliquid有价格保护机制，太离谱的价格会被直接拒绝。</li>
+  <li><strong>数量精度不对</strong>：Hyperliquid对每个币种都有最小交易单位和精度要求。比如BTC只能精确到0.001，你填了0.0001就会报错。</li>
+  <li><strong>订单类型不支持</strong>：某些特殊订单（如IOC、FOK）在特定市场可能被禁用。</li>
+</ul>
+
+<div class="highlight">
+  <p><strong>我的处理流程：</strong></p>
+  <ol>
+    <li>先检查订单价格是否在合理范围内（一般不超过当前市价的±20%）</li>
+    <li>再确认数量精度——去Hyperliquid的「市场信息」接口查一下最小交易单位</li>
+    <li>如果还不行，换个订单类型试试（比如把限价单改成市价单）</li>
+  </ol>
+</div>
+
+<div class="tip">
+  <p><strong>小技巧：</strong> 我在写交易机器人时，习惯在每次下单前先调用一次 <code>get_exchange_info()</code> 接口，把当前市场的价格范围、精度限制都拉下来。这样能提前过滤掉99%的-2011错误。</p>
+</div>
+
+<h3>错误码详解：-1013</h3>
+
+<p><strong>-1013</strong> 这个错误码，说白了就是「你找的币不存在」。听起来很蠢对吧？但我曾经就犯过这种低级错误——把「ETH」写成了「ETC」，结果卡了半天。</p>
+
+<p>常见原因：</p>
+<ul>
+  <li>币种名称拼写错误（大小写敏感）</li>
+  <li>交易对格式不对（比如应该用「ETH-USDC」而不是「ETHUSDC」）</li>
+  <li>该币种在Hyperliquid上确实没有上架</li>
+</ul>
+
+<div class="warning">
+  <p><strong>注意：</strong> Hyperliquid上的交易对命名规则是「基础币种-计价币种」，比如 <code>BTC-USDC</code>、<code>ETH-USDC</code>。不要用其他交易所的命名习惯来套。</p>
+</div>
+
+<p>我的处理方式很简单：直接去Hyperliquid官网的「Markets」页面看一眼，或者用API拉一下 <code>get_all_markets()</code> 列表。嗯，这一步花不了10秒钟，但能省下你半小时的排查时间。</p>
+
+<h3>错误码详解：-2010 和 -2012</h3>
+
+<p>这两个错误码其实是一对「兄弟」——一个管钱，一个管量。</p>
+
+<p><strong>-2010（余额不足）</strong>：这个不用多解释，就是你的账户里钱不够。但要注意，Hyperliquid的保证金计算方式跟其他交易所不太一样。它用的是「全仓模式」，所以你的可用余额 = 总资产 - 所有持仓的维持保证金。有时候你看着账户里有钱，但实际可用余额可能是负数——因为持仓占用了保证金。</p>
+
+<p><strong>-2012（数量超限）</strong>：每个交易所有单笔最大下单量的限制。Hyperliquid上，BTC的单笔最大订单量是100 BTC（具体数值会动态调整）。如果你是个大户，想一把梭哈，就得拆成多笔订单。</p>
+
+<div class="highlight">
+  <p><strong>我的建议：</strong> 写代码时，最好在每次下单前先检查一下 <code>get_account_balance()</code> 和 <code>get_market_limits()</code>。别等到报错了再回头改，那样容易错过行情。</p>
+</div>
+
+<h3>错误码处理流程图</h3>
+
+<p>下面这张图是我自己总结的「错误码处理流程」。你遇到任何错误码，都可以按这个思路走一遍：</p>
+
+<svg width="700" height="420" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="700" height="420" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 开始 -->
+  <rect x="250" y="20" width="200" height="40" rx="20" fill="#4CAF50" stroke="#2E7D32" stroke-width="2"/>
+  <text x="350" y="45" text-anchor="middle" fill="white" font-size="14" font-weight="bold">收到错误码</text>
+  
+  <!-- 箭头 -->
+  <line x1="350" y1="60" x2="350" y2="90" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 判断1 -->
+  <polygon points="350,90 450,130 350,170 250,130" fill="#FFEB3B" stroke="#FBC02D" stroke-width="2"/>
+  <text x="350" y="135" text-anchor="middle" fill="#333" font-size="13" font-weight="bold">是否常见错误码？</text>
+  
+  <!-- 箭头-是 -->
+  <line x1="450" y1="130" x2="530" y2="130" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="490" y="120" text-anchor="middle" fill="#333" font-size="12">是</text>
+  
+  <!-- 查表 -->
+  <rect x="530" y="110" width="150" height="40" rx="8" fill="#2196F3" stroke="#1565C0" stroke-width="2"/>
+  <text x="605" y="135" text-anchor="middle" fill="white" font-size="13">查错误码速查表</text>
+  
+  <!-- 箭头-否 -->
+  <line x1="350" y1="170" x2="350" y2="210" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="370" y="195" text-anchor="start" fill="#333" font-size="12">否</text>
+  
+  <!-- 判断2 -->
+  <polygon points="350,210 450,250 350,290 250,250" fill="#FF9800" stroke="#E65100" stroke-width="2"/>
+  <text x="350" y="245" text-anchor="middle" fill="#333" font-size="12" font-weight="bold">是否网络/系统错误？</text>
+  
+  <!-- 箭头-是 -->
+  <line x1="450" y1="250" x2="530" y2="250" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="490" y="240" text-anchor="middle" fill="#333" font-size="12">是</text>
+  
+  <!-- 网络处理 -->
+  <rect x="530" y="230" width="150" height="40" rx="8" fill="#9C27B0" stroke="#6A1B9A" stroke-width="2"/>
+  <text x="605" y="255" text-anchor="middle" fill="white" font-size="12">等待重试（3-5秒）</text>
+  
+  <!-- 箭头-否 -->
+  <line x1="350" y1="290" x2="350" y2="330" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="370" y="315" text-anchor="start" fill="#333" font-size="12">否</text>
+  
+  <!-- 最终处理 -->
+  <rect x="200" y="330" width="300" height="40" rx="8" fill="#f44336" stroke="#c62828" stroke-width="2"/>
+  <text x="350" y="355" text-anchor="middle" fill="white" font-size="13" font-weight="bold">记录日志 + 联系Hyperliquid支持</text>
+  
+  <!-- 箭头从查表到结束 -->
+  <line x1="605" y1="150" x2="605" y2="350" stroke="#333" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="605" y1="350" x2="500" y2="350" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 箭头从网络处理到结束 -->
+  <line x1="605" y1="270" x2="605" y2="350" stroke="#333" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="605" y1="350" x2="500" y2="350" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 箭头定义 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+</svg>
+
+<h3>我的通用处理流程</h3>
+
+<p>不管遇到什么错误码，我个人的处理流程都是固定的。你直接照搬就行：</p>
+
+<ol>
+  <li><strong>先别慌，记录错误码和上下文</strong>——包括时间、订单参数、当前市场状态。这些信息后面排查时非常有用。</li>
+  <li><strong>查速查表</strong>——如果是-2011、-1013这种常见错误，直接按表里的建议处理。</li>
+  <li><strong>检查网络状态</strong>——有时候错误码是网络波动导致的假象。我习惯先ping一下Hyperliquid的API端点，确认网络没问题。</li>
+  <li><strong>重试一次</strong>——对于-1001这种系统错误，等3-5秒重试一次。如果连续3次都失败，就停下来。</li>
+  <li><strong>记录日志</strong>——把错误信息写到日志文件里，方便后续复盘。我一般会记录：错误码、时间、订单参数、重试次数。</li>
+</ol>
+
+<div class="warning">
+  <p><strong>避坑指南：</strong> 我曾经犯过一个错误——在收到-2011错误后，没有检查原因就直接重试。结果连续下了10次单，全部被拒绝，还白白浪费了API调用次数。记住：<strong>先排查原因，再决定是否重试</strong>。</p>
+</div>
+
+<h3>代码示例：错误处理模板</h3>
+
+<p>下面是我写交易机器人时用的错误处理模板。你可以直接复制过去用：</p>
+
+<pre><code>def place_order_with_retry(symbol, side, price, quantity, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            result = hyperliquid_api.place_order(
+                symbol=symbol,
+                side=side,
+                price=price,
+                quantity=quantity
+            )
+            return result
+            
+        except HyperliquidError as e:
+            error_code = e.code
+            
+            # 常见错误直接处理
+            if error_code == -2011:
+                # 检查价格和数量
+                print(f"订单被拒绝，检查价格和数量: {e}")
+                break  # 不重试，先排查
+                
+            elif error_code == -1013:
+                print(f"交易对不存在: {symbol}")
+                break
+                
+            elif error_code == -2010:
+                print("余额不足，停止下单")
+                break
+                
+            elif error_code == -1001:
+                # 系统错误，可以重试
+                if attempt &lt; max_retries - 1:
+                    time.sleep(3)
+                    continue
+                else:
+                    print("系统错误，重试次数用尽")
+                    
+            else:
+                # 未知错误，记录日志
+                log_error(error_code, e)
+                break
+                
+    return None</code></pre>
+
+<p>这段代码的核心思路是：<strong>对已知错误直接处理，对系统错误才重试</strong>。别傻乎乎地什么错误都重试，那样只会让情况更糟。</p>
+
+<h3>最后说两句</h3>
+
+<p>错误码这东西，说白了就是交易所跟你沟通的语言。你读懂了，它就是个提示；读不懂，它就是拦路虎。我个人建议你把上面那张速查表截图保存，或者打印出来贴在工位上。遇到错误码时，先查表，再动手。</p>
+
+<p>嗯，关于错误码的解读就讲到这里。记住：<strong>大部分错误码都不是你的错，而是参数没调对</strong>。冷静下来，按流程走一遍，问题基本都能解决。</p>
+
+<hr>
+<footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+        <div class="footer-nav">
+            <a href="26.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="28.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

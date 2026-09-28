@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Hyperliquid新手避坑指南 · 课程介绍</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0b0e1a;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            line-height: 1.5;
+            color: #1e1e2f;
+        }
+        .course-card {
+            max-width: 1280px;
+            width: 100%;
+            background: #f9faff;
+            border-radius: 2.5rem;
+            padding: 3rem 3.5rem;
+            position: relative;
+            box-shadow: 0 0 0 6px rgba(255, 50, 50, 0.25), 0 0 0 12px rgba(255, 80, 80, 0.08);
+        }
+        .course-card::before {
+            content: "";
+            position: absolute;
+            inset: -12px;
+            border-radius: calc(2.5rem + 12px);
+            background: linear-gradient(145deg, #ff3b3b, #d9001a, #b3001a, #ff4d4d);
+            z-index: -1;
+            opacity: 0.35;
+            filter: blur(2px);
+        }
+        .course-title {
+            font-size: 3.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #b31b1b, #e62e2e, #ff5e5e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            border-left: 8px solid #e62e2e;
+            padding-left: 1.5rem;
+        }
+        .subhead {
+            font-size: 1.1rem;
+            color: #4a4a6a;
+            margin-bottom: 2.5rem;
+            padding-left: 2.3rem;
+            border-bottom: 1px solid rgba(200, 50, 50, 0.15);
+            padding-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .subhead span {
+            background: #f0e6e6;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            color: #a52a2a;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1.2rem 0;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 2px solid rgba(230, 46, 46, 0.25);
+            padding-bottom: 0.5rem;
+        }
+        .section-title i {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #e62e2e;
+            border-radius: 50%;
+        }
+        .section-title small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #6b6b8a;
+            margin-left: 0.5rem;
+        }
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1rem 0;
+        }
+        .info-block {
+            background: rgba(255, 245, 245, 0.6);
+            padding: 1.5rem 2rem;
+            border-radius: 2rem;
+            border: 1px solid rgba(230, 46, 46, 0.15);
+        }
+        .info-block h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #b31b1b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .info-block ul {
+            list-style: none;
+            padding: 0;
+        }
+        .info-block li {
+            padding: 0.4rem 0 0.4rem 1.8rem;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23e62e2e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>') left center no-repeat;
+            background-size: 1rem;
+            margin-bottom: 0.2rem;
+            color: #2d2d44;
+        }
+        .info-block li strong {
+            color: #a02929;
+        }
+        .syllabus-list {
+            margin: 1.8rem 0;
+            padding: 0;
+            list-style: none;
+        }
+        .syllabus-list li {
+            padding: 0.9rem 0 0.9rem 2.8rem;
+            border-bottom: 1px solid rgba(200, 60, 60, 0.08);
+            font-size: 1.05rem;
+            position: relative;
+            line-height: 1.6;
+        }
+        .syllabus-list li:last-child {
+            border-bottom: none;
+        }
+        .syllabus-list li::before {
+            content: attr(data-index);
+            position: absolute;
+            left: 0.2rem;
+            top: 0.9rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #c92a2a;
+            background: rgba(230, 46, 46, 0.08);
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 40px;
+        }
+        .syllabus-list li strong {
+            color: #b31b1b;
+            font-weight: 600;
+        }
+        .syllabus-desc {
+            display: block;
+            margin-top: 0.1rem;
+            font-size: 0.95rem;
+            color: #4b4b68;
+            letter-spacing: 0.01em;
+        }
+        .footer {
+            margin-top: 3.5rem;
+            padding-top: 1.8rem;
+            border-top: 2px solid rgba(230, 46, 46, 0.2);
+            text-align: center;
+        }
+        .footer a {
+            display: inline-block;
+            background: linear-gradient(135deg, #fce8e8, #fff);
+            padding: 0.9rem 2.8rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #a02929;
+            text-decoration: none;
+            border: 1px solid rgba(200, 50, 50, 0.3);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(200, 30, 30, 0.08);
+        }
+        .footer a:hover {
+            background: linear-gradient(135deg, #ffd9d9, #ffe6e6);
+            border-color: #c92a2a;
+            box-shadow: 0 8px 18px rgba(200, 30, 30, 0.15);
+            transform: scale(1.01);
+            color: #8a1f1f;
+        }
+        @media (max-width: 800px) {
+            .course-card { padding: 2rem 1.5rem; }
+            .course-title { font-size: 2.4rem; }
+            .grid-2col { grid-template-columns: 1fr; gap: 1.2rem; }
+            .section-title { font-size: 1.6rem; }
+            .syllabus-list li { padding-left: 2.4rem; font-size: 0.98rem; }
+            .footer a { padding: 0.7rem 1.5rem; width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .course-card { padding: 1.5rem 1rem; border-radius: 2rem; }
+            .course-title { font-size: 2rem; border-left-width: 6px; padding-left: 0.8rem; }
+            .subhead { font-size: 0.9rem; padding-left: 1rem; flex-wrap: wrap; }
+            .info-block { padding: 1.2rem 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="course-card">
+    <h1 class="course-title">Hyperliquid新手避坑指南</h1>
+    <div class="subhead">
+        <span>🔐 安全开发 · 系统级实战</span>
+        <span>v2.0 · 30 章体系</span>
+    </div>
+    <div class="grid-2col">
+        <div class="info-block">
+            <h3>🎯 受益人群</h3>
+            <ul>
+                <li><strong>Hyperliquid 新用户</strong> — 从零开始，避开常见陷阱</li>
+                <li><strong>DeFi 交易者</strong> — 永续合约、资金费率、套利策略</li>
+                <li><strong>钱包/安全研究者</strong> — 私钥管理、授权风险、钓鱼防范</li>
+                <li><strong>量化/策略开发者</strong> — API安全、订单类型、滑点控制</li>
+                <li><strong>风控与合规人员</strong> — 仓位管理、税务、审计要点</li>
+                <li><strong>任何想在Hyperliquid上盈利的人</strong> — 避免爆仓、资金费率陷阱</li>
+            </ul>
+        </div>
+        <div class="info-block">
+            <h3>📈 学员收益</h3>
+            <ul>
+                <li><strong>彻底理解Hyperliquid底层机制</strong> — 从跨链到永续合约，从资金费率到强平</li>
+                <li><strong>掌握安全操作全流程</strong> — 钱包、授权、API、防钓鱼，资产0损失</li>
+                <li><strong>学会专业交易策略</strong> — 趋势跟踪、网格、对冲，稳定盈利</li>
+                <li><strong>精通订单类型与风控</strong> — 止损、追踪止损、TWAP，仓位管理</li>
+                <li><strong>独立诊断错误与申诉</strong> — 错误代码解读、客服工单、证据保留</li>
+                <li><strong>获得完整新手行动清单</strong> — 从入金到提现，每一步都有避坑指南</li>
+            </ul>
+        </div>
+    </div>
+    <div class="section-title">
+        <i></i> 课程大纲 <small>· 30 大章节，体系化进阶</small>
+    </div>
+    <ul class="syllabus-list">
+        <li data-index="1"><strong>认识Hyperliquid：</strong>什么是Hyperliquid、与传统交易所的区别、核心优势与风险。</li>
+        <li data-index="2"><strong>钱包准备与安全：</strong>支持的钱包（Metamask/OKX Wallet）、私钥管理、授权风险。</li>
+        <li data-index="3"><strong>跨链入金：</strong>从L1到Arbitrum的跨链流程、Gas费估算、常见失败原因。</li>
+        <li data-index="4"><strong>账户与API设置：</strong>创建子账户、API密钥生成、权限管理（只读/交易/提现）。</li>
+        <li data-index="5"><strong>现货交易基础：</strong>市价单与限价单、滑点控制、交易对选择。</li>
+        <li data-index="6"><strong>永续合约入门：</strong>什么是永续合约、资金费率机制、杠杆与保证金。</li>
+        <li data-index="7"><strong>做多与做空：</strong>开仓方向选择、止盈止损设置、爆仓价计算。</li>
+        <li data-index="8"><strong>订单类型详解：</strong>市价单、限价单、止损单、追踪止损单、TWAP订单。</li>
+        <li data-index="9"><strong>杠杆与风险管理：</strong>杠杆倍数选择、维持保证金率、强平机制。</li>
+        <li data-index="10"><strong>资金费率详解：</strong>资金费率计算方式、正负费率影响、套利机会。</li>
+        <li data-index="11"><strong>K线图与指标：</strong>K线图基础、成交量、RSI、MACD、布林带。</li>
+        <li data-index="12"><strong>交易策略入门：</strong>趋势跟踪、网格交易、对冲策略。</li>
+        <li data-index="13"><strong>模拟交易：</strong>测试网使用、模拟资金配置、策略回测。</li>
+        <li data-index="14"><strong>Gas费优化：</strong>Arbitrum Gas费波动、交易时机选择、批量操作。</li>
+        <li data-index="15"><strong>滑点控制：</strong>滑点产生原因、设置合理滑点、大额交易技巧。</li>
+        <li data-index="16"><strong>流动性陷阱：</strong>低流动性币种风险、深度图解读、大单拆分。</li>
+        <li data-index="17"><strong>合约参数检查：</strong>开仓前必查的5个参数（杠杆、保证金、止盈止损、资金费率、到期日）。</li>
+        <li data-index="18"><strong>钓鱼与假网站：</strong>官方域名确认、书签管理、二次验证。</li>
+        <li data-index="19"><strong>授权与合约风险：</strong>无限授权风险、撤销授权、合约审计。</li>
+        <li data-index="20"><strong>提现注意事项：</strong>提现地址白名单、最小提现额、网络确认数。</li>
+        <li data-index="21"><strong>API安全：</strong>IP白名单、密钥轮换、避免明文存储。</li>
+        <li data-index="22"><strong>行情波动应对：</strong>黑天鹅事件、插针行情、熔断机制。</li>
+        <li data-index="23"><strong>仓位管理：</strong>单笔风险控制、总仓位限制、金字塔加仓。</li>
+        <li data-index="24"><strong>情绪管理：</strong>FOMO与恐慌、交易日志、纪律执行。</li>
+        <li data-index="25"><strong>税务与合规：</strong>交易记录导出、税务申报、合规风险。</li>
+        <li data-index="26"><strong>社区与信息源：</strong>官方Discord、Twitter、Medium、警惕付费群。</li>
+        <li data-index="27"><strong>常见错误代码：</strong>错误码解读（如-2011、-1013）、处理流程。</li>
+        <li data-index="28"><strong>客服与申诉：</strong>联系官方渠道、提交工单、证据保留。</li>
+        <li data-index="29"><strong>进阶工具：</strong>Hyperliquid Dashboard、链上数据分析、第三方工具。</li>
+        <li data-index="30"><strong>总结与行动计划：</strong>新手行动清单、持续学习路径、风险提示。</li>
+    </ul>
+    <div class="footer">
+        <a href="http://124.221.106.7/wendang/" target="_blank">
+            点击此处查看：50个+行业、500+细分领域、10w+门课程资料-大目录汇总
+        </a>
+    </div>
+</div>
+</body>
+</html>

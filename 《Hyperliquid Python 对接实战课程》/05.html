@@ -1,0 +1,476 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第5章 签名机制详解</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="active">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="">第28章 部署与运维</a></li>
+<li><a href="29.html" class="">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第5章：签名机制详解——EIP-712 结构化数据签名</h2>
+
+<p>说到 Hyperliquid 的对接，签名机制是绕不开的核心环节。我个人觉得，这也是最容易踩坑的地方之一。你想想看，一条交易指令从你的程序发出，到链上执行，中间怎么证明「是你发的」？靠的就是签名。</p>
+
+<p>Hyperliquid 用的是 EIP-712 标准。说白了，就是把要签名的数据整理成一个结构化的格式，而不是一串乱七八糟的十六进制。这样做的好处很明显——用户在钱包里签名时，能看到清晰的数据内容，而不是一堆看不懂的哈希。</p>
+
+<h3>5.1 为什么是 EIP-712？</h3>
+
+<p>我记得最早做 DeFi 项目时，大家还在用 eth_sign。那个方法太原始了，直接对一段字节签名，用户根本不知道自己在签什么。后来出了 EIP-712，才算是解决了这个痛点。</p>
+
+<p>EIP-712 的核心思想是：</p>
+<ul>
+  <li>定义清晰的数据结构（TypedData）</li>
+  <li>包含一个 domain 字段，防止跨应用重放攻击</li>
+  <li>钱包可以解析并展示给用户看</li>
+</ul>
+
+<p>Hyperliquid 选择 EIP-712，也是看中了它的安全性和可读性。你在签名时，钱包里会显示「你要签署一笔订单，金额 xxx，过期时间 xxx」，而不是一串乱码。</p>
+
+<div class="highlight">
+  <strong>重要概念：</strong> EIP-712 签名包含三个部分——domain、types 和 message。domain 标识应用，types 定义数据结构，message 是实际数据。
+</div>
+
+<h3>5.2 TypedData 的构建</h3>
+
+<p>我们先看一个 Hyperliquid 订单签名的 TypedData 结构。嗯，这里要注意，不同版本的 API 可能略有差异，但核心逻辑是一样的。</p>
+
+<pre><code>{
+  "types": {
+    "EIP712Domain": [
+      {"name": "name", "type": "string"},
+      {"name": "version", "type": "string"},
+      {"name": "chainId", "type": "uint256"},
+      {"name": "verifyingContract", "type": "address"}
+    ],
+    "Order": [
+      {"name": "asset", "type": "int32"},
+      {"name": "isBuy", "type": "bool"},
+      {"name": "reduceOnly", "type": "bool"},
+      {"name": "limitPx", "type": "int64"},
+      {"name": "sz", "type": "int64"},
+      {"name": "orderType", "type": "int32"},
+      {"name": "cloid", "type": "bytes16"},
+      {"name": "expiration", "type": "uint64"},
+      {"name": "salt", "type": "uint256"}
+    ]
+  },
+  "domain": {
+    "name": "Hyperliquid",
+    "version": "1.0",
+    "chainId": 42161,
+    "verifyingContract": "0x0000000000000000000000000000000000000000"
+  },
+  "primaryType": "Order",
+  "message": {
+    "asset": 0,
+    "isBuy": true,
+    "reduceOnly": false,
+    "limitPx": 50000,
+    "sz": 100,
+    "orderType": 2,
+    "cloid": "0x00000000000000000000000000000000",
+    "expiration": 1700000000,
+    "salt": 123456789
+  }
+}</code></pre>
+
+<p>看到这个结构，你可能会有疑问：为什么 verifyingContract 是零地址？我在项目中第一次看到时也愣了一下。后来才明白，Hyperliquid 不是传统意义上的智能合约，它用的是自己的 L1 链，所以这里填零地址就行。</p>
+
+<h3>5.3 eth_signTypedData_v4 的实现</h3>
+
+<p>现在我们来写实际的签名代码。我个人习惯用 eth_account 库，它原生支持 EIP-712。</p>
+
+<pre><code>from eth_account.messages import encode_typed_data
+from eth_account import Account
+import json
+
+def sign_hyperliquid_order(private_key, order_data, domain_data):
+    """
+    对 Hyperliquid 订单进行 EIP-712 签名
+    
+    Args:
+        private_key: 私钥（十六进制字符串）
+        order_data: 订单数据字典
+        domain_data: domain 数据字典
+    
+    Returns:
+        签名结果（十六进制字符串）
+    """
+    # 构建完整的 TypedData
+    typed_data = {
+        "types": {
+            "EIP712Domain": [
+                {"name": "name", "type": "string"},
+                {"name": "version", "type": "string"},
+                {"name": "chainId", "type": "uint256"},
+                {"name": "verifyingContract", "type": "address"}
+            ],
+            "Order": [
+                {"name": "asset", "type": "int32"},
+                {"name": "isBuy", "type": "bool"},
+                {"name": "reduceOnly", "type": "bool"},
+                {"name": "limitPx", "type": "int64"},
+                {"name": "sz", "type": "int64"},
+                {"name": "orderType", "type": "int32"},
+                {"name": "cloid", "type": "bytes16"},
+                {"name": "expiration", "type": "uint64"},
+                {"name": "salt", "type": "uint256"}
+            ]
+        },
+        "domain": domain_data,
+        "primaryType": "Order",
+        "message": order_data
+    }
+    
+    # 编码并签名
+    encoded = encode_typed_data(full_message=typed_data)
+    signed = Account.sign_message(encoded, private_key)
+    
+    return signed.signature.hex()
+
+# 使用示例
+private_key = "0x你的私钥"
+domain = {
+    "name": "Hyperliquid",
+    "version": "1.0",
+    "chainId": 42161,
+    "verifyingContract": "0x0000000000000000000000000000000000000000"
+}
+
+order = {
+    "asset": 0,
+    "isBuy": True,
+    "reduceOnly": False,
+    "limitPx": 50000,
+    "sz": 100,
+    "orderType": 2,
+    "cloid": "0x" + "00" * 16,
+    "expiration": 1700000000,
+    "salt": 123456789
+}
+
+signature = sign_hyperliquid_order(private_key, order, domain)
+print(f"签名结果: {signature}")</code></pre>
+
+<div class="tip">
+  <strong>小技巧：</strong> 如果你用的是 web3.py，可以用 w3.eth.sign_typed_data() 方法。但 eth_account 更轻量，适合在服务端使用。
+</div>
+
+<h3>5.4 签名验证流程</h3>
+
+<p>签名发出去之后，Hyperliquid 服务端会做两件事：</p>
+<ol>
+  <li>从签名中恢复出公钥/地址</li>
+  <li>检查这个地址是否有权限执行该操作</li>
+</ol>
+
+<p>我们也可以自己验证签名，方便调试：</p>
+
+<pre><code>from eth_account.messages import encode_typed_data
+from eth_account import Account
+
+def verify_hyperliquid_signature(signature_hex, order_data, domain_data, expected_address):
+    """
+    验证 Hyperliquid 订单签名
+    
+    Args:
+        signature_hex: 签名字符串
+        order_data: 订单数据
+        domain_data: domain 数据
+        expected_address: 期望的签名者地址
+    
+    Returns:
+        布尔值，表示签名是否有效
+    """
+    typed_data = {
+        "types": {
+            "EIP712Domain": [
+                {"name": "name", "type": "string"},
+                {"name": "version", "type": "string"},
+                {"name": "chainId", "type": "uint256"},
+                {"name": "verifyingContract", "type": "address"}
+            ],
+            "Order": [
+                {"name": "asset", "type": "int32"},
+                {"name": "isBuy", "type": "bool"},
+                {"name": "reduceOnly", "type": "bool"},
+                {"name": "limitPx", "type": "int64"},
+                {"name": "sz", "type": "int64"},
+                {"name": "orderType", "type": "int32"},
+                {"name": "cloid", "type": "bytes16"},
+                {"name": "expiration", "type": "uint64"},
+                {"name": "salt", "type": "uint256"}
+            ]
+        },
+        "domain": domain_data,
+        "primaryType": "Order",
+        "message": order_data
+    }
+    
+    encoded = encode_typed_data(full_message=typed_data)
+    recovered = Account.recover_message(encoded, signature=signature_hex)
+    
+    return recovered.lower() == expected_address.lower()</code></pre>
+
+<h3>5.5 常见坑点与避坑指南</h3>
+
+<p>我曾经在签名上栽过跟头，分享几个血泪教训：</p>
+
+<div class="warning">
+  <strong>坑点1：cloid 的格式</strong>
+  <p>cloid 是 bytes16 类型，必须正好 16 字节。如果你传了 15 字节或 17 字节，签名会失败。我建议用 uuid 生成，然后转成 bytes。</p>
+</div>
+
+<div class="warning">
+  <strong>坑点2：int64 的精度</strong>
+  <p>Python 的 int 是无限精度的，但 Hyperliquid 要求 int64。如果你传的值超出范围，签名虽然能生成，但服务端会拒绝。记得做范围检查。</p>
+</div>
+
+<div class="warning">
+  <strong>坑点3：chainId 的选择</strong>
+  <p>主网是 42161（Arbitrum），测试网是 421613。我见过有人用错了 chainId，签名一直通不过，排查了半天才发现是这个问题。</p>
+</div>
+
+<h3>5.6 核心流程总结</h3>
+
+<p>为了让你更直观地理解整个签名流程，我画了一张图：</p>
+
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="500" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">EIP-712 签名流程</text>
+  
+  <!-- 步骤1：构建数据 -->
+  <rect x="50" y="70" width="200" height="80" rx="10" fill="#3498db" opacity="0.9"/>
+  <text x="150" y="105" text-anchor="middle" font-size="14" fill="white" font-weight="bold">1. 构建 TypedData</text>
+  <text x="150" y="130" text-anchor="middle" font-size="12" fill="white">domain + types + message</text>
+  
+  <!-- 箭头1 -->
+  <line x1="250" y1="110" x2="320" y2="110" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 步骤2：编码 -->
+  <rect x="320" y="70" width="200" height="80" rx="10" fill="#e74c3c" opacity="0.9"/>
+  <text x="420" y="105" text-anchor="middle" font-size="14" fill="white" font-weight="bold">2. encode_typed_data</text>
+  <text x="420" y="130" text-anchor="middle" font-size="12" fill="white">结构化哈希</text>
+  
+  <!-- 箭头2 -->
+  <line x1="520" y1="110" x2="590" y2="110" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 步骤3：签名 -->
+  <rect x="590" y="70" width="160" height="80" rx="10" fill="#27ae60" opacity="0.9"/>
+  <text x="670" y="105" text-anchor="middle" font-size="14" fill="white" font-weight="bold">3. 私钥签名</text>
+  <text x="670" y="130" text-anchor="middle" font-size="12" fill="white">生成签名</text>
+  
+  <!-- 箭头3 -->
+  <line x1="670" y1="150" x2="670" y2="200" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 步骤4：发送 -->
+  <rect x="570" y="200" width="200" height="60" rx="10" fill="#8e44ad" opacity="0.9"/>
+  <text x="670" y="230" text-anchor="middle" font-size="14" fill="white" font-weight="bold">4. 发送到 Hyperliquid</text>
+  <text x="670" y="250" text-anchor="middle" font-size="12" fill="white">签名 + 原始数据</text>
+  
+  <!-- 箭头4 -->
+  <line x1="570" y1="230" x2="500" y2="230" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 步骤5：验证 -->
+  <rect x="300" y="200" width="200" height="60" rx="10" fill="#f39c12" opacity="0.9"/>
+  <text x="400" y="230" text-anchor="middle" font-size="14" fill="white" font-weight="bold">5. 服务端验证</text>
+  <text x="400" y="250" text-anchor="middle" font-size="12" fill="white">恢复地址 + 权限检查</text>
+  
+  <!-- 箭头5 -->
+  <line x1="400" y1="260" x2="400" y2="320" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 步骤6：结果 -->
+  <rect x="300" y="320" width="200" height="60" rx="10" fill="#1abc9c" opacity="0.9"/>
+  <text x="400" y="350" text-anchor="middle" font-size="14" fill="white" font-weight="bold">6. 执行或拒绝</text>
+  <text x="400" y="370" text-anchor="middle" font-size="12" fill="white">订单上链 / 错误返回</text>
+  
+  <!-- 箭头定义 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50"/>
+    </marker>
+  </defs>
+  
+  <!-- 底部说明 -->
+  <text x="400" y="440" text-anchor="middle" font-size="12" fill="#7f8c8d">整个流程从构建数据开始，到服务端验证结束</text>
+  <text x="400" y="460" text-anchor="middle" font-size="12" fill="#7f8c8d">签名是连接客户端和服务端的信任桥梁</text>
+</svg>
+
+<p>这张图把整个流程串起来了。你从左边开始，一步步走到右边，就能理解签名是怎么工作的。</p>
+
+<h3>5.7 实战建议</h3>
+
+<p>最后给你几个实战建议：</p>
+<ul>
+  <li><strong>先写测试代码</strong>：用测试网调试签名逻辑，确认没问题再上主网</li>
+  <li><strong>保存原始数据</strong>：签名时把完整的 TypedData 存下来，方便后续排查问题</li>
+  <li><strong>注意时间戳</strong>：expiration 字段用 Unix 时间戳，单位是秒。我习惯加一个 5 分钟的缓冲</li>
+  <li><strong>salt 要随机</strong>：每次签名用不同的 salt，防止重放攻击</li>
+</ul>
+
+<div class="tip">
+  <strong>我的习惯：</strong> 我会把签名逻辑封装成一个独立的模块，然后写单元测试。这样每次改代码时跑一下测试，心里踏实。
+</div>
+
+<p>好了，EIP-712 签名这块就讲到这里。你只要照着上面的代码写，应该不会出大问题。如果遇到奇怪的签名错误，先检查 cloid 长度和 chainId，这两个是最高频的坑。</p>
+        <div class="footer-nav">
+            <a href="04.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="06.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,443 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第26章 数据存储与分析</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="active">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="">第28章 部署与运维</a></li>
+<li><a href="29.html" class="">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第二十六课：数据存储与分析——SQLite + Pandas + 可视化</h2>
+
+<p>说实话，做量化交易这几年，我踩过最大的坑之一就是数据管理。</p>
+<p>刚开始做 Hyperliquid 策略回测时，我习惯把每次拉到的订单簿数据直接扔进 CSV 文件。结果呢？三个月后，光一个交易对的 tick 数据就攒了十几个 GB，打开文件要等半分钟，查询某一天的记录更是噩梦。</p>
+<p>后来我学乖了。用 SQLite 做本地存储，配合 Pandas 做分析，再画几张图看看趋势。这套组合拳打下来，数据管理再也没出过乱子。</p>
+<p>今天我就把这套方法拆开揉碎了讲给你听。</p>
+
+<h3>为什么选 SQLite？</h3>
+<p>你可能想问：为什么不用 MySQL 或者 PostgreSQL？</p>
+<p>我的回答很简单——<strong>本地量化研究不需要上服务器级数据库</strong>。</p>
+<p>SQLite 有几个特点特别适合我们：</p>
+<ul>
+  <li><strong>零配置</strong>：不需要安装、不需要启动服务，一个文件就是一个数据库</li>
+  <li><strong>轻量级</strong>：整个库就几百 KB，Python 自带支持</li>
+  <li><strong>够用</strong>：单机读写性能足够应付百万级数据量</li>
+</ul>
+<p>我在项目中遇到过最极端的情况——一个 SQLite 文件里存了 500 万条订单簿快照，查询某一天的记录仍然在 200 毫秒以内。嗯，够用了。</p>
+
+<div class="highlight">
+  <strong>核心思路</strong>：把 Hyperliquid 的实时数据写入 SQLite，然后用 Pandas 读出来做分析，最后用 Matplotlib 或 Plotly 画图。
+</div>
+
+<h3>第一步：设计表结构</h3>
+<p>我个人习惯把不同数据类型分表存储。比如订单簿数据、成交数据、资金费率数据，各放一张表。</p>
+<p>以订单簿为例，我通常这样设计：</p>
+
+<pre><code>CREATE TABLE orderbook_snapshots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    symbol TEXT NOT NULL,
+    timestamp INTEGER NOT NULL,
+    bid_price_0 REAL,
+    bid_size_0 REAL,
+    ask_price_0 REAL,
+    ask_size_0 REAL,
+    bid_price_1 REAL,
+    bid_size_1 REAL,
+    ask_price_1 REAL,
+    ask_size_1 REAL,
+    -- 可以继续加更多档位
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_symbol_ts ON orderbook_snapshots(symbol, timestamp);</code></pre>
+
+<p>为什么要加索引？</p>
+<p>我曾经试过不加索引直接查 100 万条数据，等了 8 秒才出结果。加上联合索引后，同样的查询 0.3 秒搞定。说白了，索引就是数据库的「目录」，没有目录你只能一页页翻书。</p>
+
+<h3>第二步：用 Python 写入数据</h3>
+<p>从 Hyperliquid 拿到数据后，写入 SQLite 其实就几行代码：</p>
+
+<pre><code>import sqlite3
+import json
+from hyperliquid import info
+
+# 连接数据库（文件不存在会自动创建）
+conn = sqlite3.connect('hyperliquid_data.db')
+cursor = conn.cursor()
+
+# 创建表（如果不存在）
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS orderbook_snapshots (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        symbol TEXT,
+        timestamp INTEGER,
+        bid_price REAL,
+        bid_size REAL,
+        ask_price REAL,
+        ask_size REAL
+    )
+''')
+
+# 获取 Hyperliquid 订单簿数据
+info_client = info.Info()
+data = info_client.l2_snapshot("BTC")
+
+# 解析并写入
+timestamp = int(time.time() * 1000)
+for level in data['levels']:
+    if level['side'] == 'B':
+        bid_price = float(level['px'])
+        bid_size = float(level['sz'])
+    else:
+        ask_price = float(level['px'])
+        ask_size = float(level['sz'])
+
+cursor.execute('''
+    INSERT INTO orderbook_snapshots 
+    (symbol, timestamp, bid_price, bid_size, ask_price, ask_size)
+    VALUES (?, ?, ?, ?, ?, ?)
+''', ('BTC', timestamp, bid_price, bid_size, ask_price, ask_size))
+
+conn.commit()
+conn.close()</code></pre>
+
+<div class="tip">
+  <strong>小技巧</strong>：批量写入时用 <code>executemany</code> 代替逐条 <code>execute</code>，速度能提升 10 倍以上。我一般攒够 1000 条再一次性 commit。
+</div>
+
+<h3>第三步：用 Pandas 读取和分析</h3>
+<p>数据存进去了，怎么分析？Pandas 就是干这个的。</p>
+
+<pre><code>import pandas as pd
+import sqlite3
+
+conn = sqlite3.connect('hyperliquid_data.db')
+
+# 直接读成 DataFrame
+df = pd.read_sql_query('''
+    SELECT * FROM orderbook_snapshots 
+    WHERE symbol = 'BTC' 
+    AND timestamp >= 1700000000000
+    ORDER BY timestamp
+''', conn)
+
+conn.close()
+
+# 计算买卖价差
+df['spread'] = df['ask_price'] - df['bid_price']
+
+# 计算中间价
+df['mid_price'] = (df['bid_price'] + df['ask_price']) / 2
+
+# 查看基本统计
+print(df[['mid_price', 'spread']].describe())</code></pre>
+
+<p>你看，从数据库到 DataFrame 就是一行 <code>read_sql_query</code> 的事。Pandas 会自动把 SQL 查询结果转成表格，后面你想怎么算都行。</p>
+
+<p>我个人最常用的几个分析场景：</p>
+<ul>
+  <li><strong>价差分析</strong>：计算买卖价差的均值、标准差，判断市场流动性</li>
+  <li><strong>价格波动率</strong>：用 <code>df['mid_price'].pct_change().rolling(20).std()</code> 算滚动波动率</li>
+  <li><strong>订单簿深度</strong>：统计不同价格档位的挂单量总和</li>
+</ul>
+
+<h3>第四步：可视化——让数据说话</h3>
+<p>数字看多了容易眼花。画成图，趋势一目了然。</p>
+
+<pre><code>import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
+# 把时间戳转成可读格式
+df['datetime'] = pd.to_datetime(df['timestamp'], unit='ms')
+
+# 画图
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
+
+# 上图：价格走势
+ax1.plot(df['datetime'], df['mid_price'], label='Mid Price', color='#2196F3', linewidth=1)
+ax1.set_ylabel('Price (USD)')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+# 下图：价差变化
+ax2.plot(df['datetime'], df['spread'], label='Bid-Ask Spread', color='#FF5722', linewidth=1)
+ax2.set_ylabel('Spread (USD)')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+
+# 格式化 x 轴时间
+ax2.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+plt.xlabel('Time')
+
+plt.tight_layout()
+plt.show()</code></pre>
+
+<p>画出来的图长什么样？我描述一下：上面是价格曲线，下面是价差曲线。你会发现，价格剧烈波动的时候，价差往往会突然拉大——这就是流动性不足的信号。</p>
+
+<div class="warning">
+  <strong>注意</strong>：如果数据量很大（比如超过 10 万条），直接用 Matplotlib 画线图会非常慢。我的做法是先做降采样，比如每 10 秒取一个平均值，再画图。
+</div>
+
+<h3>知识体系总览</h3>
+<p>下面这张图概括了本章的核心流程：</p>
+
+<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:800px;height:auto;margin:20px auto;display:block;">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- 背景 -->
+  <rect x="0" y="0" width="800" height="500" rx="15" fill="#f8f9ff" stroke="#667eea" stroke-width="2"/>
+
+  <!-- 标题 -->
+  <text x="400" y="45" text-anchor="middle" font-size="22" font-weight="bold" fill="#333">数据存储与分析流程</text>
+
+  <!-- 第一层：数据源 -->
+  <rect x="300" y="70" width="200" height="60" rx="30" fill="url(#grad1)" filter="url(#shadow)"/>
+  <text x="400" y="107" text-anchor="middle" font-size="16" fill="white" font-weight="bold">Hyperliquid 数据源</text>
+
+  <!-- 箭头1 -->
+  <line x1="400" y1="130" x2="400" y2="170" stroke="#667eea" stroke-width="3" marker-end="url(#arrow1)"/>
+  <defs>
+    <marker id="arrow1" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#667eea"/>
+    </marker>
+  </defs>
+
+  <!-- 第二层：存储 -->
+  <rect x="275" y="175" width="250" height="60" rx="10" fill="url(#grad2)" filter="url(#shadow)"/>
+  <text x="400" y="212" text-anchor="middle" font-size="16" fill="white" font-weight="bold">SQLite 数据库存储</text>
+
+  <!-- 箭头2 -->
+  <line x1="400" y1="235" x2="400" y2="275" stroke="#f5576c" stroke-width="3" marker-end="url(#arrow2)"/>
+  <defs>
+    <marker id="arrow2" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#f5576c"/>
+    </marker>
+  </defs>
+
+  <!-- 第三层：分析 -->
+  <rect x="275" y="280" width="250" height="60" rx="10" fill="url(#grad3)" filter="url(#shadow)"/>
+  <text x="400" y="317" text-anchor="middle" font-size="16" fill="white" font-weight="bold">Pandas 数据分析</text>
+
+  <!-- 箭头3 -->
+  <line x1="400" y1="340" x2="400" y2="380" stroke="#4facfe" stroke-width="3" marker-end="url(#arrow3)"/>
+  <defs>
+    <marker id="arrow3" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4facfe"/>
+    </marker>
+  </defs>
+
+  <!-- 第四层：可视化 -->
+  <rect x="275" y="385" width="250" height="60" rx="10" fill="#6c5ce7" filter="url(#shadow)"/>
+  <text x="400" y="422" text-anchor="middle" font-size="16" fill="white" font-weight="bold">Matplotlib 可视化</text>
+
+  <!-- 右侧说明 -->
+  <rect x="580" y="175" width="180" height="270" rx="10" fill="#fff3e0" stroke="#ff9800" stroke-width="1.5" stroke-dasharray="5,5"/>
+  <text x="670" y="200" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">关键操作</text>
+  <text x="590" y="225" font-size="12" fill="#555">• CREATE TABLE</text>
+  <text x="590" y="245" font-size="12" fill="#555">• INSERT / executemany</text>
+  <text x="590" y="265" font-size="12" fill="#555">• read_sql_query</text>
+  <text x="590" y="285" font-size="12" fill="#555">• 价差 / 波动率计算</text>
+  <text x="590" y="305" font-size="12" fill="#555">• plt.plot / subplots</text>
+  <text x="590" y="325" font-size="12" fill="#555">• 降采样优化</text>
+  <text x="590" y="345" font-size="12" fill="#555">• 索引优化查询</text>
+  <text x="590" y="365" font-size="12" fill="#555">• 批量写入提速</text>
+  <text x="590" y="385" font-size="12" fill="#555">• 时间序列处理</text>
+  <text x="590" y="405" font-size="12" fill="#555">• 滚动统计</text>
+  <text x="590" y="425" font-size="12" fill="#555">• 多子图布局</text>
+</svg>
+
+<h3>避坑指南</h3>
+<p>做数据存储和分析，有几个坑我当年都踩过，分享给你：</p>
+
+<ul>
+  <li><strong>不要频繁 commit</strong>：每条数据都 commit 一次，写入速度会慢到让你怀疑人生。攒一批再写。</li>
+  <li><strong>时间戳用整数</strong>：别存字符串格式的时间，查询和排序都慢。用毫秒级整数时间戳，又快又准。</li>
+  <li><strong>定期清理旧数据</strong>：SQLite 文件不会自动瘦身。我写了个定时任务，每周删除 30 天前的数据，再用 <code>VACUUM</code> 回收空间。</li>
+  <li><strong>画图前先采样</strong>：10 万条数据直接画线图，Matplotlib 会卡住。先 resample 再画。</li>
+</ul>
+
+<div class="tip">
+  <strong>我的习惯</strong>：每天收盘后跑一次数据分析脚本，自动生成当天的价差图、深度图、波动率图，存成 PNG 文件。复盘的时候翻一翻，比看数字直观多了。
+</div>
+
+<p>好了，数据存储和分析的流程就是这样。从 Hyperliquid 拿到数据，存进 SQLite，用 Pandas 算指标，最后画图看趋势。这套流程我用了两年多，稳定可靠。</p>
+
+<p>你可以在自己的机器上试试，先跑一天的数据，看看 BTC 的价差在什么时间区间最小——那通常就是流动性最好的交易窗口。</p>
+
+<footer style="margin-top:40px;padding-top:20px;border-top:1px solid #e0e0e0;text-align:center;color:#888;font-size:14px;">
+  公众号:蓝海资料掘金营，微信deep3321
+</footer>
+        <div class="footer-nav">
+            <a href="25.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="27.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

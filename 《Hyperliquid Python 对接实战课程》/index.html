@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Hyperliquid Python 对接实战 · 课程目录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(145deg, #f0f9ff 0%, #e6f5e9 100%);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1.5rem 1rem;
+            color: #1e3c4f;
+        }
+        .course-wrapper {
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.70);
+            backdrop-filter: blur(2px);
+            border-radius: 48px 48px 32px 32px;
+            padding: 2rem 2rem 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 40, 60, 0.12);
+            border: 2px solid rgba(255, 240, 150, 0.5);
+        }
+        .header-title {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            border-bottom: 6px solid #fdd835;
+            padding-bottom: 0.75rem;
+        }
+        .header-title h1 {
+            font-size: 2.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0077b6, #00b4d8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-title h1::before {
+            content: "📘";
+            font-size: 2.2rem;
+            background: #fff2c0;
+            padding: 0 8px;
+            border-radius: 40px;
+        }
+        .header-title .subhead {
+            font-size: 1.1rem;
+            background: #b7e4c7;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            color: #1b4d3d;
+            font-weight: 600;
+        }
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.2rem;
+            margin: 1.8rem 0 1.2rem;
+        }
+        .chapter-card {
+            background: #ffffffdd;
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 1.2rem;
+            transition: all 0.2s ease;
+            border: 3px solid #ffd966;
+            box-shadow: 0 6px 0 #e0c27a;
+            cursor: pointer;
+            position: relative;
+        }
+        .chapter-card:hover {
+            transform: translateY(-4px);
+            border-color: #f9c74f;
+            background: #fffef7;
+        }
+        .chapter-badge {
+            display: inline-block;
+            background: #f94144;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0.1rem 0.9rem;
+            border-radius: 40px;
+            margin-bottom: 0.5rem;
+        }
+        .chapter-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .chapter-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #023e8a;
+            margin: 0.2rem 0 0.4rem;
+            line-height: 1.3;
+        }
+        .chapter-desc {
+            font-size: 0.85rem;
+            color: #1e4a5f;
+            line-height: 1.4;
+            margin: 0.2rem 0;
+            padding-left: 10px;
+            border-left: 4px solid #90e0ef;
+        }
+        .card-tags {
+            margin-top: 0.6rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        .tag {
+            background: #d8f3dc;
+            color: #1b4332;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+        .chapter-card a.chapter-link::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 28px;
+            z-index: 1;
+        }
+        .chapter-card > *:not(a.chapter-link) {
+            position: relative;
+            z-index: 2;
+            pointer-events: none;
+        }
+        @media (max-width: 680px) {
+            .course-wrapper { padding: 1.2rem; }
+            .header-title h1 { font-size: 2rem; }
+            .catalog-grid { grid-template-columns: 1fr; }
+        }
+        .footer {
+            max-width: 1300px;
+            width: 100%;
+            margin-top: 1.5rem;
+            text-align: center;
+            padding: 1rem;
+        }
+        .footer a {
+            display: inline-block;
+            background: linear-gradient(135deg, #fce8e8, #fff);
+            padding: 0.9rem 2.8rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #a02929;
+            text-decoration: none;
+            border: 1px solid rgba(200, 50, 50, 0.3);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(200, 30, 30, 0.08);
+        }
+        .footer a:hover {
+            background: linear-gradient(135deg, #ffd9d9, #ffe6e6);
+            border-color: #c92a2a;
+            box-shadow: 0 8px 18px rgba(200, 30, 30, 0.15);
+            transform: scale(1.01);
+            color: #8a1f1f;
+        }
+        .footer-note {
+            margin-top: 0.8rem;
+            font-size: 0.95rem;
+            color: #2b5f4a;
+            background: #f1f9e6;
+            display: inline-block;
+            padding: 0.3rem 2rem;
+            border-radius: 40px;
+            border: 1px solid #b7d7b0;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<div class="course-wrapper">
+    <div class="header-title">
+        <h1>Hyperliquid Python 对接实战</h1>
+        <span class="subhead">📚 共计 30 章节</span>
+    </div>
+    <div class="catalog-grid">
+        <!-- 卡片 1 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="01.html">
+                <span class="chapter-badge">第01章</span>
+                <div class="chapter-title">Hyperliquid 生态概览</div>
+                <div class="chapter-desc">什么是 Hyperliquid、去中心化衍生品交易的核心逻辑、为什么选择 Python 对接。</div>
+                <div class="card-tags"><span class="tag">生态</span><span class="tag">入门</span></div>
+            </a>
+        </div>
+        <!-- 卡片 2 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="02.html">
+                <span class="chapter-badge">第02章</span>
+                <div class="chapter-title">环境准备</div>
+                <div class="chapter-desc">Python 3.10+ 安装、虚拟环境配置、pip 换源、常用依赖库安装。</div>
+                <div class="card-tags"><span class="tag">环境</span><span class="tag">工具</span></div>
+            </a>
+        </div>
+        <!-- 卡片 3 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="03.html">
+                <span class="chapter-badge">第03章</span>
+                <div class="chapter-title">Hyperliquid API 基础</div>
+                <div class="chapter-desc">REST API 与 WebSocket API 的区别、API 文档速览、获取公开市场数据。</div>
+                <div class="card-tags"><span class="tag">API</span><span class="tag">基础</span></div>
+            </a>
+        </div>
+        <!-- 卡片 4 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="04.html">
+                <span class="chapter-badge">第04章</span>
+                <div class="chapter-title">账户与钱包</div>
+                <div class="chapter-desc">以太坊钱包生成、私钥管理、助记词导入、本地签名环境搭建。</div>
+                <div class="card-tags"><span class="tag">钱包</span><span class="tag">安全</span></div>
+            </a>
+        </div>
+        <!-- 卡片 5 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="05.html">
+                <span class="chapter-badge">第05章</span>
+                <div class="chapter-title">签名机制详解</div>
+                <div class="chapter-desc">EIP-712 结构化数据签名、TypedData 构建、eth_signTypedData_v4 实现。</div>
+                <div class="card-tags"><span class="tag">签名</span><span class="tag">EIP712</span></div>
+            </a>
+        </div>
+        <!-- 卡片 6 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="06.html">
+                <span class="chapter-badge">第06章</span>
+                <div class="chapter-title">REST API 实战（一）</div>
+                <div class="chapter-desc">获取订单簿深度、获取 K 线数据、获取交易历史。</div>
+                <div class="card-tags"><span class="tag">REST</span><span class="tag">市场数据</span></div>
+            </a>
+        </div>
+        <!-- 卡片 7 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="07.html">
+                <span class="chapter-badge">第07章</span>
+                <div class="chapter-title">REST API 实战（二）</div>
+                <div class="chapter-desc">获取账户余额、获取持仓信息、获取未成交订单。</div>
+                <div class="card-tags"><span class="tag">账户</span><span class="tag">订单</span></div>
+            </a>
+        </div>
+        <!-- 卡片 8 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="08.html">
+                <span class="chapter-badge">第08章</span>
+                <div class="chapter-title">REST API 实战（三）</div>
+                <div class="chapter-desc">获取资金费率、获取指数价格、获取市场状态。</div>
+                <div class="card-tags"><span class="tag">费率</span><span class="tag">指数</span></div>
+            </a>
+        </div>
+        <!-- 卡片 9 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="09.html">
+                <span class="chapter-badge">第09章</span>
+                <div class="chapter-title">下单操作（一）</div>
+                <div class="chapter-desc">限价单与市价单的区别、下单参数详解、构建下单请求。</div>
+                <div class="card-tags"><span class="tag">交易</span><span class="tag">限价单</span></div>
+            </a>
+        </div>
+        <!-- 卡片 10 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="10.html">
+                <span class="chapter-badge">第10章</span>
+                <div class="chapter-title">下单操作（二）</div>
+                <div class="chapter-desc">签名并发送订单、订单状态轮询、订单取消与修改。</div>
+                <div class="card-tags"><span class="tag">签名</span><span class="tag">管理</span></div>
+            </a>
+        </div>
+        <!-- 卡片 11 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="11.html">
+                <span class="chapter-badge">第11章</span>
+                <div class="chapter-title">下单操作（三）</div>
+                <div class="chapter-desc">止损单、止盈单、追踪止损单的实现。</div>
+                <div class="card-tags"><span class="tag">止损</span><span class="tag">止盈</span></div>
+            </a>
+        </div>
+        <!-- 卡片 12 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="12.html">
+                <span class="chapter-badge">第12章</span>
+                <div class="chapter-title">WebSocket 基础</div>
+                <div class="chapter-desc">WebSocket 连接建立、心跳维持、订阅与取消订阅。</div>
+                <div class="card-tags"><span class="tag">WebSocket</span><span class="tag">实时</span></div>
+            </a>
+        </div>
+        <!-- 卡片 13 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="13.html">
+                <span class="chapter-badge">第13章</span>
+                <div class="chapter-title">WebSocket 实战（一）</div>
+                <div class="chapter-desc">实时订单簿数据流、增量更新与全量快照。</div>
+                <div class="card-tags"><span class="tag">订单簿</span><span class="tag">增量</span></div>
+            </a>
+        </div>
+        <!-- 卡片 14 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="14.html">
+                <span class="chapter-badge">第14章</span>
+                <div class="chapter-title">WebSocket 实战（二）</div>
+                <div class="chapter-desc">实时成交数据流、用户订单状态推送。</div>
+                <div class="card-tags"><span class="tag">成交</span><span class="tag">推送</span></div>
+            </a>
+        </div>
+        <!-- 卡片 15 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="15.html">
+                <span class="chapter-badge">第15章</span>
+                <div class="chapter-title">WebSocket 实战（三）</div>
+                <div class="chapter-desc">实时账户余额与持仓更新、资金费率推送。</div>
+                <div class="card-tags"><span class="tag">账户</span><span class="tag">费率</span></div>
+            </a>
+        </div>
+        <!-- 卡片 16 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="16.html">
+                <span class="chapter-badge">第16章</span>
+                <div class="chapter-title">错误处理与重试机制</div>
+                <div class="chapter-desc">HTTP 错误码处理、WebSocket 断线重连、指数退避策略。</div>
+                <div class="card-tags"><span class="tag">错误</span><span class="tag">重试</span></div>
+            </a>
+        </div>
+        <!-- 卡片 17 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="17.html">
+                <span class="chapter-badge">第17章</span>
+                <div class="chapter-title">日志与监控</div>
+                <div class="chapter-desc">Python logging 配置、关键操作日志记录、异常告警集成。</div>
+                <div class="card-tags"><span class="tag">日志</span><span class="tag">监控</span></div>
+            </a>
+        </div>
+        <!-- 卡片 18 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="18.html">
+                <span class="chapter-badge">第18章</span>
+                <div class="chapter-title">性能优化</div>
+                <div class="chapter-desc">连接池管理、请求并发控制、数据缓存策略。</div>
+                <div class="card-tags"><span class="tag">性能</span><span class="tag">并发</span></div>
+            </a>
+        </div>
+        <!-- 卡片 19 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="19.html">
+                <span class="chapter-badge">第19章</span>
+                <div class="chapter-title">策略框架搭建（一）</div>
+                <div class="chapter-desc">策略基类设计、回测与实盘模式切换。</div>
+                <div class="card-tags"><span class="tag">框架</span><span class="tag">基类</span></div>
+            </a>
+        </div>
+        <!-- 卡片 20 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="20.html">
+                <span class="chapter-badge">第20章</span>
+                <div class="chapter-title">策略框架搭建（二）</div>
+                <div class="chapter-desc">信号生成模块、风险管理模块、订单执行模块。</div>
+                <div class="card-tags"><span class="tag">信号</span><span class="tag">风控</span></div>
+            </a>
+        </div>
+        <!-- 卡片 21 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="21.html">
+                <span class="chapter-badge">第21章</span>
+                <div class="chapter-title">策略框架搭建（三）</div>
+                <div class="chapter-desc">多时间周期分析、资金管理、仓位管理。</div>
+                <div class="card-tags"><span class="tag">周期</span><span class="tag">仓位</span></div>
+            </a>
+        </div>
+        <!-- 卡片 22 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="22.html">
+                <span class="chapter-badge">第22章</span>
+                <div class="chapter-title">实战策略（一）网格交易</div>
+                <div class="chapter-desc">网格交易策略——原理、实现、回测。</div>
+                <div class="card-tags"><span class="tag">网格</span><span class="tag">回测</span></div>
+            </a>
+        </div>
+        <!-- 卡片 23 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="23.html">
+                <span class="chapter-badge">第23章</span>
+                <div class="chapter-title">实战策略（二）趋势跟踪</div>
+                <div class="chapter-desc">均线交叉、布林带突破。</div>
+                <div class="card-tags"><span class="tag">趋势</span><span class="tag">均线</span></div>
+            </a>
+        </div>
+        <!-- 卡片 24 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="24.html">
+                <span class="chapter-badge">第24章</span>
+                <div class="chapter-title">实战策略（三）套利策略</div>
+                <div class="chapter-desc">跨期套利、资金费率套利。</div>
+                <div class="card-tags"><span class="tag">套利</span><span class="tag">费率</span></div>
+            </a>
+        </div>
+        <!-- 卡片 25 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="25.html">
+                <span class="chapter-badge">第25章</span>
+                <div class="chapter-title">实战策略（四）做市商策略</div>
+                <div class="chapter-desc">双边报价、库存管理。</div>
+                <div class="card-tags"><span class="tag">做市</span><span class="tag">报价</span></div>
+            </a>
+        </div>
+        <!-- 卡片 26 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="26.html">
+                <span class="chapter-badge">第26章</span>
+                <div class="chapter-title">数据存储与分析</div>
+                <div class="chapter-desc">使用 SQLite 存储历史数据、Pandas 数据分析、可视化。</div>
+                <div class="card-tags"><span class="tag">SQLite</span><span class="tag">Pandas</span></div>
+            </a>
+        </div>
+        <!-- 卡片 27 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="27.html">
+                <span class="chapter-badge">第27章</span>
+                <div class="chapter-title">安全最佳实践</div>
+                <div class="chapter-desc">私钥加密存储、环境变量管理、API 权限最小化。</div>
+                <div class="card-tags"><span class="tag">安全</span><span class="tag">加密</span></div>
+            </a>
+        </div>
+        <!-- 卡片 28 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="28.html">
+                <span class="chapter-badge">第28章</span>
+                <div class="chapter-title">部署与运维</div>
+                <div class="chapter-desc">Linux 服务器部署、Supervisor 进程管理、Docker 容器化。</div>
+                <div class="card-tags"><span class="tag">部署</span><span class="tag">Docker</span></div>
+            </a>
+        </div>
+        <!-- 卡片 29 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="29.html">
+                <span class="chapter-badge">第29章</span>
+                <div class="chapter-title">测试与调试</div>
+                <div class="chapter-desc">单元测试、模拟交易环境、回测引擎集成。</div>
+                <div class="card-tags"><span class="tag">测试</span><span class="tag">模拟</span></div>
+            </a>
+        </div>
+        <!-- 卡片 30 -->
+        <div class="chapter-card">
+            <a class="chapter-link" href="30.html">
+                <span class="chapter-badge">第30章</span>
+                <div class="chapter-title">项目实战</div>
+                <div class="chapter-desc">从零搭建完整的 Hyperliquid 量化交易机器人——需求分析、架构设计、编码实现、部署上线。</div>
+                <div class="card-tags"><span class="tag">全栈</span><span class="tag">机器人</span></div>
+            </a>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <a href="http://124.221.106.7/wendang/" target="_blank">
+        点击此处查看：50个+行业、500+细分领域、10w+门课程资料-大目录汇总
+    </a>
+    <div class="footer-note">公众号:蓝海资料掘金营，微信deep3321</div>
+</div>
+</body>
+</html>

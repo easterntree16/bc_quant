@@ -1,0 +1,412 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第29章 测试与调试</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="">第28章 部署与运维</a></li>
+<li><a href="29.html" class="active">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第二十九章：测试与调试——单元测试、模拟交易环境、回测引擎集成</h2>
+
+<p>说实话，很多做量化的人对测试这件事不太上心。我见过不少团队，代码写完了直接丢到主网上跑，结果爆仓了才发现是某个边界条件没处理。嗯，这种教训一次就够了。</p>
+
+<p>测试不是可有可无的环节。它是你交易系统的安全网。今天我就带你看看，在Hyperliquid生态里，怎么把测试这件事做到位。</p>
+
+<h3>单元测试：给每个函数上保险</h3>
+
+<p>单元测试听起来高大上，说白了就是验证每个小函数对不对。我个人习惯是，每写一个核心函数，立刻补上对应的测试。别等代码堆到上千行再回头测，那时候你连bug在哪都找不到。</p>
+
+<p>在Hyperliquid的对接中，有几个地方特别容易出问题：</p>
+
+<ul>
+  <li><strong>签名计算</strong>：私钥签名错了，交易直接失败</li>
+  <li><strong>订单参数</strong>：价格精度、数量精度搞混了</li>
+  <li><strong>时间戳处理</strong>：毫秒和微秒的转换</li>
+</ul>
+
+<p>我建议你用pytest来写测试。它比unittest简洁得多。来看个例子：</p>
+
+<pre><code># test_order.py
+import pytest
+from hyperliquid_api import OrderBuilder
+
+def test_limit_order_creation():
+    """测试限价单创建"""
+    builder = OrderBuilder()
+    order = builder.create_limit_order(
+        symbol="BTC-USD",
+        side="buy",
+        price=50000.50,
+        size=0.1
+    )
+    
+    assert order["type"] == "limit"
+    assert order["price"] == "50000.5"  # 注意精度处理
+    assert order["size"] == "0.1"
+    assert "signature" in order
+
+def test_invalid_price_raises():
+    """测试无效价格是否抛出异常"""
+    builder = OrderBuilder()
+    with pytest.raises(ValueError):
+        builder.create_limit_order(
+            symbol="BTC-USD",
+            side="buy",
+            price=-1,  # 负数价格
+            size=0.1
+        )</code></pre>
+
+<div class="tip">
+  <strong>小技巧</strong>：测试命名用test_开头，pytest会自动发现。我习惯把测试文件和源码放同一目录，加个tests文件夹。
+</div>
+
+<p>我在项目中遇到过一个问题：某个订单签名函数在本地测试全过，但一上主网就报错。查了半天，发现是测试环境用的私钥格式不对。所以记住——测试数据要尽量贴近真实环境。</p>
+
+<h3>模拟交易环境：不花钱的试错机会</h3>
+
+<p>单元测试只能测单个函数。但交易系统是个整体，你需要一个模拟环境来跑完整流程。Hyperliquid提供了测试网，这玩意儿你一定要用。</p>
+
+<p>测试网和主网的区别其实不大：</p>
+
+<table>
+  <tr>
+    <th>特性</th>
+    <th>主网</th>
+    <th>测试网</th>
+  </tr>
+  <tr>
+    <td>资金</td>
+    <td>真金白银</td>
+    <td>测试代币（免费领）</td>
+  </tr>
+  <tr>
+    <td>API地址</td>
+    <td>api.hyperliquid.xyz</td>
+    <td>api.testnet.hyperliquid.xyz</td>
+  </tr>
+  <tr>
+    <td>撮合速度</td>
+    <td>真实市场速度</td>
+    <td>稍慢，但够用</td>
+  </tr>
+  <tr>
+    <td>数据</td>
+    <td>真实行情</td>
+    <td>模拟行情</td>
+  </tr>
+</table>
+
+<p>怎么切换？很简单。我一般会在配置里加个环境变量：</p>
+
+<pre><code>import os
+
+HYPERLIQUID_CONFIG = {
+    "mainnet": {
+        "api_url": "https://api.hyperliquid.xyz",
+        "ws_url": "wss://api.hyperliquid.xyz/ws"
+    },
+    "testnet": {
+        "api_url": "https://api.testnet.hyperliquid.xyz",
+        "ws_url": "wss://api.testnet.hyperliquid.xyz/ws"
+    }
+}
+
+# 通过环境变量控制
+env = os.getenv("HYPER_ENV", "testnet")
+config = HYPERLIQUID_CONFIG[env]</code></pre>
+
+<div class="warning">
+  <strong>警告</strong>：千万不要把主网的API密钥硬编码在代码里。我曾经见过有人把私钥写在配置文件里，然后不小心提交到了GitHub...那画面太美我不敢看。
+</div>
+
+<p>在测试网上跑模拟交易时，我建议你至少跑满100笔订单。为什么？因为很多bug在少量交易时不会暴露，比如订单簿深度变化时的滑点计算、批量撤单的并发问题。</p>
+
+<h3>回测引擎集成：用历史数据检验策略</h3>
+
+<p>模拟环境只能测当前行情。但你的策略能不能赚钱，得看它在历史数据上的表现。这就是回测的价值。</p>
+
+<p>回测引擎的核心逻辑其实不复杂：</p>
+
+<ol>
+  <li>加载历史K线数据</li>
+  <li>逐根K线模拟交易</li>
+  <li>记录每笔交易的盈亏</li>
+  <li>输出统计指标（夏普比率、最大回撤等）</li>
+</ol>
+
+<p>我写了一个轻量级的回测框架，专门适配Hyperliquid的数据格式：</p>
+
+<pre><code>class HyperliquidBacktester:
+    def __init__(self, initial_capital=10000):
+        self.capital = initial_capital
+        self.positions = []
+        self.trades = []
+        
+    def load_data(self, symbol, start_time, end_time):
+        """从Hyperliquid拉取历史K线"""
+        # 实际代码会调用Hyperliquid的历史数据API
+        pass
+    
+    def run(self, strategy_func):
+        """运行回测"""
+        for candle in self.candles:
+            signal = strategy_func(candle)
+            if signal == "buy":
+                self._execute_buy(candle)
+            elif signal == "sell":
+                self._execute_sell(candle)
+        
+        return self._calculate_stats()
+    
+    def _calculate_stats(self):
+        """计算回测指标"""
+        total_return = (self.capital - 10000) / 10000
+        sharpe = self._sharpe_ratio()
+        max_drawdown = self._max_drawdown()
+        
+        return {
+            "total_return": total_return,
+            "sharpe_ratio": sharpe,
+            "max_drawdown": max_drawdown,
+            "total_trades": len(self.trades)
+        }</code></pre>
+
+<div class="highlight">
+  <strong>核心要点</strong>：回测时一定要考虑交易成本。Hyperliquid的费率是maker -0.0001，taker 0.0005。别小看这点费用，高频交易时它能吃掉你一半利润。
+</div>
+
+<p>你想想看，如果回测时每笔交易都按理想价格成交，那结果肯定好看。但实际市场里，你的订单可能吃不到那个价格。所以我建议在回测里加一个滑点模型：</p>
+
+<pre><code>def apply_slippage(price, side, slippage_bps=2):
+    """应用滑点，bps表示基点，1bps=0.01%"""
+    slippage = price * slippage_bps / 10000
+    if side == "buy":
+        return price + slippage  # 买入时价格变高
+    else:
+        return price - slippage  # 卖出时价格变低</code></pre>
+
+<p>我曾经用这个回测框架跑过一个网格策略。回测结果年化30%，我兴冲冲上了主网。结果一个月下来只赚了8%。为什么？因为回测时我没考虑网络延迟和API限频。所以记住——回测是参考，不是承诺。</p>
+
+<h3>测试流程的完整闭环</h3>
+
+<p>说了这么多，我把整个测试流程串起来。这是我个人比较推崇的做法：</p>
+
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="400" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">Hyperliquid 测试流程闭环</text>
+  
+  <!-- 阶段1：单元测试 -->
+  <rect x="50" y="80" width="160" height="60" rx="8" fill="#3498db" opacity="0.9"/>
+  <text x="130" y="115" text-anchor="middle" font-size="14" fill="white" font-weight="bold">单元测试</text>
+  <text x="130" y="130" text-anchor="middle" font-size="11" fill="#ecf0f1">每个函数独立验证</text>
+  
+  <!-- 箭头1 -->
+  <line x1="210" y1="110" x2="270" y2="110" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 阶段2：模拟交易 -->
+  <rect x="280" y="80" width="160" height="60" rx="8" fill="#2ecc71" opacity="0.9"/>
+  <text x="360" y="115" text-anchor="middle" font-size="14" fill="white" font-weight="bold">模拟交易</text>
+  <text x="360" y="130" text-anchor="middle" font-size="11" fill="#ecf0f1">测试网跑完整流程</text>
+  
+  <!-- 箭头2 -->
+  <line x1="440" y1="110" x2="500" y2="110" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 阶段3：回测 -->
+  <rect x="510" y="80" width="160" height="60" rx="8" fill="#e74c3c" opacity="0.9"/>
+  <text x="590" y="115" text-anchor="middle" font-size="14" fill="white" font-weight="bold">历史回测</text>
+  <text x="590" y="130" text-anchor="middle" font-size="11" fill="#ecf0f1">验证策略历史表现</text>
+  
+  <!-- 箭头3 -->
+  <line x1="670" y1="110" x2="730" y2="110" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 阶段4：上线 -->
+  <rect x="580" y="200" width="160" height="60" rx="8" fill="#9b59b6" opacity="0.9"/>
+  <text x="660" y="235" text-anchor="middle" font-size="14" fill="white" font-weight="bold">主网上线</text>
+  <text x="660" y="250" text-anchor="middle" font-size="11" fill="#ecf0f1">小资金验证</text>
+  
+  <!-- 回环箭头 -->
+  <path d="M 660 260 L 660 320 L 130 320 L 130 140" fill="none" stroke="#e67e22" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+  <text x="400" y="340" text-anchor="middle" font-size="12" fill="#e67e22">发现问题 → 返回修改 → 重新测试</text>
+  
+  <!-- 箭头定义 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50"/>
+    </marker>
+  </defs>
+  
+  <!-- 底部说明 -->
+  <text x="400" y="380" text-anchor="middle" font-size="11" fill="#7f8c8d">每个阶段通过后才能进入下一阶段，形成测试闭环</text>
+</svg>
+
+<p>这个闭环的核心思想是：<strong>先小后大，先模拟后真实</strong>。单元测试过了，才进模拟环境；模拟环境跑通了，才做回测；回测结果满意了，才上主网。每一步都可能发现新问题，发现了就回去改，改完重新测。</p>
+
+<div class="tip">
+  <strong>我的习惯</strong>：每次修改代码后，至少跑一遍完整的测试套件。我写了个Makefile，一个make test命令就能跑完所有测试。省心。
+</div>
+
+<p>最后说一句：测试不是浪费时间。它是在帮你省钱。你想想看，一个bug如果在单元测试阶段被发现，修复成本几乎为零。但如果到了主网上才发现，那可能就是几万U的损失。这笔账，你自己算。</p>
+
+<footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+        <div class="footer-nav">
+            <a href="28.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="30.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

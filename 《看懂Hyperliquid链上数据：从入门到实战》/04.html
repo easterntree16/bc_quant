@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第4章 链上数据结构解析</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid生态全景</a></li>
+<li><a href="02.html" class="">第2章 HyperLiquid链基础</a></li>
+<li><a href="03.html" class="">第3章 RPC节点与数据源</a></li>
+<li><a href="04.html" class="active">第4章 链上数据结构解析</a></li>
+<li><a href="05.html" class="">第5章 Python环境搭建</a></li>
+<li><a href="06.html" class="">第6章 查询账户信息</a></li>
+<li><a href="07.html" class="">第7章 订单簿数据深度解析</a></li>
+<li><a href="08.html" class="">第8章 交易数据实战</a></li>
+<li><a href="09.html" class="">第9章 K线数据获取与处理</a></li>
+<li><a href="10.html" class="">第10章 资金费率与衍生品数据</a></li>
+<li><a href="11.html" class="">第11章 预言机数据</a></li>
+<li><a href="12.html" class="">第12章 链上清算数据分析</a></li>
+<li><a href="13.html" class="">第13章 大户地址追踪</a></li>
+<li><a href="14.html" class="">第14章 Gas费与网络状态</a></li>
+<li><a href="15.html" class="">第15章 智能合约交互</a></li>
+<li><a href="16.html" class="">第16章 数据存储方案</a></li>
+<li><a href="17.html" class="">第17章 数据可视化基础</a></li>
+<li><a href="18.html" class="">第18章 实时数据监控系统</a></li>
+<li><a href="19.html" class="">第19章 量化交易数据准备</a></li>
+<li><a href="20.html" class="">第20章 链上数据分析框架</a></li>
+<li><a href="21.html" class="">第21章 市场微观结构分析</a></li>
+<li><a href="22.html" class="">第22章 链上指标构建</a></li>
+<li><a href="23.html" class="">第23章 套利机会识别</a></li>
+<li><a href="24.html" class="">第24章 风险管理与风控</a></li>
+<li><a href="25.html" class="">第25章 数据API服务开发</a></li>
+<li><a href="26.html" class="">第26章 自动化交易信号</a></li>
+<li><a href="27.html" class="">第27章 HyperLiquid生态工具</a></li>
+<li><a href="28.html" class="">第28章 性能优化与最佳实践</a></li>
+<li><a href="29.html" class="">第29章 实战项目一</a></li>
+<li><a href="30.html" class="">第30章 实战项目二</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>4. 链上数据结构解析：交易结构、事件日志、状态数据、账户模型</h2>
+
+<p>说实话，刚接触Hyperliquid链上数据时，我也被各种结构搞晕过。后来我发现，只要抓住四个核心维度——交易、事件、状态、账户——整个数据体系就清晰了。今天咱们就一个一个拆开来看。</p>
+
+<h3>4.1 交易结构：链上动作的原始记录</h3>
+
+<p>每一笔交易，说白了就是用户对链下达的一个指令。Hyperliquid的交易结构跟以太坊不太一样，它更轻量，也更贴合衍生品交易场景。</p>
+
+<p>我习惯把交易结构拆成三层来看：</p>
+
+<ul>
+  <li><strong>头部信息</strong>：包括nonce、gas价格、签名等基础字段</li>
+  <li><strong>交易类型</strong>：比如PlaceOrder、CancelOrder、Liquidate等</li>
+  <li><strong>业务载荷</strong>：具体交易参数，比如订单价格、数量、杠杆等</li>
+</ul>
+
+<p>举个例子，一个典型的限价单交易，它的核心结构长这样：</p>
+
+<pre><code>{
+  "type": "PlaceOrder",
+  "order": {
+    "asset": "BTC-PERP",
+    "isBuy": true,
+    "price": "45000.5",
+    "size": "1.2",
+    "leverage": "10x",
+    "reduceOnly": false,
+    "postOnly": true
+  },
+  "signature": "0x..."
+}</code></pre>
+
+<div class="highlight">
+  <p><strong>关键点</strong>：Hyperliquid的交易是直接在L1上执行的，没有L2的延迟。这意味着你看到的每一笔交易，都是最终状态。</p>
+</div>
+
+<h3>4.2 事件日志：链上发生了什么</h3>
+
+<p>事件日志就像是链上的「广播系统」。每当有重要操作完成，链就会emit一个事件。我个人觉得，事件日志是调试和监控最趁手的工具。</p>
+
+<p>常见的几类事件：</p>
+
+<ul>
+  <li><strong>OrderPlaced</strong>：订单被成功挂入订单簿</li>
+  <li><strong>OrderFilled</strong>：订单部分或全部成交</li>
+  <li><strong>PositionUpdated</strong>：持仓发生变化（开仓、加仓、减仓）</li>
+  <li><strong>Liquidation</strong>：爆仓事件</li>
+  <li><strong>FundingPayment</strong>：资金费率结算</li>
+</ul>
+
+<p>嗯，这里要注意：事件日志里包含的字段，往往比交易结构更丰富。比如OrderFilled事件会额外包含成交均价、手续费、对手方信息等。</p>
+
+<div class="tip">
+  <p><strong>我的经验</strong>：做数据回溯时，我建议优先解析事件日志而不是交易结构。因为事件日志是「结果」，交易结构只是「意图」。意图可能失败，但结果一定真实。</p>
+</div>
+
+<h3>4.3 状态数据：链的「快照」</h3>
+
+<p>状态数据反映的是某一时刻链上所有数据的全貌。你可以把它理解成数据库的一张张表。</p>
+
+<p>Hyperliquid的状态数据主要分这几块：</p>
+
+<table>
+  <tr>
+    <th>状态类型</th>
+    <th>说明</th>
+    <th>更新频率</th>
+  </tr>
+  <tr>
+    <td>订单簿状态</td>
+    <td>所有未成交订单的聚合</td>
+    <td>每个区块</td>
+  </tr>
+  <tr>
+    <td>持仓状态</td>
+    <td>每个地址的当前持仓</td>
+    <td>每个区块</td>
+  </tr>
+  <tr>
+    <td>用户余额</td>
+    <td>每个地址的保证金余额</td>
+    <td>每个区块</td>
+  </tr>
+  <tr>
+    <td>市场参数</td>
+    <td>杠杆倍数、最小变动单位等</td>
+    <td>低频更新</td>
+  </tr>
+</table>
+
+<p>为什么状态数据重要？因为交易和事件都是「增量」，而状态是「存量」。你想知道某个地址现在有多少仓位，只能查状态数据。</p>
+
+<div class="warning">
+  <p><strong>避坑指南</strong>：我曾经犯过一个错误——只靠事件日志累加来计算用户余额。结果发现对不上账。后来才明白，事件日志可能因为链重组而重复或丢失。正确的做法是：以状态数据为准，事件日志只做辅助验证。</p>
+</div>
+
+<h3>4.4 账户模型：Hyperliquid的独特设计</h3>
+
+<p>Hyperliquid的账户模型跟以太坊的EOA（外部账户）不太一样。它采用了一种叫「统一保证金账户」的设计。</p>
+
+<p>说白了，就是每个地址只有一个保证金账户，所有交易对共享这个账户里的资金。这样做的好处很明显：</p>
+
+<ul>
+  <li><strong>资金利用率高</strong>：一个账户里的钱可以同时做多BTC、做空ETH，互不冲突</li>
+  <li><strong>清算逻辑简单</strong>：只要总保证金够，就不会被单独某个仓位拖垮</li>
+  <li><strong>跨市场对冲方便</strong>：一个账户就能完成多品种组合策略</li>
+</ul>
+
+<p>账户模型的核心字段：</p>
+
+<pre><code>{
+  "address": "0x...",
+  "totalCollateral": "10000.00",   // 总保证金
+  "usedMargin": "4500.00",         // 已用保证金
+  "availableMargin": "5500.00",    // 可用保证金
+  "positions": [
+    {
+      "asset": "BTC-PERP",
+      "size": "2.5",
+      "entryPrice": "44000",
+      "unrealizedPnl": "1250.00"
+    },
+    {
+      "asset": "ETH-PERP",
+      "size": "-15.0",
+      "entryPrice": "3100",
+      "unrealizedPnl": "-300.00"
+    }
+  ]
+}</code></pre>
+
+<div class="highlight">
+  <p><strong>核心逻辑</strong>：账户的「健康度」由 <code>totalCollateral / usedMargin</code> 决定。当这个比值低于某个阈值（比如1.05），就会触发清算。这个设计比逐仓模型更灵活，但也对风控要求更高。</p>
+</div>
+
+<h3>4.5 知识体系总览</h3>
+
+<p>为了让你更直观地理解这四块数据的关系，我画了一张图：</p>
+
+<svg width="800" height="450" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="450" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">Hyperliquid 链上数据四层结构</text>
+  
+  <!-- 第一层：交易结构 -->
+  <rect x="50" y="70" width="700" height="70" rx="8" fill="#e8f4f8" stroke="#3498db" stroke-width="2"/>
+  <text x="400" y="95" text-anchor="middle" font-size="16" font-weight="bold" fill="#2980b9">交易结构（Transaction）</text>
+  <text x="400" y="120" text-anchor="middle" font-size="13" fill="#555">用户发起的原始指令：PlaceOrder / CancelOrder / Liquidate</text>
+  
+  <!-- 箭头 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#7f8c8d"/>
+    </marker>
+  </defs>
+  <line x1="400" y1="140" x2="400" y2="170" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 第二层：事件日志 -->
+  <rect x="50" y="175" width="700" height="70" rx="8" fill="#fef9e7" stroke="#f39c12" stroke-width="2"/>
+  <text x="400" y="200" text-anchor="middle" font-size="16" font-weight="bold" fill="#e67e22">事件日志（Event Log）</text>
+  <text x="400" y="225" text-anchor="middle" font-size="13" fill="#555">链上广播的结果：OrderFilled / PositionUpdated / Liquidation</text>
+  
+  <line x1="400" y1="245" x2="400" y2="275" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 第三层：状态数据 -->
+  <rect x="50" y="280" width="700" height="70" rx="8" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+  <text x="400" y="305" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e8449">状态数据（State）</text>
+  <text x="400" y="330" text-anchor="middle" font-size="13" fill="#555">链的快照：订单簿 / 持仓 / 余额 / 市场参数</text>
+  
+  <line x1="400" y1="350" x2="400" y2="380" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 第四层：账户模型 -->
+  <rect x="50" y="385" width="700" height="50" rx="8" fill="#f5eef8" stroke="#8e44ad" stroke-width="2"/>
+  <text x="400" y="415" text-anchor="middle" font-size="16" font-weight="bold" fill="#6c3483">账户模型（Account Model）</text>
+  
+  <!-- 左侧标注 -->
+  <text x="30" y="110" text-anchor="end" font-size="12" fill="#7f8c8d">输入</text>
+  <text x="30" y="215" text-anchor="end" font-size="12" fill="#7f8c8d">输出</text>
+  <text x="30" y="320" text-anchor="end" font-size="12" fill="#7f8c8d">存储</text>
+  <text x="30" y="415" text-anchor="end" font-size="12" fill="#7f8c8d">组织</text>
+</svg>
+
+<p>你看，这四层数据是层层递进的关系。交易是输入，事件是输出，状态是存储，账户是组织方式。搞懂了这个框架，后面解析具体数据就轻松多了。</p>
+
+<div class="tip">
+  <p><strong>实战建议</strong>：刚开始做数据分析时，我建议你先从事件日志入手。因为事件日志字段最全，也最容易理解。等熟悉了事件日志的结构，再回头去研究交易结构和状态数据，会事半功倍。</p>
+</div>
+
+<p>好了，这一章的内容就到这里。记住这四个核心概念，后面咱们会反复用到它们。</p>
+
+<footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #888; font-size: 14px;">
+  公众号:蓝海资料掘金营，微信deep3321
+</footer>
+        <div class="footer-nav">
+            <a href="03.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="05.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

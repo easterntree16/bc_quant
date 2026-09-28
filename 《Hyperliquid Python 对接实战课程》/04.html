@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第4章 账户与钱包</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="active">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="">第28章 部署与运维</a></li>
+<li><a href="29.html" class="">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第四章：账户与钱包——以太坊钱包生成、私钥管理、助记词导入、本地签名环境搭建</h2>
+
+<p>说实话，刚接触 Hyperliquid 的时候，我踩过最大的坑就是钱包管理。你以为生成个地址就能直接交易了？没那么简单。这一章，咱们就把「账户与钱包」这件事彻底讲透。</p>
+
+<h3>4.1 以太坊钱包的本质</h3>
+
+<p>先问个问题：以太坊钱包到底是什么？</p>
+<p>说白了，就是一个密钥对。公钥派生出地址，私钥控制资产。Hyperliquid 虽然跑在自己的链上，但入金、出金、签名，全都要走以太坊这套体系。所以，你得先有个以太坊钱包。</p>
+
+<p>我个人习惯用 Python 的 <code>eth_account</code> 库来生成钱包。为什么不用 web3.py 自带的？因为 eth_account 更轻量，而且签名接口更干净。</p>
+
+<h3>4.2 生成钱包：从零创建一个地址</h3>
+
+<p>先装依赖：</p>
+
+<pre><code>pip install eth-account</code></pre>
+
+<p>然后写个脚本：</p>
+
+<pre><code>from eth_account import Account
+import secrets
+
+# 生成私钥
+private_key = "0x" + secrets.token_hex(32)
+account = Account.from_key(private_key)
+
+print(f"地址: {account.address}")
+print(f"私钥: {private_key}")</code></pre>
+
+<p>嗯，就这么简单。但注意——<code>secrets.token_hex(32)</code> 是生成 256 位随机数，这才是真正的随机。别用 <code>random</code> 模块，那个是伪随机，不安全。</p>
+
+<div class="warning">
+  <strong>⚠️ 我曾经犯过的错：</strong> 用 <code>random.randint</code> 生成私钥，结果测试网跑得好好的，主网一部署就被扫了。后来才知道，伪随机种子可以被预测。从此我只用 <code>secrets</code> 或硬件随机数。
+</div>
+
+<h3>4.3 私钥管理：你只有一次机会</h3>
+
+<p>私钥丢了，资产就没了。这不是开玩笑。</p>
+
+<p>我建议的私钥管理方案：</p>
+
+<ul>
+  <li><strong>开发环境：</strong> 用环境变量或 .env 文件，别硬编码在代码里</li>
+  <li><strong>生产环境：</strong> 用硬件钱包或密钥管理服务（如 AWS KMS）</li>
+  <li><strong>本地测试：</strong> 用加密的 JSON 文件存储</li>
+</ul>
+
+<p>举个例子，用密码加密私钥：</p>
+
+<pre><code>from eth_account import Account
+import json
+
+# 创建账户
+account = Account.create()
+
+# 用密码加密私钥
+encrypted = Account.encrypt(account.key, "your-strong-password")
+
+# 保存到文件
+with open("wallet.json", "w") as f:
+    json.dump(encrypted, f)
+
+# 读取时解密
+with open("wallet.json") as f:
+    encrypted = json.load(f)
+private_key = Account.decrypt(encrypted, "your-strong-password")
+account = Account.from_key(private_key)</code></pre>
+
+<p>你看，这样就算文件泄露了，没有密码也拿不到私钥。</p>
+
+<h3>4.4 助记词导入：BIP39 标准</h3>
+
+<p>助记词是啥？就是 12 或 24 个英文单词，用来恢复私钥。Hyperliquid 官方推荐用助记词管理账户。</p>
+
+<p>生成助记词：</p>
+
+<pre><code>from eth_account import Account
+from eth_account.mnemonic import Mnemonic
+
+# 生成助记词
+mnemonic = Mnemonic("english")
+words = mnemonic.generate(strength=128)  # 12 个词
+print(f"助记词: {words}")
+
+# 从助记词派生账户
+Account.enable_unaudited_hdwallet_features()
+account = Account.from_mnemonic(words)
+print(f"地址: {account.address}")</code></pre>
+
+<div class="tip">
+  <strong>💡 小技巧：</strong> 助记词一定要手写备份，别只存在电脑里。我有个朋友硬盘坏了，12 个词只记得 10 个，剩下的 2 个硬是猜了三天——最后还真让他猜对了，但那种煎熬，你懂的。
+</div>
+
+<h3>4.5 本地签名环境搭建</h3>
+
+<p>Hyperliquid 的交易需要签名。说白了，就是你把交易数据用私钥签个名，证明「这是我发的指令」。</p>
+
+<p>搭建本地签名环境，我一般分三步：</p>
+
+<ol>
+  <li><strong>加载私钥</strong>（从环境变量或加密文件）</li>
+  <li><strong>构造交易数据</strong>（按 Hyperliquid API 格式）</li>
+  <li><strong>签名并发送</strong></li>
+</ol>
+
+<p>一个完整的签名示例：</p>
+
+<pre><code>from eth_account import Account
+from eth_account.messages import encode_defunct
+import os
+
+# 1. 加载私钥
+private_key = os.getenv("HYPERLIQUID_PRIVATE_KEY")
+account = Account.from_key(private_key)
+
+# 2. 构造要签名的消息
+message = "I am signing this message for Hyperliquid"
+message_encoded = encode_defunct(text=message)
+
+# 3. 签名
+signed = Account.sign_message(message_encoded, account.key)
+
+print(f"签名: {signed.signature.hex()}")
+print(f"地址: {account.address}")</code></pre>
+
+<p>注意，Hyperliquid 实际用的是 EIP-712 结构化签名，比上面这个复杂一点。但核心逻辑一样：私钥签名，公钥验证。</p>
+
+<h3>4.6 知识体系总览</h3>
+
+<p>下面这张图，是我自己梳理的「账户与钱包」核心流程：</p>
+
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="400" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">账户与钱包核心流程</text>
+  
+  <!-- 第一层：生成 -->
+  <rect x="50" y="70" width="200" height="60" rx="8" fill="#3498db" opacity="0.9"/>
+  <text x="150" y="105" text-anchor="middle" font-size="16" fill="white" font-weight="bold">生成钱包</text>
+  <text x="150" y="125" text-anchor="middle" font-size="12" fill="white">私钥 / 助记词</text>
+  
+  <!-- 箭头 -->
+  <line x1="250" y1="100" x2="320" y2="100" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 第二层：存储 -->
+  <rect x="320" y="70" width="200" height="60" rx="8" fill="#2ecc71" opacity="0.9"/>
+  <text x="420" y="105" text-anchor="middle" font-size="16" fill="white" font-weight="bold">安全存储</text>
+  <text x="420" y="125" text-anchor="middle" font-size="12" fill="white">加密文件 / 环境变量</text>
+  
+  <!-- 箭头 -->
+  <line x1="520" y1="100" x2="590" y2="100" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 第三层：签名 -->
+  <rect x="590" y="70" width="160" height="60" rx="8" fill="#e74c3c" opacity="0.9"/>
+  <text x="670" y="105" text-anchor="middle" font-size="16" fill="white" font-weight="bold">本地签名</text>
+  <text x="670" y="125" text-anchor="middle" font-size="12" fill="white">EIP-712 / 消息</text>
+  
+  <!-- 箭头向下 -->
+  <line x1="420" y1="130" x2="420" y2="190" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 第四层：交易 -->
+  <rect x="300" y="190" width="240" height="60" rx="8" fill="#9b59b6" opacity="0.9"/>
+  <text x="420" y="225" text-anchor="middle" font-size="16" fill="white" font-weight="bold">发送交易到 Hyperliquid</text>
+  
+  <!-- 箭头向下 -->
+  <line x1="420" y1="250" x2="420" y2="310" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 第五层：验证 -->
+  <rect x="250" y="310" width="340" height="60" rx="8" fill="#1abc9c" opacity="0.9"/>
+  <text x="420" y="345" text-anchor="middle" font-size="16" fill="white" font-weight="bold">链上验证签名 → 执行交易</text>
+  
+  <!-- 箭头标记定义 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50"/>
+    </marker>
+  </defs>
+  
+  <!-- 底部说明 -->
+  <text x="400" y="390" text-anchor="middle" font-size="12" fill="#7f8c8d">整个流程：生成 → 存储 → 签名 → 发送 → 验证</text>
+</svg>
+
+<h3>4.7 避坑指南</h3>
+
+<p>最后，分享几个我实战中遇到的坑：</p>
+
+<ul>
+  <li><strong>私钥格式：</strong> Hyperliquid 要求私钥带 <code>0x</code> 前缀，不加会报签名错误</li>
+  <li><strong>助记词路径：</strong> 默认用 <code>m/44'/60'/0'/0/0</code>，别搞混了</li>
+  <li><strong>测试网 vs 主网：</strong> 私钥千万别混用，我见过有人把测试网私钥直接贴到主网，结果...你懂的</li>
+  <li><strong>签名过期：</strong> Hyperliquid 的签名有时效性，过期了要重新签</li>
+</ul>
+
+<div class="highlight">
+  <p><strong>📌 核心总结：</strong></p>
+  <ul>
+    <li>用 <code>eth_account</code> 生成和管理钱包</li>
+    <li>私钥必须加密存储，助记词手写备份</li>
+    <li>本地签名环境 = 私钥 + 消息 + 签名算法</li>
+    <li>永远不要在代码里硬编码私钥</li>
+  </ul>
+</div>
+
+<p>嗯，这一章的内容就到这里。账户和钱包是量化交易的地基，地基不稳，后面全是白搭。你把这些代码跑一遍，把流程走通，后面对接 Hyperliquid API 就会顺手很多。</p>
+
+<footer>
+  <p>公众号: 蓝海资料掘金营，微信 deep3321</p>
+</footer>
+        <div class="footer-nav">
+            <a href="03.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="05.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

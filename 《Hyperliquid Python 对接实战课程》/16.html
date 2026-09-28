@@ -1,0 +1,416 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第16章 错误处理与重试机制</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="active">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="">第28章 部署与运维</a></li>
+<li><a href="29.html" class="">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第十六章：错误处理与重试机制</h2>
+
+<p>做量化交易，说白了就是跟网络较劲。</p>
+<p>你想想看，你的策略再牛逼，订单发不出去也是白搭。我在 Hyperliquid 上跑策略的第一周，就遇到了三次莫名其妙的断连。嗯，从那以后，我彻底把错误处理当成了第一优先级。</p>
+
+<h3>HTTP 错误码处理：别让 429 搞死你</h3>
+
+<p>Hyperliquid 的 REST API 其实挺稳的。但再稳的接口，也扛不住高频轮询。</p>
+<p>我个人习惯把 HTTP 错误码分成三类处理：</p>
+
+<table>
+  <tr>
+    <th>错误码</th>
+    <th>含义</th>
+    <th>我的处理方式</th>
+  </tr>
+  <tr>
+    <td>429</td>
+    <td>请求太频繁</td>
+    <td>必须退避，否则会被封 IP</td>
+  </tr>
+  <tr>
+    <td>5xx</td>
+    <td>服务端异常</td>
+    <td>重试 3 次，间隔递增</td>
+  </tr>
+  <tr>
+    <td>4xx 其他</td>
+    <td>参数错误/权限问题</td>
+    <td>直接报错，不重试</td>
+  </tr>
+</table>
+
+<p>这里有个坑。我曾经天真地以为所有 4xx 都可以重试，结果有一次因为 API Key 过期，疯狂重试了 10 分钟……嗯，那天的日志简直没法看。</p>
+
+<div class="highlight">
+  <p><strong>核心原则：</strong>只有 5xx 和 429 值得重试。4xx 是客户端的问题，重试一万次也没用。</p>
+</div>
+
+<pre><code>import time
+import requests
+
+def safe_request(url, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            resp = requests.get(url, timeout=5)
+            if resp.status_code == 429:
+                wait = int(resp.headers.get("Retry-After", 5))
+                print(f"被限流了，等 {wait} 秒")
+                time.sleep(wait)
+                continue
+            resp.raise_for_status()
+            return resp.json()
+        except requests.exceptions.HTTPError as e:
+            if resp.status_code >= 500:
+                print(f"服务端挂了，第 {attempt+1} 次重试")
+                time.sleep(2 ** attempt)  # 指数退避
+                continue
+            else:
+                raise  # 4xx 直接抛
+    raise Exception("重试耗尽，请求失败")</code></pre>
+
+<h3>指数退避策略：别像个愣头青</h3>
+
+<p>为什么用指数退避？</p>
+<p>你想想，如果服务器已经扛不住了，你每秒重试一次，等于在伤口上撒盐。我见过有人把 Hyperliquid 的节点重试到宕机……虽然不全是他的锅，但确实没必要。</p>
+
+<p>我个人常用的退避公式：</p>
+
+<pre><code>wait_time = min(base_delay * (2 ** attempt), max_delay)</code></pre>
+
+<p>参数我一般这么设：</p>
+<ul>
+  <li><strong>base_delay</strong>：1 秒（别太急）</li>
+  <li><strong>max_delay</strong>：30 秒（别等太久）</li>
+  <li><strong>jitter</strong>：加 0~1 秒随机抖动（防止所有客户端同时重试）</li>
+</ul>
+
+<div class="tip">
+  <p><strong>小技巧：</strong>加 jitter 真的很重要。不加的话，一旦多个客户端同时断连，重试时会再次打崩服务器。我吃过这个亏。</p>
+</div>
+
+<pre><code>import random
+
+def exponential_backoff(attempt, base=1, max_delay=30):
+    delay = min(base * (2 ** attempt), max_delay)
+    jitter = random.uniform(0, 1)
+    return delay + jitter
+
+# 使用示例
+for i in range(5):
+    wait = exponential_backoff(i)
+    print(f"第 {i+1} 次重试，等待 {wait:.2f} 秒")
+    time.sleep(wait)</code></pre>
+
+<h3>WebSocket 断线重连：心跳不能停</h3>
+
+<p>WebSocket 比 HTTP 麻烦多了。HTTP 是「请求-响应」，断了重试就行。WebSocket 是长连接，断了你得重建整个会话。</p>
+<p>我在项目中遇到过最头疼的问题：WebSocket 悄无声息地断了，没有任何错误回调。你的策略还在那傻等数据，实际上已经断线 10 分钟了。</p>
+
+<p>解决方案就三个字：<strong>用心跳</strong>。</p>
+
+<pre><code>import websocket
+import threading
+import time
+
+class HyperliquidWS:
+    def __init__(self, url):
+        self.url = url
+        self.ws = None
+        self.running = True
+        self.last_pong = time.time()
+
+    def on_message(self, ws, message):
+        # 处理正常消息
+        print(f"收到数据: {message[:50]}...")
+        self.last_pong = time.time()  # 任何消息都算心跳
+
+    def on_error(self, ws, error):
+        print(f"WS 错误: {error}")
+
+    def on_close(self, ws, close_status_code, close_msg):
+        print(f"WS 关闭: {close_status_code} - {close_msg}")
+        if self.running:
+            self.reconnect()
+
+    def on_open(self, ws):
+        print("WS 已连接")
+        # 订阅行情
+        ws.send('{"type":"subscribe","channel":"l2Book"}')
+
+    def reconnect(self):
+        print("尝试重连...")
+        time.sleep(3)  # 简单等待
+        self.connect()
+
+    def connect(self):
+        self.ws = websocket.WebSocketApp(
+            self.url,
+            on_open=self.on_open,
+            on_message=self.on_message,
+            on_error=self.on_error,
+            on_close=self.on_close
+        )
+        # 启动心跳检测线程
+        threading.Thread(target=self.heartbeat_check, daemon=True).start()
+        self.ws.run_forever()
+
+    def heartbeat_check(self):
+        while self.running:
+            time.sleep(10)
+            if time.time() - self.last_pong > 30:
+                print("心跳超时，强制重连")
+                self.ws.close()
+                self.reconnect()</code></pre>
+
+<div class="warning">
+  <p><strong>注意：</strong>WebSocket 重连后，需要重新订阅所有频道。我建议把订阅逻辑封装成一个方法，在 on_open 里统一调用。否则很容易漏订阅。</p>
+</div>
+
+<h3>整体架构：一张图说清楚</h3>
+
+<p>下面这张图，是我个人在 Hyperliquid 上用的错误处理流程。你可以直接拿去用。</p>
+
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="500" fill="#f0f8ff" rx="10"/>
+
+  <!-- 开始 -->
+  <rect x="300" y="20" width="200" height="50" rx="25" fill="#4CAF50" stroke="#2E7D32" stroke-width="2"/>
+  <text x="400" y="50" text-anchor="middle" fill="white" font-size="16" font-weight="bold">发起请求</text>
+
+  <!-- 箭头 -->
+  <line x1="400" y1="70" x2="400" y2="110" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 判断 HTTP 错误 -->
+  <rect x="250" y="110" width="300" height="50" rx="8" fill="#FFEB3B" stroke="#F9A825" stroke-width="2"/>
+  <text x="400" y="140" text-anchor="middle" fill="#333" font-size="14">检查 HTTP 状态码</text>
+
+  <!-- 箭头分叉 -->
+  <line x1="250" y1="135" x2="120" y2="135" stroke="#333" stroke-width="2"/>
+  <line x1="120" y1="135" x2="120" y2="200" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="550" y1="135" x2="680" y2="135" stroke="#333" stroke-width="2"/>
+  <line x1="680" y1="135" x2="680" y2="200" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 4xx 分支 -->
+  <rect x="30" y="200" width="180" height="50" rx="8" fill="#F44336" stroke="#D32F2F" stroke-width="2"/>
+  <text x="120" y="220" text-anchor="middle" fill="white" font-size="13">4xx 错误</text>
+  <text x="120" y="238" text-anchor="middle" fill="white" font-size="11">直接报错，不重试</text>
+
+  <!-- 5xx/429 分支 -->
+  <rect x="590" y="200" width="180" height="50" rx="8" fill="#FF9800" stroke="#E65100" stroke-width="2"/>
+  <text x="680" y="220" text-anchor="middle" fill="white" font-size="13">5xx 或 429</text>
+  <text x="680" y="238" text-anchor="middle" fill="white" font-size="11">进入重试逻辑</text>
+
+  <!-- 箭头从 5xx 分支向下 -->
+  <line x1="680" y1="250" x2="680" y2="300" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 指数退避 -->
+  <rect x="590" y="300" width="180" height="50" rx="8" fill="#2196F3" stroke="#1565C0" stroke-width="2"/>
+  <text x="680" y="320" text-anchor="middle" fill="white" font-size="13">指数退避等待</text>
+  <text x="680" y="338" text-anchor="middle" fill="white" font-size="11">base * 2^attempt + jitter</text>
+
+  <!-- 箭头回到开始 -->
+  <line x1="590" y1="325" x2="400" y2="325" stroke="#333" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="400" y1="325" x2="400" y2="70" stroke="#333" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+
+  <!-- WebSocket 分支 -->
+  <rect x="250" y="380" width="300" height="50" rx="8" fill="#9C27B0" stroke="#6A1B9A" stroke-width="2"/>
+  <text x="400" y="400" text-anchor="middle" fill="white" font-size="14">WebSocket 断线检测</text>
+  <text x="400" y="418" text-anchor="middle" fill="white" font-size="11">心跳超时 30s → 强制重连</text>
+
+  <!-- 箭头从主流程到 WS -->
+  <line x1="400" y1="160" x2="400" y2="380" stroke="#333" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+
+  <!-- 箭头标记定义 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#333"/>
+    </marker>
+  </defs>
+
+  <!-- 图例 -->
+  <rect x="30" y="440" width="740" height="50" rx="5" fill="#e8eaf6" stroke="#9fa8da" stroke-width="1"/>
+  <rect x="50" y="455" width="20" height="20" fill="#4CAF50"/>
+  <text x="80" y="470" font-size="12" fill="#333">正常流程</text>
+  <rect x="200" y="455" width="20" height="20" fill="#FF9800"/>
+  <text x="230" y="470" font-size="12" fill="#333">可重试错误</text>
+  <rect x="370" y="455" width="20" height="20" fill="#F44336"/>
+  <text x="400" y="470" font-size="12" fill="#333">不可重试错误</text>
+  <rect x="540" y="455" width="20" height="20" fill="#9C27B0"/>
+  <text x="570" y="470" font-size="12" fill="#333">WebSocket 重连</text>
+</svg>
+
+<h3>避坑指南：我踩过的三个坑</h3>
+
+<ol>
+  <li><strong>重试次数设太多</strong>——我曾经设了 10 次重试，结果服务器挂了 5 分钟，我的程序就在那傻等了 5 分钟。现在最多 3 次。</li>
+  <li><strong>忘记取消旧订阅</strong>——WebSocket 重连后，如果不取消旧的心跳线程，你会同时跑两个心跳检测。嗯，内存泄漏就是这么来的。</li>
+  <li><strong>日志打得太少</strong>——断线重连时，一定要把错误码、重试次数、等待时间都打出来。否则出了问题你根本不知道是哪一步挂了。</li>
+</ol>
+
+<div class="highlight">
+  <p><strong>总结一句话：</strong>错误处理不是为了不出错，而是为了出错后能优雅地恢复。你的交易策略可以慢，但不能挂。</p>
+</div>
+
+<footer>
+  <p>公众号：蓝海资料掘金营，微信 deep3321</p>
+</footer>
+        <div class="footer-nav">
+            <a href="15.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="17.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

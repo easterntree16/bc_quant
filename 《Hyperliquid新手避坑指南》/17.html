@@ -1,0 +1,382 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第17章 合约参数检查</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 认识Hyperliquid</a></li>
+<li><a href="02.html" class="">第2章 钱包准备与安全</a></li>
+<li><a href="03.html" class="">第3章 跨链入金</a></li>
+<li><a href="04.html" class="">第4章 账户与API设置</a></li>
+<li><a href="05.html" class="">第5章 现货交易基础</a></li>
+<li><a href="06.html" class="">第6章 永续合约入门</a></li>
+<li><a href="07.html" class="">第7章 做多与做空</a></li>
+<li><a href="08.html" class="">第8章 订单类型详解</a></li>
+<li><a href="09.html" class="">第9章 杠杆与风险管理</a></li>
+<li><a href="10.html" class="">第10章 资金费率详解</a></li>
+<li><a href="11.html" class="">第11章 K线图与指标</a></li>
+<li><a href="12.html" class="">第12章 交易策略入门</a></li>
+<li><a href="13.html" class="">第13章 模拟交易</a></li>
+<li><a href="14.html" class="">第14章 Gas费优化</a></li>
+<li><a href="15.html" class="">第15章 滑点控制</a></li>
+<li><a href="16.html" class="">第16章 流动性陷阱</a></li>
+<li><a href="17.html" class="active">第17章 合约参数检查</a></li>
+<li><a href="18.html" class="">第18章 钓鱼与假网站</a></li>
+<li><a href="19.html" class="">第19章 授权与合约风险</a></li>
+<li><a href="20.html" class="">第20章 提现注意事项</a></li>
+<li><a href="21.html" class="">第21章 API安全</a></li>
+<li><a href="22.html" class="">第22章 行情波动应对</a></li>
+<li><a href="23.html" class="">第23章 仓位管理</a></li>
+<li><a href="24.html" class="">第24章 情绪管理</a></li>
+<li><a href="25.html" class="">第25章 税务与合规</a></li>
+<li><a href="26.html" class="">第26章 社区与信息源</a></li>
+<li><a href="27.html" class="">第27章 常见错误代码</a></li>
+<li><a href="28.html" class="">第28章 客服与申诉</a></li>
+<li><a href="29.html" class="">第29章 进阶工具</a></li>
+<li><a href="30.html" class="">第30章 总结与行动计划</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第十七章：合约参数检查——开仓前必查的5个参数</h2>
+
+<p>说实话，我在Hyperliquid上见过太多人爆仓了。不是行情判断错了，而是开仓前根本没检查参数。嗯，这就像开车不系安全带——平时没事，出事就是大事。</p>
+
+<p>今天我把开仓前必须检查的5个参数掰开揉碎讲清楚。你每次开仓前，按这个清单过一遍，能避开90%的低级错误。</p>
+
+<div class="highlight">
+  <p><strong>核心原则：</strong>参数检查不是流程，是保命符。我自己的习惯是——开仓前默念一遍这5个参数，念完再点确认。</p>
+</div>
+
+<h3>5.1 杠杆倍数——不是越大越好</h3>
+
+<p>很多人一上来就开20倍、50倍。为什么？因为看着刺激。但你想过没有，杠杆是把双刃剑。</p>
+
+<p>我见过一个新手，用50倍杠杆做多BTC。行情回调了2%，他直接爆仓。2%啊，这在币圈连个浪花都算不上。但他没了。</p>
+
+<p><strong>杠杆选择的黄金法则：</strong></p>
+<ul>
+  <li><strong>1-3倍：</strong>适合大仓位、长线持仓。我自己的大仓位从来不超过3倍</li>
+  <li><strong>3-5倍：</strong>适合趋势交易，有一定回调空间</li>
+  <li><strong>5-10倍：</strong>适合短线波段，必须设止损</li>
+  <li><strong>10倍以上：</strong>除非你是职业交易员，否则别碰</li>
+</ul>
+
+<div class="warning">
+  <p><strong>⚠️ 避坑指南：</strong>我曾经在Hyperliquid上开过20倍杠杆做空ETH，结果被一个插针直接带走。后来我复盘发现，那个插针只持续了3秒。但我的仓位没了。从那以后，我给自己定了个规矩：单笔杠杆不超过10倍。</p>
+</div>
+
+<h3>5.2 保证金模式——全仓还是逐仓？</h3>
+
+<p>Hyperliquid支持两种保证金模式：全仓和逐仓。很多人搞不清区别，结果一个单子爆仓，整个账户归零。</p>
+
+<p><strong>全仓模式：</strong>你的全部余额都是保证金。好处是不会被单独爆仓，坏处是——一个亏损单子可能拖垮整个账户。</p>
+
+<p><strong>逐仓模式：</strong>只有分配给这个仓位的钱是保证金。爆仓了也只损失这部分钱。</p>
+
+<table>
+  <tr>
+    <th>对比项</th>
+    <th>全仓</th>
+    <th>逐仓</th>
+  </tr>
+  <tr>
+    <td>风险范围</td>
+    <td>整个账户</td>
+    <td>单笔仓位</td>
+  </tr>
+  <tr>
+    <td>适合场景</td>
+    <td>对冲、套利</td>
+    <td>单边投机</td>
+  </tr>
+  <tr>
+    <td>爆仓概率</td>
+    <td>较低（有缓冲）</td>
+    <td>较高（资金少）</td>
+  </tr>
+  <tr>
+    <td>我推荐</td>
+    <td>老手用</td>
+    <td>新手用</td>
+  </tr>
+</table>
+
+<p>我个人习惯是：做趋势单用全仓，做短线用逐仓。为什么？趋势单需要扛回调，全仓能给我更多缓冲空间。短线单追求快进快出，逐仓能控制单笔风险。</p>
+
+<h3>5.3 止盈止损——开仓前必须设</h3>
+
+<p>这是我最想强调的一点。很多人开仓后盯着盘面，想着「再等等，马上就到止盈了」。结果呢？行情反转，盈利变亏损，最后割肉离场。</p>
+
+<p>我有个铁律：<strong>开仓的同时设止损，止盈可以后设，但止损必须提前。</strong></p>
+
+<p>为什么？因为行情不会等你。你犹豫的那几秒钟，可能已经亏了5%。</p>
+
+<div class="tip">
+  <p><strong>💡 我的止损设置技巧：</strong></p>
+  <ul>
+    <li>技术止损：放在关键支撑/阻力位下方/上方</li>
+    <li>资金止损：单笔亏损不超过总资金的2%</li>
+    <li>时间止损：如果开仓后30分钟没动静，平仓走人</li>
+  </ul>
+</div>
+
+<p>止盈怎么设？我一般用盈亏比来算。比如止损设了2%，那止盈至少设4%。盈亏比低于1:2的单子，我基本不做。</p>
+
+<h3>5.4 资金费率——隐藏的成本</h3>
+
+<p>很多人不知道，Hyperliquid上的永续合约是有资金费率的。这个费率每8小时结算一次，多空双方互相支付。</p>
+
+<p>资金费率是正数时，多头付给空头。负数时，空头付给多头。费率高低取决于市场情绪——看多的人多，费率就高。</p>
+
+<p><strong>资金费率的影响：</strong></p>
+<ul>
+  <li>如果费率是0.1%，你开10万U的多单，每8小时要付100U</li>
+  <li>一天就是300U，一个月就是9000U</li>
+  <li>你想想看，这成本有多高？</li>
+</ul>
+
+<div class="warning">
+  <p><strong>⚠️ 避坑指南：</strong>我曾经在资金费率0.2%的时候开了个多单，持仓了3天。结果行情没怎么动，光资金费率就亏了5%。从那以后，我开仓前必查资金费率。超过0.05%的单子，我基本不考虑。</p>
+</div>
+
+<p>怎么查？Hyperliquid的交易界面右上角就有资金费率显示。开仓前看一眼，别嫌麻烦。</p>
+
+<h3>5.5 到期日——别被「永续」骗了</h3>
+
+<p>Hyperliquid上的合约叫「永续合约」，但你真的以为它永远不会到期吗？</p>
+
+<p>其实不是。永续合约没有固定的到期日，但它有「资金费率」这个机制来锚定现货价格。如果资金费率长期偏高，你的持仓成本会越来越高。</p>
+
+<p>更关键的是——<strong>Hyperliquid会不定期进行合约升级或迁移</strong>。如果你持仓不关注公告，可能会被强制平仓。</p>
+
+<p>我遇到过一件事：有一次Hyperliquid升级合约，所有未平仓的仓位被强制按市价平仓。我当时正好有个大仓位，结果被平在了最低点。亏了20%。</p>
+
+<div class="highlight">
+  <p><strong>我的建议：</strong></p>
+  <ul>
+    <li>开仓前查看官方公告，确认合约状态</li>
+    <li>不要持仓过久，尤其是大仓位</li>
+    <li>关注资金费率变化，费率异常时及时平仓</li>
+  </ul>
+</div>
+
+<h3>知识体系总览</h3>
+
+<p>下面这张图总结了开仓前必查的5个参数，以及它们之间的关系。你可以把它截图保存，每次开仓前对照检查。</p>
+
+<svg width="800" height="500" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="500" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 中心标题 -->
+  <rect x="250" y="20" width="300" height="50" rx="25" fill="#4a90d9"/>
+  <text x="400" y="52" text-anchor="middle" fill="white" font-size="20" font-weight="bold">开仓前必查5参数</text>
+  
+  <!-- 连接线 -->
+  <line x1="400" y1="70" x2="400" y2="100" stroke="#4a90d9" stroke-width="2"/>
+  
+  <!-- 5个参数节点 -->
+  <!-- 杠杆 -->
+  <rect x="50" y="100" width="120" height="60" rx="10" fill="#ff6b6b"/>
+  <text x="110" y="135" text-anchor="middle" fill="white" font-size="16" font-weight="bold">杠杆倍数</text>
+  
+  <!-- 保证金 -->
+  <rect x="200" y="100" width="120" height="60" rx="10" fill="#ffa502"/>
+  <text x="260" y="135" text-anchor="middle" fill="white" font-size="16" font-weight="bold">保证金模式</text>
+  
+  <!-- 止盈止损 -->
+  <rect x="350" y="100" width="120" height="60" rx="10" fill="#2ed573"/>
+  <text x="410" y="135" text-anchor="middle" fill="white" font-size="16" font-weight="bold">止盈止损</text>
+  
+  <!-- 资金费率 -->
+  <rect x="500" y="100" width="120" height="60" rx="10" fill="#1e90ff"/>
+  <text x="560" y="135" text-anchor="middle" fill="white" font-size="16" font-weight="bold">资金费率</text>
+  
+  <!-- 到期日 -->
+  <rect x="650" y="100" width="120" height="60" rx="10" fill="#a55eea"/>
+  <text x="710" y="135" text-anchor="middle" fill="white" font-size="16" font-weight="bold">到期日</text>
+  
+  <!-- 连接线到中心 -->
+  <line x1="110" y1="160" x2="110" y2="220" stroke="#ff6b6b" stroke-width="2"/>
+  <line x1="260" y1="160" x2="260" y2="220" stroke="#ffa502" stroke-width="2"/>
+  <line x1="410" y1="160" x2="410" y2="220" stroke="#2ed573" stroke-width="2"/>
+  <line x1="560" y1="160" x2="560" y2="220" stroke="#1e90ff" stroke-width="2"/>
+  <line x1="710" y1="160" x2="710" y2="220" stroke="#a55eea" stroke-width="2"/>
+  
+  <!-- 水平连接线 -->
+  <line x1="110" y1="220" x2="710" y2="220" stroke="#333" stroke-width="2"/>
+  
+  <!-- 向下连接 -->
+  <line x1="410" y1="220" x2="410" y2="260" stroke="#333" stroke-width="2"/>
+  
+  <!-- 核心原则 -->
+  <rect x="250" y="260" width="300" height="50" rx="25" fill="#ff4757"/>
+  <text x="400" y="292" text-anchor="middle" fill="white" font-size="18" font-weight="bold">核心原则：开仓即检查</text>
+  
+  <!-- 向下分支 -->
+  <line x1="400" y1="310" x2="400" y2="340" stroke="#333" stroke-width="2"/>
+  
+  <!-- 三个结果 -->
+  <rect x="100" y="340" width="160" height="50" rx="10" fill="#2ed573"/>
+  <text x="180" y="370" text-anchor="middle" fill="white" font-size="14">✅ 参数正确 → 开仓</text>
+  
+  <rect x="320" y="340" width="160" height="50" rx="10" fill="#ffa502"/>
+  <text x="400" y="370" text-anchor="middle" fill="white" font-size="14">⚠️ 参数异常 → 调整</text>
+  
+  <rect x="540" y="340" width="160" height="50" rx="10" fill="#ff6b6b"/>
+  <text x="620" y="370" text-anchor="middle" fill="white" font-size="14">❌ 参数错误 → 取消</text>
+  
+  <!-- 底部提示 -->
+  <rect x="200" y="420" width="400" height="50" rx="10" fill="#f1f2f6"/>
+  <text x="400" y="450" text-anchor="middle" fill="#333" font-size="14">每次开仓前，默念这5个参数，念完再点确认</text>
+</svg>
+
+<h3>开仓前检查清单</h3>
+
+<p>最后，我给你一个可以直接用的检查清单。每次开仓前，按这个顺序过一遍：</p>
+
+<ol>
+  <li><strong>杠杆倍数：</strong>是否在你能承受的范围内？</li>
+  <li><strong>保证金模式：</strong>全仓还是逐仓？是否匹配你的策略？</li>
+  <li><strong>止损设置：</strong>设了吗？位置合理吗？</li>
+  <li><strong>资金费率：</strong>当前费率是多少？持仓成本能接受吗？</li>
+  <li><strong>合约状态：</strong>有没有升级公告？到期日临近吗？</li>
+</ol>
+
+<div class="tip">
+  <p><strong>💡 我的小习惯：</strong>我把这个清单写在手机备忘录里，每次开仓前看一眼。坚持一个月，你就形成肌肉记忆了。到时候不用看清单，脑子里自动过一遍。</p>
+</div>
+
+<p>记住，参数检查不是流程，是保命符。你省下的那10秒钟，可能就是你爆仓的导火索。</p>
+
+<footer>
+  <p>公众号:蓝海资料掘金营，微信deep3321</p>
+</footer>
+        <div class="footer-nav">
+            <a href="16.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="18.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

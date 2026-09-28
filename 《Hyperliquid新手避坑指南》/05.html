@@ -1,0 +1,383 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第5章 现货交易基础</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 认识Hyperliquid</a></li>
+<li><a href="02.html" class="">第2章 钱包准备与安全</a></li>
+<li><a href="03.html" class="">第3章 跨链入金</a></li>
+<li><a href="04.html" class="">第4章 账户与API设置</a></li>
+<li><a href="05.html" class="active">第5章 现货交易基础</a></li>
+<li><a href="06.html" class="">第6章 永续合约入门</a></li>
+<li><a href="07.html" class="">第7章 做多与做空</a></li>
+<li><a href="08.html" class="">第8章 订单类型详解</a></li>
+<li><a href="09.html" class="">第9章 杠杆与风险管理</a></li>
+<li><a href="10.html" class="">第10章 资金费率详解</a></li>
+<li><a href="11.html" class="">第11章 K线图与指标</a></li>
+<li><a href="12.html" class="">第12章 交易策略入门</a></li>
+<li><a href="13.html" class="">第13章 模拟交易</a></li>
+<li><a href="14.html" class="">第14章 Gas费优化</a></li>
+<li><a href="15.html" class="">第15章 滑点控制</a></li>
+<li><a href="16.html" class="">第16章 流动性陷阱</a></li>
+<li><a href="17.html" class="">第17章 合约参数检查</a></li>
+<li><a href="18.html" class="">第18章 钓鱼与假网站</a></li>
+<li><a href="19.html" class="">第19章 授权与合约风险</a></li>
+<li><a href="20.html" class="">第20章 提现注意事项</a></li>
+<li><a href="21.html" class="">第21章 API安全</a></li>
+<li><a href="22.html" class="">第22章 行情波动应对</a></li>
+<li><a href="23.html" class="">第23章 仓位管理</a></li>
+<li><a href="24.html" class="">第24章 情绪管理</a></li>
+<li><a href="25.html" class="">第25章 税务与合规</a></li>
+<li><a href="26.html" class="">第26章 社区与信息源</a></li>
+<li><a href="27.html" class="">第27章 常见错误代码</a></li>
+<li><a href="28.html" class="">第28章 客服与申诉</a></li>
+<li><a href="29.html" class="">第29章 进阶工具</a></li>
+<li><a href="30.html" class="">第30章 总结与行动计划</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第五章：现货交易基础——市价单与限价单、滑点控制、交易对选择</h2>
+
+<p>现货交易，说白了就是一手交钱一手交货。但在Hyperliquid上，这个「交货」的过程里藏着不少坑。我见过太多新手上来就猛冲市价单，结果被滑点吃掉一大块利润。今天咱们就把这些基础操作掰开揉碎，讲清楚。</p>
+
+<h3>5.1 市价单 vs 限价单：什么时候用哪个？</h3>
+
+<p>先给个最直白的定义：<strong>市价单</strong>是「我不管价格，现在就要成交」；<strong>限价单</strong>是「我只接受这个价格，不着急」。听起来简单，但实际用起来差别很大。</p>
+
+<h4>市价单（Market Order）</h4>
+<p>市价单会吃掉当前盘口上所有对手方的挂单。你下单时看到的「预估价格」，其实只是盘口第一档的价格。如果流动性不够，实际成交价可能差很多。</p>
+
+<div class="highlight">
+<p><strong>我个人的习惯：</strong>只在两种情况下用市价单——</p>
+<ul>
+  <li>行情剧烈波动，限价单根本成交不了</li>
+  <li>交易量很小，滑点可以忽略不计</li>
+</ul>
+</div>
+
+<p>举个例子。假设你想买1000个HYPE，盘口是这样的：</p>
+
+<table>
+  <tr>
+    <th>档位</th>
+    <th>卖价</th>
+    <th>数量</th>
+  </tr>
+  <tr>
+    <td>第1档</td>
+    <td>2.0000</td>
+    <td>200个</td>
+  </tr>
+  <tr>
+    <td>第2档</td>
+    <td>2.0005</td>
+    <td>300个</td>
+  </tr>
+  <tr>
+    <td>第3档</td>
+    <td>2.0010</td>
+    <td>500个</td>
+  </tr>
+</table>
+
+<p>你下1000个市价买单，实际成交价是：<br>
+200×2.0000 + 300×2.0005 + 500×2.0010 = 400 + 600.15 + 1000.5 = 2000.65 USDC<br>
+平均成本是2.00065，比第一档贵了0.0325%。</p>
+
+<p>嗯，这还算好的。如果盘口深度差，滑点能到1%甚至更高。我在项目里遇到过有人用市价单买一个流动性极差的代币，结果滑点吃了3%，直接亏掉几百刀。</p>
+
+<h4>限价单（Limit Order）</h4>
+<p>限价单是你指定一个价格，只有市场价格达到这个位置才会成交。好处是价格可控，坏处是可能永远成交不了。</p>
+
+<div class="tip">
+<p><strong>小技巧：</strong>如果你不急着成交，可以把限价单挂在当前买一价或卖一价附近。比如当前卖一价是2.0000，你想买，可以挂2.0001，稍微让利一点，成交概率会高很多。</p>
+</div>
+
+<p>限价单还有一个隐藏优势：<strong>可以赚取挂单奖励</strong>。Hyperliquid对提供流动性的限价单会返还一部分手续费。虽然不多，但积少成多。我有个朋友专门做这个，一个月能省下几百刀手续费。</p>
+
+<h3>5.2 滑点控制：别让市场吃掉你的利润</h3>
+
+<p>滑点（Slippage）是现货交易里最容易被忽视的成本。你以为自己赚了5%，结果滑点吃掉1%，实际只赚4%。</p>
+
+<p>为什么会这样？说白了就是流动性不足。你下单的金额超过了盘口某一档的深度，系统只能往下一档吃。档位越深，价格越差。</p>
+
+<h4>如何控制滑点？</h4>
+<ol>
+  <li><strong>用限价单代替市价单</strong>——这是最根本的方法。限价单永远不会产生滑点，因为价格是你定的。</li>
+  <li><strong>拆分大单</strong>——如果你要买10000个HYPE，别一次性下。拆成10个1000的单子，分批挂限价单。这样每单只吃一档深度，滑点几乎为零。</li>
+  <li><strong>观察盘口深度</strong>——下单前看一眼买卖盘的厚度。如果卖一档只有200个，你买500个，那肯定要滑。这时候要么等，要么调整价格。</li>
+</ol>
+
+<div class="warning">
+<p><strong>警告：</strong>千万不要在流动性极差的交易对上用市价单。比如一些新上线的山寨币，盘口可能只有几百刀深度。你一个市价单下去，直接拉出几根大阳线，自己成了「市场操纵者」。</p>
+</div>
+
+<p>我记得有一次，一个朋友在Hyperliquid上交易一个叫「PEPE2.0」的币，盘口深度只有500 USDC。他下了个2000 USDC的市价买单，结果成交价从0.001直接拉到0.0012，滑点20%。他当场就懵了。嗯，从那以后他再也不敢碰这种币了。</p>
+
+<h3>5.3 交易对选择：选错了，第一步就输了</h3>
+
+<p>Hyperliquid上的交易对很多，但并不是每个都值得交易。我总结了几条选币的标准：</p>
+
+<h4>流动性是第一位的</h4>
+<p>流动性好的交易对，买卖盘口厚，滑点小，成交快。怎么看流动性？很简单：看盘口深度。如果买一和卖一加起来不到10万刀，那就算流动性差。</p>
+
+<p>我个人习惯只交易以下类型的交易对：</p>
+<ul>
+  <li><strong>主流币种：</strong>HYPE/USDC、BTC/USDC、ETH/USDC</li>
+  <li><strong>稳定币对：</strong>USDC/USDT（虽然Hyperliquid上USDT不多）</li>
+  <li><strong>高流动性山寨币：</strong>比如ARB、OP这些，盘口深度通常在百万刀级别</li>
+</ul>
+
+<h4>避开「僵尸对」</h4>
+<p>有些交易对一天都没几笔交易，盘口挂单稀稀拉拉。这种对子你进去容易，出来难。我曾经在某个小币种上挂了个限价单，结果挂了三天才成交。想卖的时候，发现买盘只有几十刀，根本出不了货。</p>
+
+<div class="highlight">
+<p><strong>避坑指南：</strong>我曾经在Hyperliquid上交易一个叫「XYZ」的币，日交易量不到1万刀。我买了500刀，结果想卖的时候，盘口只有200刀的买单。最后只能挂一个极低的价格，亏了15%才跑掉。所以，<strong>日交易量低于10万刀的交易对，直接忽略</strong>。</p>
+</div>
+
+<h4>关注交易对的手续费</h4>
+<p>Hyperliquid对不同交易对的手续费略有不同。主流币种通常有优惠，山寨币可能高一些。虽然差别不大（比如0.01% vs 0.02%），但高频交易者要注意。</p>
+
+<h3>5.4 实战：如何下第一笔现货单？</h3>
+
+<p>假设你想买1000个HYPE，当前价格2.0000 USDC。我给你一个标准流程：</p>
+
+<ol>
+  <li><strong>先看盘口：</strong>打开HYPE/USDC交易对，看卖一档有多少量。如果卖一档有2000个，那你的1000个可以全部吃掉，不会滑点。</li>
+  <li><strong>选择订单类型：</strong>如果卖一档足够，用限价单挂2.0000。如果不够，挂2.0001或2.0002，稍微让利。</li>
+  <li><strong>设置数量：</strong>输入1000，确认总金额是2000 USDC（不含手续费）。</li>
+  <li><strong>检查滑点：</strong>如果系统提示「预估滑点0.01%」，那没问题。如果提示超过0.1%，建议调整价格或拆分订单。</li>
+  <li><strong>下单：</strong>点击「买入」，等待成交。</li>
+</ol>
+
+<p>成交后，你可以在「持仓」页面看到你的HYPE数量和平均成本。如果用的是限价单，成本就是2.0000，一分不多一分不少。</p>
+
+<h3>5.5 知识体系总览</h3>
+
+<p>下面这张图把本章的核心逻辑串起来了。你看一遍，基本就能理解现货交易的完整流程。</p>
+
+<svg width="800" height="500" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4A90D9"/>
+    </marker>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F0F8FF;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#E6F3FF;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="800" height="500" fill="url(#bgGrad)" rx="15" ry="15"/>
+
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#2C3E50">现货交易核心知识体系</text>
+
+  <!-- 三个主节点 -->
+  <rect x="50" y="80" width="200" height="60" rx="10" ry="10" fill="#4A90D9" opacity="0.9"/>
+  <text x="150" y="115" text-anchor="middle" font-size="16" font-weight="bold" fill="white">订单类型</text>
+
+  <rect x="300" y="80" width="200" height="60" rx="10" ry="10" fill="#E67E22" opacity="0.9"/>
+  <text x="400" y="115" text-anchor="middle" font-size="16" font-weight="bold" fill="white">滑点控制</text>
+
+  <rect x="550" y="80" width="200" height="60" rx="10" ry="10" fill="#27AE60" opacity="0.9"/>
+  <text x="650" y="115" text-anchor="middle" font-size="16" font-weight="bold" fill="white">交易对选择</text>
+
+  <!-- 子节点 - 订单类型 -->
+  <rect x="30" y="200" width="130" height="50" rx="8" ry="8" fill="#A8D0F0"/>
+  <text x="95" y="230" text-anchor="middle" font-size="13" fill="#2C3E50">市价单</text>
+
+  <rect x="180" y="200" width="130" height="50" rx="8" ry="8" fill="#A8D0F0"/>
+  <text x="245" y="230" text-anchor="middle" font-size="13" fill="#2C3E50">限价单</text>
+
+  <rect x="30" y="280" width="130" height="40" rx="6" ry="6" fill="#D4E6F9"/>
+  <text x="95" y="305" text-anchor="middle" font-size="11" fill="#555">立即成交</text>
+
+  <rect x="180" y="280" width="130" height="40" rx="6" ry="6" fill="#D4E6F9"/>
+  <text x="245" y="305" text-anchor="middle" font-size="11" fill="#555">价格可控</text>
+
+  <!-- 子节点 - 滑点控制 -->
+  <rect x="280" y="200" width="130" height="50" rx="8" ry="8" fill="#FAD7A0"/>
+  <text x="345" y="230" text-anchor="middle" font-size="13" fill="#2C3E50">拆分大单</text>
+
+  <rect x="430" y="200" width="130" height="50" rx="8" ry="8" fill="#FAD7A0"/>
+  <text x="495" y="230" text-anchor="middle" font-size="13" fill="#2C3E50">观察盘口</text>
+
+  <rect x="280" y="280" width="130" height="40" rx="6" ry="6" fill="#FDEBD0"/>
+  <text x="345" y="305" text-anchor="middle" font-size="11" fill="#555">分批挂单</text>
+
+  <rect x="430" y="280" width="130" height="40" rx="6" ry="6" fill="#FDEBD0"/>
+  <text x="495" y="305" text-anchor="middle" font-size="11" fill="#555">避免市价</text>
+
+  <!-- 子节点 - 交易对选择 -->
+  <rect x="530" y="200" width="130" height="50" rx="8" ry="8" fill="#A9DFBF"/>
+  <text x="595" y="230" text-anchor="middle" font-size="13" fill="#2C3E50">流动性优先</text>
+
+  <rect x="680" y="200" width="130" height="50" rx="8" ry="8" fill="#A9DFBF"/>
+  <text x="745" y="230" text-anchor="middle" font-size="13" fill="#2C3E50">避开僵尸对</text>
+
+  <rect x="530" y="280" width="130" height="40" rx="6" ry="6" fill="#D5F5E3"/>
+  <text x="595" y="305" text-anchor="middle" font-size="11" fill="#555">主流币种</text>
+
+  <rect x="680" y="280" width="130" height="40" rx="6" ry="6" fill="#D5F5E3"/>
+  <text x="745" y="305" text-anchor="middle" font-size="11" fill="#555">日交易量&gt;10万</text>
+
+  <!-- 连接线 -->
+  <line x1="150" y1="140" x2="95" y2="200" stroke="#4A90D9" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="150" y1="140" x2="245" y2="200" stroke="#4A90D9" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="95" y1="250" x2="95" y2="280" stroke="#4A90D9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="245" y1="250" x2="245" y2="280" stroke="#4A90D9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <line x1="400" y1="140" x2="345" y2="200" stroke="#E67E22" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="400" y1="140" x2="495" y2="200" stroke="#E67E22" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="345" y1="250" x2="345" y2="280" stroke="#E67E22" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="495" y1="250" x2="495" y2="280" stroke="#E67E22" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <line x1="650" y1="140" x2="595" y2="200" stroke="#27AE60" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="650" y1="140" x2="745" y2="200" stroke="#27AE60" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="595" y1="250" x2="595" y2="280" stroke="#27AE60" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="745" y1="250" x2="745" y2="280" stroke="#27AE60" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <!-- 底部总结 -->
+  <rect x="200" y="370" width="400" height="80" rx="12" ry="12" fill="#2C3E50" opacity="0.85"/>
+  <text x="400" y="400" text-anchor="middle" font-size="14" font-weight="bold" fill="white">核心原则</text>
+  <text x="400" y="425" text-anchor="middle" font-size="12" fill="#ECF0F1">限价单为主 · 控制滑点 · 选择高流动性交易对</text>
+</svg>
+
+<p>这张图把订单类型、滑点控制和交易对选择串在了一起。你从左边开始看，先理解市价单和限价单的区别，然后看中间怎么控制滑点，最后到右边选对交易对。三步走完，现货交易的基础就稳了。</p>
+
+<div class="tip">
+<p><strong>最后说一句：</strong>现货交易看似简单，但细节决定成败。我见过太多人因为贪图方便用市价单，结果滑点吃掉利润。记住，<strong>限价单是你的朋友，市价单是最后的选项</strong>。刚开始交易时，宁可慢一点，也要把每一笔的成本算清楚。</p>
+</div>
+
+<hr>
+<p style="text-align:center; color:#888; font-size:12px;">公众号:蓝海资料掘金营，微信deep3321</p>
+        <div class="footer-nav">
+            <a href="04.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="06.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

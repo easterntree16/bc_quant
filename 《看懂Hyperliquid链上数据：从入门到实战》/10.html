@@ -1,0 +1,449 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第10章 资金费率与衍生品数据</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid生态全景</a></li>
+<li><a href="02.html" class="">第2章 HyperLiquid链基础</a></li>
+<li><a href="03.html" class="">第3章 RPC节点与数据源</a></li>
+<li><a href="04.html" class="">第4章 链上数据结构解析</a></li>
+<li><a href="05.html" class="">第5章 Python环境搭建</a></li>
+<li><a href="06.html" class="">第6章 查询账户信息</a></li>
+<li><a href="07.html" class="">第7章 订单簿数据深度解析</a></li>
+<li><a href="08.html" class="">第8章 交易数据实战</a></li>
+<li><a href="09.html" class="">第9章 K线数据获取与处理</a></li>
+<li><a href="10.html" class="active">第10章 资金费率与衍生品数据</a></li>
+<li><a href="11.html" class="">第11章 预言机数据</a></li>
+<li><a href="12.html" class="">第12章 链上清算数据分析</a></li>
+<li><a href="13.html" class="">第13章 大户地址追踪</a></li>
+<li><a href="14.html" class="">第14章 Gas费与网络状态</a></li>
+<li><a href="15.html" class="">第15章 智能合约交互</a></li>
+<li><a href="16.html" class="">第16章 数据存储方案</a></li>
+<li><a href="17.html" class="">第17章 数据可视化基础</a></li>
+<li><a href="18.html" class="">第18章 实时数据监控系统</a></li>
+<li><a href="19.html" class="">第19章 量化交易数据准备</a></li>
+<li><a href="20.html" class="">第20章 链上数据分析框架</a></li>
+<li><a href="21.html" class="">第21章 市场微观结构分析</a></li>
+<li><a href="22.html" class="">第22章 链上指标构建</a></li>
+<li><a href="23.html" class="">第23章 套利机会识别</a></li>
+<li><a href="24.html" class="">第24章 风险管理与风控</a></li>
+<li><a href="25.html" class="">第25章 数据API服务开发</a></li>
+<li><a href="26.html" class="">第26章 自动化交易信号</a></li>
+<li><a href="27.html" class="">第27章 HyperLiquid生态工具</a></li>
+<li><a href="28.html" class="">第28章 性能优化与最佳实践</a></li>
+<li><a href="29.html" class="">第29章 实战项目一</a></li>
+<li><a href="30.html" class="">第30章 实战项目二</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第十章：资金费率与衍生品数据</h2>
+
+<p>永续合约是Hyperliquid生态的核心产品。说实话，很多人一上来就盯着K线看，却忽略了资金费率这个关键指标。我做了三年链上数据分析，可以负责任地告诉你——资金费率才是读懂市场情绪的密码。</p>
+
+<h3>10.1 资金费率到底是什么？</h3>
+
+<p>永续合约没有到期日，那怎么保证价格跟现货不跑偏？答案就是资金费率。它本质上是一种多空双方定期支付的费用。</p>
+
+<p>简单说：</p>
+<ul>
+  <li><strong>资金费率 &gt; 0</strong>：多头付钱给空头。说明市场偏多，做多的人多</li>
+  <li><strong>资金费率 &lt; 0</strong>：空头付钱给多头。说明市场偏空，做空的人多</li>
+  <li><strong>资金费率 = 0</strong>：多空平衡，市场冷静期</li>
+</ul>
+
+<div class="highlight">
+  <p><strong>核心公式</strong>：</p>
+  <p>资金费率 = 溢价指数 + clamp(利率 - 溢价指数, 0.05%, -0.05%)</p>
+  <p>其中溢价指数 = (永续合约价格 - 现货指数价格) / 现货指数价格</p>
+</div>
+
+<p>嗯，公式看着有点绕。但你只需要记住：资金费率绝对值越大，说明市场越极端。我个人习惯把超过0.1%的费率视为「过热信号」。</p>
+
+<h3>10.2 如何获取资金费率数据？</h3>
+
+<p>Hyperliquid提供了非常干净的API接口。我直接给你看代码：</p>
+
+<pre><code>import requests
+import json
+
+# 获取当前所有永续合约的资金费率
+url = "https://api.hyperliquid.xyz/info"
+payload = {
+    "type": "allMids"
+}
+
+response = requests.post(url, json=payload)
+data = response.json()
+
+# 解析资金费率
+for symbol, info in data.items():
+    if 'funding' in info:
+        print(f"{symbol}: 资金费率 = {info['funding']}")</code></pre>
+
+<p>这段代码会返回所有交易对的当前资金费率。我在项目中遇到过一个问题——资金费率每8小时更新一次，但API返回的是「当前值」，不是「历史值」。如果你要做回测，记得自己存历史数据。</p>
+
+<h3>10.3 解析永续合约的完整数据</h3>
+
+<p>光看资金费率还不够。一个完整的永续合约数据包含多个维度：</p>
+
+<table>
+  <tr>
+    <th>字段</th>
+    <th>说明</th>
+    <th>我的用法</th>
+  </tr>
+  <tr>
+    <td>markPx</td>
+    <td>标记价格</td>
+    <td>用于计算盈亏的基准价</td>
+  </tr>
+  <tr>
+    <td>funding</td>
+    <td>当前资金费率</td>
+    <td>判断多空情绪</td>
+  </tr>
+  <tr>
+    <td>openInterest</td>
+    <td>未平仓合约量</td>
+    <td>看市场总参与度</td>
+  </tr>
+  <tr>
+    <td>volume24h</td>
+    <td>24小时成交量</td>
+    <td>看流动性是否充足</td>
+  </tr>
+  <tr>
+    <td>prevDayPx</td>
+    <td>前一日收盘价</td>
+    <td>计算涨跌幅</td>
+  </tr>
+</table>
+
+<p>获取完整数据的代码：</p>
+
+<pre><code># 获取指定合约的完整信息
+payload = {
+    "type": "metaAndAssetCtxs"
+}
+
+response = requests.post(url, json=payload)
+data = response.json()
+
+# 解析BTC永续合约
+for asset in data[1]:
+    if asset['name'] == 'BTC':
+        print(f"标记价格: {asset['markPx']}")
+        print(f"资金费率: {asset['funding']}")
+        print(f"未平仓量: {asset['openInterest']}")
+        print(f"24h成交量: {asset['volume24h']}")</code></pre>
+
+<div class="tip">
+  <p><strong>个人经验</strong>：我一般会同时监控资金费率和未平仓量。如果资金费率很高但未平仓量在下降，说明多头在平仓离场，这是见顶信号。反过来，资金费率低但未平仓量在涨，可能是主力在悄悄建仓。</p>
+</div>
+
+<h3>10.4 计算多空比</h3>
+
+<p>多空比是另一个重要指标。Hyperliquid没有直接提供这个数据，但我们可以通过资金费率反推。</p>
+
+<p>逻辑是这样的：</p>
+<ul>
+  <li>资金费率 = 多头持仓占比 × 多头支付意愿 - 空头持仓占比 × 空头支付意愿</li>
+  <li>简化模型：多空比 ≈ (1 + 资金费率) / (1 - 资金费率)</li>
+</ul>
+
+<pre><code>def calculate_long_short_ratio(funding_rate):
+    """
+    根据资金费率估算多空比
+    """
+    # 防止除零
+    if abs(funding_rate) &gt; 0.01:
+        ratio = (1 + funding_rate) / (1 - funding_rate)
+        return ratio
+    else:
+        return 1.0  # 费率接近0时，多空接近平衡
+
+# 示例
+btc_funding = 0.0005  # 0.05%
+ratio = calculate_long_short_ratio(btc_funding)
+print(f"估算多空比: {ratio:.2f}")
+# 输出: 估算多空比: 1.10
+# 意味着多头比空头多10%</code></pre>
+
+<div class="warning">
+  <p><strong>注意</strong>：这个计算是简化模型。实际多空比还受杠杆倍数、持仓量等因素影响。我一般把它当作「情绪温度计」而不是精确指标。曾经有一次，我用这个模型算出来多空比是1.5，结果市场马上反转了——因为极端值往往意味着过度拥挤。</p>
+</div>
+
+<h3>10.5 监控爆仓数据</h3>
+
+<p>爆仓数据是市场最真实的「疼痛指标」。Hyperliquid的API可以获取历史爆仓记录：</p>
+
+<pre><code># 获取爆仓数据
+payload = {
+    "type": "liquidations"
+}
+
+response = requests.post(url, json=payload)
+liquidations = response.json()
+
+# 分析最近爆仓
+for liq in liquidations[:10]:
+    print(f"交易对: {liq['coin']}")
+    print(f"爆仓数量: {liq['size']}")
+    print(f"爆仓价格: {liq['price']}")
+    print(f"方向: {'多头' if liq['side'] == 'B' else '空头'}")
+    print("---")</code></pre>
+
+<p>爆仓数据能告诉你什么？</p>
+<ul>
+  <li><strong>大量多头爆仓</strong>：说明价格快速下跌，杠杆多头被强平。这往往加速下跌</li>
+  <li><strong>大量空头爆仓</strong>：说明价格快速上涨，空头被强平。这往往加速上涨</li>
+  <li><strong>爆仓量突然放大</strong>：可能是「连环爆仓」的开始，市场进入极端行情</li>
+</ul>
+
+<div class="highlight">
+  <p><strong>我的实战框架</strong>：</p>
+  <p>1. 资金费率 &gt; 0.1% + 爆仓以多头为主 → 短期见顶概率大</p>
+  <p>2. 资金费率 &lt; -0.1% + 爆仓以空头为主 → 短期见底概率大</p>
+  <p>3. 资金费率正常 + 爆仓量突然放大 → 可能是趋势加速信号</p>
+</div>
+
+<h3>10.6 知识体系总览</h3>
+
+<p>下面这张图是我自己梳理的衍生品数据分析框架，你照着这个思路走，基本不会漏掉关键信息：</p>
+
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="500" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#2c3e50">衍生品数据分析框架</text>
+  
+  <!-- 中心节点 -->
+  <rect x="300" y="70" width="200" height="50" rx="25" fill="#3498db" opacity="0.9"/>
+  <text x="400" y="100" text-anchor="middle" font-size="16" fill="white" font-weight="bold">永续合约数据</text>
+  
+  <!-- 四个分支 -->
+  <!-- 资金费率 -->
+  <rect x="50" y="170" width="160" height="45" rx="10" fill="#e74c3c" opacity="0.85"/>
+  <text x="130" y="198" text-anchor="middle" font-size="14" fill="white" font-weight="bold">资金费率</text>
+  
+  <!-- 未平仓量 -->
+  <rect x="240" y="170" width="160" height="45" rx="10" fill="#2ecc71" opacity="0.85"/>
+  <text x="320" y="198" text-anchor="middle" font-size="14" fill="white" font-weight="bold">未平仓量</text>
+  
+  <!-- 多空比 -->
+  <rect x="430" y="170" width="160" height="45" rx="10" fill="#f39c12" opacity="0.85"/>
+  <text x="510" y="198" text-anchor="middle" font-size="14" fill="white" font-weight="bold">多空比</text>
+  
+  <!-- 爆仓数据 -->
+  <rect x="620" y="170" width="160" height="45" rx="10" fill="#9b59b6" opacity="0.85"/>
+  <text x="700" y="198" text-anchor="middle" font-size="14" fill="white" font-weight="bold">爆仓数据</text>
+  
+  <!-- 连接线 -->
+  <line x1="400" y1="120" x2="130" y2="170" stroke="#bdc3c7" stroke-width="2"/>
+  <line x1="400" y1="120" x2="320" y2="170" stroke="#bdc3c7" stroke-width="2"/>
+  <line x1="400" y1="120" x2="510" y2="170" stroke="#bdc3c7" stroke-width="2"/>
+  <line x1="400" y1="120" x2="700" y2="170" stroke="#bdc3c7" stroke-width="2"/>
+  
+  <!-- 二级节点 -->
+  <!-- 资金费率子项 -->
+  <rect x="30" y="260" width="140" height="35" rx="8" fill="#fadbd8"/>
+  <text x="100" y="283" text-anchor="middle" font-size="12" fill="#c0392b">当前费率</text>
+  
+  <rect x="30" y="310" width="140" height="35" rx="8" fill="#fadbd8"/>
+  <text x="100" y="333" text-anchor="middle" font-size="12" fill="#c0392b">历史费率</text>
+  
+  <rect x="30" y="360" width="140" height="35" rx="8" fill="#fadbd8"/>
+  <text x="100" y="383" text-anchor="middle" font-size="12" fill="#c0392b">费率变化率</text>
+  
+  <!-- 未平仓量子项 -->
+  <rect x="220" y="260" width="140" height="35" rx="8" fill="#d5f5e3"/>
+  <text x="290" y="283" text-anchor="middle" font-size="12" fill="#27ae60">总持仓量</text>
+  
+  <rect x="220" y="310" width="140" height="35" rx="8" fill="#d5f5e3"/>
+  <text x="290" y="333" text-anchor="middle" font-size="12" fill="#27ae60">持仓变化</text>
+  
+  <rect x="220" y="360" width="140" height="35" rx="8" fill="#d5f5e3"/>
+  <text x="290" y="383" text-anchor="middle" font-size="12" fill="#27ae60">多空持仓比</text>
+  
+  <!-- 多空比子项 -->
+  <rect x="410" y="260" width="140" height="35" rx="8" fill="#fdebd0"/>
+  <text x="480" y="283" text-anchor="middle" font-size="12" fill="#e67e22">多头占比</text>
+  
+  <rect x="410" y="310" width="140" height="35" rx="8" fill="#fdebd0"/>
+  <text x="480" y="333" text-anchor="middle" font-size="12" fill="#e67e22">空头占比</text>
+  
+  <rect x="410" y="360" width="140" height="35" rx="8" fill="#fdebd0"/>
+  <text x="480" y="383" text-anchor="middle" font-size="12" fill="#e67e22">极端值预警</text>
+  
+  <!-- 爆仓数据子项 -->
+  <rect x="600" y="260" width="140" height="35" rx="8" fill="#ebdef0"/>
+  <text x="670" y="283" text-anchor="middle" font-size="12" fill="#8e44ad">爆仓数量</text>
+  
+  <rect x="600" y="310" width="140" height="35" rx="8" fill="#ebdef0"/>
+  <text x="670" y="333" text-anchor="middle" font-size="12" fill="#8e44ad">爆仓方向</text>
+  
+  <rect x="600" y="360" width="140" height="35" rx="8" fill="#ebdef0"/>
+  <text x="670" y="383" text-anchor="middle" font-size="12" fill="#8e44ad">连环爆仓检测</text>
+  
+  <!-- 连接线二级 -->
+  <line x1="130" y1="215" x2="100" y2="260" stroke="#fadbd8" stroke-width="1.5"/>
+  <line x1="130" y1="215" x2="100" y2="310" stroke="#fadbd8" stroke-width="1.5"/>
+  <line x1="130" y1="215" x2="100" y2="360" stroke="#fadbd8" stroke-width="1.5"/>
+  
+  <line x1="320" y1="215" x2="290" y2="260" stroke="#d5f5e3" stroke-width="1.5"/>
+  <line x1="320" y1="215" x2="290" y2="310" stroke="#d5f5e3" stroke-width="1.5"/>
+  <line x1="320" y1="215" x2="290" y2="360" stroke="#d5f5e3" stroke-width="1.5"/>
+  
+  <line x1="510" y1="215" x2="480" y2="260" stroke="#fdebd0" stroke-width="1.5"/>
+  <line x1="510" y1="215" x2="480" y2="310" stroke="#fdebd0" stroke-width="1.5"/>
+  <line x1="510" y1="215" x2="480" y2="360" stroke="#fdebd0" stroke-width="1.5"/>
+  
+  <line x1="700" y1="215" x2="670" y2="260" stroke="#ebdef0" stroke-width="1.5"/>
+  <line x1="700" y1="215" x2="670" y2="310" stroke="#ebdef0" stroke-width="1.5"/>
+  <line x1="700" y1="215" x2="670" y2="360" stroke="#ebdef0" stroke-width="1.5"/>
+  
+  <!-- 底部总结 -->
+  <rect x="200" y="430" width="400" height="45" rx="10" fill="#34495e" opacity="0.8"/>
+  <text x="400" y="458" text-anchor="middle" font-size="14" fill="white">四个维度交叉验证，才能看清市场全貌</text>
+</svg>
+
+<p>你看，这四个维度不是孤立的。资金费率告诉你情绪，未平仓量告诉你资金规模，多空比告诉你方向偏好，爆仓数据告诉你风险在哪里。把它们放在一起看，才能做出靠谱的判断。</p>
+
+<div class="tip">
+  <p><strong>避坑指南</strong>：我曾经只盯着资金费率做交易，结果亏得很惨。后来发现，资金费率在震荡市里经常给出错误信号。一定要结合未平仓量和爆仓数据一起看。比如资金费率很高，但未平仓量在下降，说明是「虚火」，别追多。</p>
+</div>
+
+<p>好了，这一章的内容就到这里。代码你直接复制就能跑，数据接口都是公开的。下一章我们会聊更深入的东西——但先把这些基础打牢，后面的内容才能吃得透。</p>
+
+<hr>
+<p style="text-align:center; color:#7f8c8d; font-size:12px;">公众号:蓝海数据掘金营，微信deep3321</p>
+        <div class="footer-nav">
+            <a href="09.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="11.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

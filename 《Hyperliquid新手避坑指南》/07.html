@@ -1,0 +1,350 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第7章 做多与做空</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 认识Hyperliquid</a></li>
+<li><a href="02.html" class="">第2章 钱包准备与安全</a></li>
+<li><a href="03.html" class="">第3章 跨链入金</a></li>
+<li><a href="04.html" class="">第4章 账户与API设置</a></li>
+<li><a href="05.html" class="">第5章 现货交易基础</a></li>
+<li><a href="06.html" class="">第6章 永续合约入门</a></li>
+<li><a href="07.html" class="active">第7章 做多与做空</a></li>
+<li><a href="08.html" class="">第8章 订单类型详解</a></li>
+<li><a href="09.html" class="">第9章 杠杆与风险管理</a></li>
+<li><a href="10.html" class="">第10章 资金费率详解</a></li>
+<li><a href="11.html" class="">第11章 K线图与指标</a></li>
+<li><a href="12.html" class="">第12章 交易策略入门</a></li>
+<li><a href="13.html" class="">第13章 模拟交易</a></li>
+<li><a href="14.html" class="">第14章 Gas费优化</a></li>
+<li><a href="15.html" class="">第15章 滑点控制</a></li>
+<li><a href="16.html" class="">第16章 流动性陷阱</a></li>
+<li><a href="17.html" class="">第17章 合约参数检查</a></li>
+<li><a href="18.html" class="">第18章 钓鱼与假网站</a></li>
+<li><a href="19.html" class="">第19章 授权与合约风险</a></li>
+<li><a href="20.html" class="">第20章 提现注意事项</a></li>
+<li><a href="21.html" class="">第21章 API安全</a></li>
+<li><a href="22.html" class="">第22章 行情波动应对</a></li>
+<li><a href="23.html" class="">第23章 仓位管理</a></li>
+<li><a href="24.html" class="">第24章 情绪管理</a></li>
+<li><a href="25.html" class="">第25章 税务与合规</a></li>
+<li><a href="26.html" class="">第26章 社区与信息源</a></li>
+<li><a href="27.html" class="">第27章 常见错误代码</a></li>
+<li><a href="28.html" class="">第28章 客服与申诉</a></li>
+<li><a href="29.html" class="">第29章 进阶工具</a></li>
+<li><a href="30.html" class="">第30章 总结与行动计划</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第七课：做多与做空——开仓方向选择、止盈止损设置、爆仓价计算</h2>
+
+<p>说实话，很多新手在Hyperliquid上亏钱，不是亏在行情判断上，而是亏在「方向搞反了」或者「爆仓了都不知道怎么算的」。今天这课，我就把做多、做空、止盈止损、爆仓价这些核心逻辑，掰开了讲清楚。</p>
+
+<div class="highlight">
+  <p><strong>核心一句话：</strong>做多是「先买后卖」，做空是「先卖后买」。方向选错，神仙也救不了你。</p>
+</div>
+
+<h3>一、做多与做空：开仓方向怎么选？</h3>
+
+<p>做多，说白了就是你觉得价格要涨。你买入，等涨了再卖出，赚差价。做空，就是你觉得价格要跌。你先借币卖出，等跌了再买回来还掉，赚差价。</p>
+
+<p>嗯，听起来很简单对吧？但我在项目中遇到过不少新手，把做空理解成「反向做多」，结果开仓方向搞反，直接爆仓。这里我给大家一个口诀：</p>
+
+<ul>
+  <li><strong>看涨 → 做多 → 点击「Long」或「Buy」</strong></li>
+  <li><strong>看跌 → 做空 → 点击「Short」或「Sell」</strong></li>
+</ul>
+
+<p>Hyperliquid的界面很清晰，开仓时会有「Long/Short」的切换按钮。我个人习惯是，开仓前先看一眼K线图，确认趋势方向，再动手。别急，急就容易出错。</p>
+
+<div class="tip">
+  <p><strong>小技巧：</strong>如果你不确定方向，可以先用小仓位试单。比如开0.1个ETH试试水，感受一下盘口深度和滑点。我刚开始做合约时，就靠这个办法少亏了不少钱。</p>
+</div>
+
+<h3>二、止盈止损设置：别让盈利变亏损</h3>
+
+<p>止盈止损，是合约交易的「安全带」。不系安全带，你可能赚得爽，但一次失误就能让你回到解放前。</p>
+
+<p>止盈（Take Profit, TP）：价格涨到目标位，自动平仓，锁定利润。<br>
+止损（Stop Loss, SL）：价格跌到某个位置，自动平仓，限制亏损。</p>
+
+<p>Hyperliquid支持「限价止盈止损」和「市价止盈止损」。我个人建议用限价单，因为市价单在极端行情下可能滑点很大，你想想看，本来想止损在1000，结果成交在950，那多亏啊。</p>
+
+<div class="highlight">
+  <p><strong>设置原则：</strong></p>
+  <ul>
+    <li>止盈：建议设置在关键阻力位上方一点点，比如前高+0.5%</li>
+    <li>止损：建议设置在关键支撑位下方一点点，比如前低-0.5%</li>
+    <li>盈亏比：至少1:2，也就是赚2个点，亏1个点。这样胜率只要33%，你就能盈利</li>
+  </ul>
+</div>
+
+<p>我曾经有一次做多BTC，没设止损，结果半夜一根针插下来，直接爆仓。嗯，从那以后，我开仓必设止损，哪怕只设一个很宽的位置，也比没有强。</p>
+
+<h3>三、爆仓价计算：你的仓位能扛多久？</h3>
+
+<p>爆仓价，就是你的保证金亏完、仓位被强制平仓的价格。Hyperliquid用的是「全仓模式」和「逐仓模式」，两种模式的爆仓价计算方式不一样。</p>
+
+<h4>3.1 逐仓模式爆仓价计算</h4>
+
+<p>逐仓模式下，你只亏这个仓位的保证金，不会影响其他仓位。公式如下：</p>
+
+<pre><code>做多爆仓价 = 开仓价 × (1 - 保证金率 / 杠杆倍数)
+做空爆仓价 = 开仓价 × (1 + 保证金率 / 杠杆倍数)</code></pre>
+
+<p>举个例子：你开多1个ETH，开仓价2000U，10倍杠杆，保证金200U。</p>
+
+<pre><code>做多爆仓价 = 2000 × (1 - 1/10) = 2000 × 0.9 = 1800U</code></pre>
+
+<p>也就是说，ETH跌到1800U，你的仓位就爆了。你想想看，如果ETH跌到1800，你亏了200U，正好是全部保证金。</p>
+
+<h4>3.2 全仓模式爆仓价计算</h4>
+
+<p>全仓模式下，你的所有可用余额都作为保证金。公式稍微复杂一点：</p>
+
+<pre><code>做多爆仓价 = 开仓价 × (1 - (账户权益 - 维持保证金) / (仓位价值 × 杠杆倍数))
+做空爆仓价 = 开仓价 × (1 + (账户权益 - 维持保证金) / (仓位价值 × 杠杆倍数))</code></pre>
+
+<p>嗯，这个公式看着有点吓人。但说白了，就是你的账户总资产减去维持保证金后，还能扛多少亏损。我个人建议新手先用逐仓模式，至少爆仓了你知道亏多少，心里有数。</p>
+
+<div class="warning">
+  <p><strong>⚠️ 重要提醒：</strong>Hyperliquid的爆仓机制是「部分减仓」而非「全部平仓」。当价格接近爆仓价时，系统会先减掉一部分仓位，降低杠杆，避免直接爆仓。但别指望这个机制能救你，它只是延缓爆仓时间。</p>
+</div>
+
+<h3>四、知识体系图：做多与做空核心逻辑</h3>
+
+<p>下面这张图，我画了做多与做空的完整流程，包括开仓、止盈止损、爆仓价计算。建议你保存下来，每次开仓前看一眼。</p>
+
+<svg width="800" height="500" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="500" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#2c3e50">做多与做空核心逻辑图</text>
+  
+  <!-- 做多分支 -->
+  <rect x="50" y="70" width="300" height="50" rx="10" fill="#27ae60" opacity="0.9"/>
+  <text x="200" y="100" text-anchor="middle" font-size="18" fill="white" font-weight="bold">看涨 → 做多 (Long)</text>
+  
+  <!-- 做空分支 -->
+  <rect x="450" y="70" width="300" height="50" rx="10" fill="#e74c3c" opacity="0.9"/>
+  <text x="600" y="100" text-anchor="middle" font-size="18" fill="white" font-weight="bold">看跌 → 做空 (Short)</text>
+  
+  <!-- 箭头 -->
+  <line x1="200" y1="120" x2="200" y2="160" stroke="#27ae60" stroke-width="2"/>
+  <polygon points="195,155 200,165 205,155" fill="#27ae60"/>
+  <line x1="600" y1="120" x2="600" y2="160" stroke="#e74c3c" stroke-width="2"/>
+  <polygon points="595,155 600,165 605,155" fill="#e74c3c"/>
+  
+  <!-- 开仓设置 -->
+  <rect x="50" y="170" width="300" height="80" rx="8" fill="#d5f5e3" stroke="#27ae60" stroke-width="1.5"/>
+  <text x="200" y="195" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="bold">开仓设置</text>
+  <text x="200" y="215" text-anchor="middle" font-size="12" fill="#555">杠杆倍数：5x / 10x / 20x</text>
+  <text x="200" y="235" text-anchor="middle" font-size="12" fill="#555">保证金模式：逐仓 / 全仓</text>
+  
+  <rect x="450" y="170" width="300" height="80" rx="8" fill="#fadbd8" stroke="#e74c3c" stroke-width="1.5"/>
+  <text x="600" y="195" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="bold">开仓设置</text>
+  <text x="600" y="215" text-anchor="middle" font-size="12" fill="#555">杠杆倍数：5x / 10x / 20x</text>
+  <text x="600" y="235" text-anchor="middle" font-size="12" fill="#555">保证金模式：逐仓 / 全仓</text>
+  
+  <!-- 箭头 -->
+  <line x1="200" y1="250" x2="200" y2="290" stroke="#27ae60" stroke-width="2"/>
+  <polygon points="195,285 200,295 205,285" fill="#27ae60"/>
+  <line x1="600" y1="250" x2="600" y2="290" stroke="#e74c3c" stroke-width="2"/>
+  <polygon points="595,285 600,295 605,285" fill="#e74c3c"/>
+  
+  <!-- 止盈止损 -->
+  <rect x="50" y="300" width="300" height="80" rx="8" fill="#d5f5e3" stroke="#27ae60" stroke-width="1.5"/>
+  <text x="200" y="325" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="bold">止盈止损设置</text>
+  <text x="200" y="345" text-anchor="middle" font-size="12" fill="#555">止盈：阻力位上方 +0.5%</text>
+  <text x="200" y="365" text-anchor="middle" font-size="12" fill="#555">止损：支撑位下方 -0.5%</text>
+  
+  <rect x="450" y="300" width="300" height="80" rx="8" fill="#fadbd8" stroke="#e74c3c" stroke-width="1.5"/>
+  <text x="600" y="325" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="bold">止盈止损设置</text>
+  <text x="600" y="345" text-anchor="middle" font-size="12" fill="#555">止盈：支撑位下方 -0.5%</text>
+  <text x="600" y="365" text-anchor="middle" font-size="12" fill="#555">止损：阻力位上方 +0.5%</text>
+  
+  <!-- 箭头 -->
+  <line x1="200" y1="380" x2="200" y2="420" stroke="#27ae60" stroke-width="2"/>
+  <polygon points="195,415 200,425 205,415" fill="#27ae60"/>
+  <line x1="600" y1="380" x2="600" y2="420" stroke="#e74c3c" stroke-width="2"/>
+  <polygon points="595,415 600,425 605,415" fill="#e74c3c"/>
+  
+  <!-- 爆仓价计算 -->
+  <rect x="50" y="430" width="300" height="50" rx="8" fill="#aed6f1" stroke="#2980b9" stroke-width="1.5"/>
+  <text x="200" y="455" text-anchor="middle" font-size="13" fill="#2c3e50" font-weight="bold">爆仓价 = 开仓价 × (1 - 保证金率/杠杆)</text>
+  <text x="200" y="472" text-anchor="middle" font-size="11" fill="#555">价格下跌 → 爆仓</text>
+  
+  <rect x="450" y="430" width="300" height="50" rx="8" fill="#aed6f1" stroke="#2980b9" stroke-width="1.5"/>
+  <text x="600" y="455" text-anchor="middle" font-size="13" fill="#2c3e50" font-weight="bold">爆仓价 = 开仓价 × (1 + 保证金率/杠杆)</text>
+  <text x="600" y="472" text-anchor="middle" font-size="11" fill="#555">价格上涨 → 爆仓</text>
+  
+  <!-- 连接线 -->
+  <line x1="350" y1="95" x2="450" y2="95" stroke="#95a5a6" stroke-width="1.5" stroke-dasharray="5,5"/>
+  <text x="400" y="90" text-anchor="middle" font-size="11" fill="#7f8c8d">方向相反</text>
+</svg>
+
+<h3>五、实战案例：一次完整的做多操作</h3>
+
+<p>假设你现在想开多ETH，当前价格2000U，你打算用10倍杠杆，逐仓模式，保证金200U。</p>
+
+<ol>
+  <li><strong>开仓：</strong>点击「Long」，输入开仓价2000U，杠杆10x，保证金200U。系统自动计算仓位大小为2个ETH（200U × 10倍 / 2000U = 1个ETH？不对，是200U × 10倍 = 2000U，2000U / 2000U = 1个ETH）。嗯，这里要注意，仓位大小 = 保证金 × 杠杆 / 开仓价。</li>
+  <li><strong>设置止盈：</strong>你看到前高在2100U，设置止盈在2105U（前高上方一点点）。</li>
+  <li><strong>设置止损：</strong>前低在1950U，设置止损在1945U（前低下方一点点）。</li>
+  <li><strong>计算爆仓价：</strong>爆仓价 = 2000 × (1 - 1/10) = 1800U。也就是说，ETH跌到1800U，你的200U保证金就没了。</li>
+</ol>
+
+<div class="tip">
+  <p><strong>我的个人习惯：</strong>开仓后，我会立刻在手机上设置一个「价格提醒」，比如ETH跌到1850U时提醒我。这样即使我没盯着屏幕，也能提前知道风险。别问我为什么，问就是曾经爆仓爆怕了。</p>
+</div>
+
+<h3>六、常见问题与避坑指南</h3>
+
+<ul>
+  <li><strong>问：做空是不是比做多风险大？</strong><br>
+  答：理论上，做多最多亏100%（跌到0），做空可能亏无限（涨到无限）。但实际上，加密货币波动大，做空的风险确实更高。我个人建议新手先做多，等熟悉了再做空。</li>
+  <li><strong>问：止盈止损设了，为什么没触发？</strong><br>
+  答：可能是滑点问题。极端行情下，价格可能直接跳过你的止盈止损位。我建议用「限价单」而不是「市价单」，虽然成交慢一点，但至少不会滑点太多。</li>
+  <li><strong>问：爆仓价算出来是1800，为什么1805就爆了？</strong><br>
+  答：因为还有「维持保证金」和「手续费」。实际爆仓价会比理论值更接近开仓价。嗯，这里要留点余量，我一般会在理论爆仓价上方加1%作为实际止损位。</li>
+</ul>
+
+<div class="warning">
+  <p><strong>⚠️ 避坑指南：</strong>我曾经有一次做空，没设止损，结果行情突然拉涨，我眼睁睁看着爆仓价越来越近，最后爆了。那种感觉，就像看着自己的钱被火烧一样。所以，开仓必设止损，这是铁律。</p>
+</div>
+
+<p>好了，这节课的内容就到这里。做多与做空，说白了就是方向选择的问题。方向对了，赚钱；方向错了，亏钱。但有了止盈止损和爆仓价计算，至少你能控制风险，不会一次亏光。记住，在Hyperliquid上，活得久比赚得快更重要。</p>
+
+<footer>
+  <p>公众号:蓝海资料掘金营，微信deep3321</p>
+</footer>
+        <div class="footer-nav">
+            <a href="06.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="08.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

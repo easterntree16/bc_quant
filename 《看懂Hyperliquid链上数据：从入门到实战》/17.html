@@ -1,0 +1,394 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第17章 数据可视化基础</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid生态全景</a></li>
+<li><a href="02.html" class="">第2章 HyperLiquid链基础</a></li>
+<li><a href="03.html" class="">第3章 RPC节点与数据源</a></li>
+<li><a href="04.html" class="">第4章 链上数据结构解析</a></li>
+<li><a href="05.html" class="">第5章 Python环境搭建</a></li>
+<li><a href="06.html" class="">第6章 查询账户信息</a></li>
+<li><a href="07.html" class="">第7章 订单簿数据深度解析</a></li>
+<li><a href="08.html" class="">第8章 交易数据实战</a></li>
+<li><a href="09.html" class="">第9章 K线数据获取与处理</a></li>
+<li><a href="10.html" class="">第10章 资金费率与衍生品数据</a></li>
+<li><a href="11.html" class="">第11章 预言机数据</a></li>
+<li><a href="12.html" class="">第12章 链上清算数据分析</a></li>
+<li><a href="13.html" class="">第13章 大户地址追踪</a></li>
+<li><a href="14.html" class="">第14章 Gas费与网络状态</a></li>
+<li><a href="15.html" class="">第15章 智能合约交互</a></li>
+<li><a href="16.html" class="">第16章 数据存储方案</a></li>
+<li><a href="17.html" class="active">第17章 数据可视化基础</a></li>
+<li><a href="18.html" class="">第18章 实时数据监控系统</a></li>
+<li><a href="19.html" class="">第19章 量化交易数据准备</a></li>
+<li><a href="20.html" class="">第20章 链上数据分析框架</a></li>
+<li><a href="21.html" class="">第21章 市场微观结构分析</a></li>
+<li><a href="22.html" class="">第22章 链上指标构建</a></li>
+<li><a href="23.html" class="">第23章 套利机会识别</a></li>
+<li><a href="24.html" class="">第24章 风险管理与风控</a></li>
+<li><a href="25.html" class="">第25章 数据API服务开发</a></li>
+<li><a href="26.html" class="">第26章 自动化交易信号</a></li>
+<li><a href="27.html" class="">第27章 HyperLiquid生态工具</a></li>
+<li><a href="28.html" class="">第28章 性能优化与最佳实践</a></li>
+<li><a href="29.html" class="">第29章 实战项目一</a></li>
+<li><a href="30.html" class="">第30章 实战项目二</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>17、数据可视化基础：Matplotlib绘制折线图、绘制柱状图、绘制散点图、图表美化技巧</h2>
+
+<p>说实话，做链上数据分析这几年，我最大的感触就是：<strong>数据本身不会说话，但图表会</strong>。你想想看，面对几万行交易记录，谁能一眼看出资金流向的规律？但一张折线图，趋势立马就出来了。</p>
+
+<p>Matplotlib 是 Python 生态里最经典的可视化库。我刚开始用的时候也觉得它丑，后来发现——<strong>不是它丑，是我不会打扮它</strong>。今天咱们就把它彻底玩明白。</p>
+
+<h3>17.1 准备工作：安装与导入</h3>
+
+<p>先装好库，这一步没什么好说的：</p>
+
+<pre><code>pip install matplotlib pandas numpy</code></pre>
+
+<p>导入的时候，我个人习惯这样写：</p>
+
+<pre><code>import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
+# 让图表在 Jupyter 里直接显示
+%matplotlib inline
+
+# 设置中文字体，避免乱码
+plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS']
+plt.rcParams['axes.unicode_minus'] = False</code></pre>
+
+<p>嗯，这里要注意：<strong>中文字体设置是必做的</strong>。我曾经在 Mac 上没配好，结果所有标签都变成了小方块，排查了半天才发现是字体问题。</p>
+
+<h3>17.2 折线图：看趋势的利器</h3>
+
+<p>折线图最适合展示<strong>时间序列数据</strong>。比如我们分析 Hyperliquid 上某个代币的每日交易量变化：</p>
+
+<pre><code># 模拟数据：7天的交易量（单位：万美元）
+days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+volume = [120, 135, 128, 150, 165, 180, 175]
+
+plt.figure(figsize=(10, 5))
+plt.plot(days, volume, marker='o', linestyle='-', color='#2196F3', linewidth=2)
+plt.title('Hyperliquid 某代币周交易量变化')
+plt.xlabel('日期')
+plt.ylabel('交易量（万美元）')
+plt.grid(True, alpha=0.3)
+plt.show()</code></pre>
+
+<p>你看，就这么几行代码，趋势一目了然。周末交易量明显上升，说明散户活跃度在增加。</p>
+
+<div class="tip">
+  <strong>我的小技巧：</strong> marker 参数用 'o' 或 's' 效果最好，别用 '^' 或 'v'，容易跟数据点混淆。
+</div>
+
+<h3>17.3 柱状图：对比数据的首选</h3>
+
+<p>柱状图适合<strong>分类对比</strong>。比如对比不同协议的资金流入量：</p>
+
+<pre><code># 模拟数据：各协议 TVL（单位：亿美元）
+protocols = ['Hyperliquid', 'dYdX', 'GMX', 'Synthetix', 'Perpetual']
+tvl = [8.5, 6.2, 4.8, 3.1, 2.5]
+
+plt.figure(figsize=(10, 5))
+bars = plt.bar(protocols, tvl, color=['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'])
+
+# 在柱子上显示数值
+for bar in bars:
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width()/2., height,
+             f'{height}亿', ha='center', va='bottom')
+
+plt.title('各衍生品协议 TVL 对比')
+plt.xlabel('协议名称')
+plt.ylabel('TVL（亿美元）')
+plt.show()</code></pre>
+
+<p>我在项目中遇到过一个问题：<strong>柱子颜色太接近，根本分不清</strong>。后来我养成了习惯，用一组对比明显的色板，比如上面那套。</p>
+
+<div class="warning">
+  <strong>避坑指南：</strong> 我曾经用默认颜色画了 10 个柱子，结果第 3 和第 4 个颜色几乎一样。建议手动指定颜色，或者用 colormap。
+</div>
+
+<h3>17.4 散点图：发现隐藏的关系</h3>
+
+<p>散点图能帮你发现<strong>变量之间的相关性</strong>。比如分析交易频率和盈亏的关系：</p>
+
+<pre><code># 模拟数据：100个交易者的数据
+np.random.seed(42)
+n = 100
+trade_count = np.random.randint(1, 50, n)  # 交易次数
+profit_rate = np.random.normal(0.05, 0.1, n)  # 收益率
+# 加入一些异常值
+trade_count[0] = 80
+profit_rate[0] = -0.3
+
+plt.figure(figsize=(10, 6))
+scatter = plt.scatter(trade_count, profit_rate, 
+                     c=profit_rate, cmap='RdYlGn', 
+                     alpha=0.6, s=50)
+
+plt.colorbar(scatter, label='收益率')
+plt.xlabel('交易次数')
+plt.ylabel('收益率')
+plt.title('交易频率 vs 收益率 散点图')
+plt.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+plt.show()</code></pre>
+
+<p>你发现没有？<strong>交易次数适中的用户，收益率反而更高</strong>。那些频繁交易的，很多都在亏损。这就是散点图的价值——一眼看出规律。</p>
+
+<h3>17.5 图表美化技巧：从能看到好看</h3>
+
+<p>说实话，Matplotlib 默认的图表确实丑。但别急，我总结了几个<strong>立竿见影的美化技巧</strong>：</p>
+
+<h4>17.5.1 配色方案</h4>
+
+<p>别用默认的蓝色红色了。试试这些：</p>
+
+<ul>
+  <li><strong>科技蓝：</strong> #2196F3, #1976D2, #0D47A1</li>
+  <li><strong>暖色系：</strong> #FF6B6B, #FFA726, #FFCC80</li>
+  <li><strong>冷色系：</strong> #4ECDC4, #45B7D1, #96CEB4</li>
+  <li><strong>渐变色：</strong> 用 cmap 参数，比如 'viridis', 'plasma', 'RdYlGn'</li>
+</ul>
+
+<h4>17.5.2 样式设置</h4>
+
+<pre><code># 使用内置样式
+plt.style.use('seaborn-v0_8-darkgrid')
+# 或者
+plt.style.use('ggplot')
+
+# 自定义样式
+plt.rcParams.update({
+    'figure.facecolor': 'white',
+    'axes.facecolor': '#f5f5f5',
+    'axes.grid': True,
+    'grid.alpha': 0.3,
+    'axes.spines.top': False,
+    'axes.spines.right': False,
+})</code></pre>
+
+<p>我个人最喜欢 'seaborn-v0_8-darkgrid'，背景有网格线，数据点更突出。</p>
+
+<h4>17.5.3 字体与标签</h4>
+
+<ul>
+  <li><strong>标题：</strong> fontsize=16, fontweight='bold'</li>
+  <li><strong>轴标签：</strong> fontsize=12</li>
+  <li><strong>刻度标签：</strong> fontsize=10</li>
+  <li><strong>图例：</strong> loc='best', frameon=False</li>
+</ul>
+
+<h4>17.5.4 组合图表：一图多信息</h4>
+
+<pre><code>fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+# 左上：折线图
+axes[0, 0].plot(days, volume, marker='o', color='#2196F3')
+axes[0, 0].set_title('交易量趋势')
+
+# 右上：柱状图
+axes[0, 1].bar(protocols, tvl, color='#FF6B6B')
+axes[0, 1].set_title('TVL 对比')
+
+# 左下：散点图
+axes[1, 0].scatter(trade_count, profit_rate, alpha=0.6)
+axes[1, 0].set_title('交易频率 vs 收益率')
+
+# 右下：饼图
+sizes = [35, 25, 20, 15, 5]
+labels = ['Hyperliquid', 'dYdX', 'GMX', 'Synthetix', '其他']
+axes[1, 1].pie(sizes, labels=labels, autopct='%1.1f%%')
+axes[1, 1].set_title('市场份额')
+
+plt.tight_layout()
+plt.show()</code></pre>
+
+<div class="highlight">
+  <strong>核心要点：</strong> 图表美化的本质是<strong>减少视觉噪音，突出数据信息</strong>。去掉不必要的边框、网格线调淡、颜色统一、字体清晰——做到这四点，你的图表就已经超过 80% 的人了。
+</div>
+
+<h3>17.6 实战：Hyperliquid 链上数据可视化</h3>
+
+<p>最后，咱们来一个完整的实战案例。假设你从链上拿到了 Hyperliquid 的每日交易数据：</p>
+
+<pre><code># 模拟真实数据
+dates = pd.date_range('2024-01-01', periods=30, freq='D')
+data = {
+    '交易量': np.random.randint(100, 300, 30),
+    '活跃地址': np.random.randint(500, 1500, 30),
+    '手续费收入': np.random.uniform(10, 50, 30)
+}
+df = pd.DataFrame(data, index=dates)
+
+# 创建图表
+fig, ax1 = plt.subplots(figsize=(12, 6))
+
+# 左轴：交易量（柱状图）
+color1 = '#2196F3'
+ax1.bar(df.index, df['交易量'], color=color1, alpha=0.7, label='交易量')
+ax1.set_ylabel('交易量（万美元）', color=color1)
+ax1.tick_params(axis='y', labelcolor=color1)
+
+# 右轴：活跃地址（折线图）
+ax2 = ax1.twinx()
+color2 = '#FF6B6B'
+ax2.plot(df.index, df['活跃地址'], color=color2, marker='o', label='活跃地址')
+ax2.set_ylabel('活跃地址数', color=color2)
+ax2.tick_params(axis='y', labelcolor=color2)
+
+# 美化
+plt.title('Hyperliquid 1月链上数据概览', fontsize=16, fontweight='bold')
+fig.autofmt_xdate()
+plt.grid(True, alpha=0.3)
+
+# 合并图例
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
+
+plt.show()</code></pre>
+
+<p>你看，双轴图表能同时展示<strong>交易量和活跃地址</strong>两个维度的数据。我经常用这种方式来分析链上活动——<strong>量价配合，才能看清全貌</strong>。</p>
+
+<div class="tip">
+  <strong>避坑指南：</strong> 双轴图表要注意两个轴的刻度范围，别让一条线压扁了另一条。我一般会手动调整 ylim，让两条曲线在视觉上平衡。
+</div>
+
+<p>好了，这一章的内容就到这里。Matplotlib 的核心就四个字：<strong>数据 + 美学</strong>。先把数据画对，再慢慢调样式。别一上来就追求花哨，<strong>清晰才是第一位的</strong>。</p>
+
+<hr>
+<p>公众号:蓝海资料掘金营，微信deep3321</p>
+        <div class="footer-nav">
+            <a href="16.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="18.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

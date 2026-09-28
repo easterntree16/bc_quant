@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第21章 API安全</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 认识Hyperliquid</a></li>
+<li><a href="02.html" class="">第2章 钱包准备与安全</a></li>
+<li><a href="03.html" class="">第3章 跨链入金</a></li>
+<li><a href="04.html" class="">第4章 账户与API设置</a></li>
+<li><a href="05.html" class="">第5章 现货交易基础</a></li>
+<li><a href="06.html" class="">第6章 永续合约入门</a></li>
+<li><a href="07.html" class="">第7章 做多与做空</a></li>
+<li><a href="08.html" class="">第8章 订单类型详解</a></li>
+<li><a href="09.html" class="">第9章 杠杆与风险管理</a></li>
+<li><a href="10.html" class="">第10章 资金费率详解</a></li>
+<li><a href="11.html" class="">第11章 K线图与指标</a></li>
+<li><a href="12.html" class="">第12章 交易策略入门</a></li>
+<li><a href="13.html" class="">第13章 模拟交易</a></li>
+<li><a href="14.html" class="">第14章 Gas费优化</a></li>
+<li><a href="15.html" class="">第15章 滑点控制</a></li>
+<li><a href="16.html" class="">第16章 流动性陷阱</a></li>
+<li><a href="17.html" class="">第17章 合约参数检查</a></li>
+<li><a href="18.html" class="">第18章 钓鱼与假网站</a></li>
+<li><a href="19.html" class="">第19章 授权与合约风险</a></li>
+<li><a href="20.html" class="">第20章 提现注意事项</a></li>
+<li><a href="21.html" class="active">第21章 API安全</a></li>
+<li><a href="22.html" class="">第22章 行情波动应对</a></li>
+<li><a href="23.html" class="">第23章 仓位管理</a></li>
+<li><a href="24.html" class="">第24章 情绪管理</a></li>
+<li><a href="25.html" class="">第25章 税务与合规</a></li>
+<li><a href="26.html" class="">第26章 社区与信息源</a></li>
+<li><a href="27.html" class="">第27章 常见错误代码</a></li>
+<li><a href="28.html" class="">第28章 客服与申诉</a></li>
+<li><a href="29.html" class="">第29章 进阶工具</a></li>
+<li><a href="30.html" class="">第30章 总结与行动计划</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第二十一节：API安全——IP白名单、密钥轮换、避免明文存储</h2>
+
+<p>API密钥这东西，说白了就是你的资金通行证。</p>
+<p>我见过太多人把API密钥直接写在代码里，然后上传到GitHub。结果呢？几分钟内机器人就把账户里的钱搬空了。嗯，这不是段子，是我亲眼见过的真实案例。</p>
+<p>今天咱们就聊聊，怎么把API密钥这玩意儿管好。</p>
+
+<h3>一、IP白名单：给API加把物理锁</h3>
+
+<p>IP白名单是什么？简单说，就是只允许特定IP地址访问你的API。</p>
+<p>我个人习惯，哪怕只是测试用的API，也一定会绑IP。为什么？因为多一层防护总比没有强。</p>
+
+<div class="highlight">
+  <p><strong>核心原则：</strong>只允许你的交易服务器IP访问API，其他IP一律拒绝。</p>
+</div>
+
+<p>在Hyperliquid上设置IP白名单，流程大概是这样的：</p>
+
+<ol>
+  <li>登录你的交易服务器，查一下公网IP（用 <code>curl ifconfig.me</code> 就能看到）</li>
+  <li>在Hyperliquid的API管理页面，添加这个IP到白名单</li>
+  <li>保存后，测试一下——换个IP试试能不能访问，应该被拒绝</li>
+</ol>
+
+<div class="warning">
+  <p><strong>注意：</strong>如果你用的是云服务器，IP可能会变。建议用弹性公网IP，或者定期检查白名单。</p>
+</div>
+
+<p>我曾经遇到过一个用户，他把API绑了家里的IP，结果出差时想交易，发现API全挂了。嗯，这就是没考虑动态IP的后果。</p>
+
+<h3>二、密钥轮换：别让密钥活太久</h3>
+
+<p>密钥轮换，说白了就是定期换密码。</p>
+<p>你想想看，如果你的密钥泄露了，但你没发现，那对方就能一直用你的API做交易。密钥轮换的目的，就是把这种风险控制在有限时间内。</p>
+
+<p>我个人建议的轮换周期：</p>
+
+<table>
+  <tr>
+    <th>使用场景</th>
+    <th>建议轮换周期</th>
+    <th>说明</th>
+  </tr>
+  <tr>
+    <td>高频交易机器人</td>
+    <td>每周一次</td>
+    <td>交易量大，风险高</td>
+  </tr>
+  <tr>
+    <td>普通交易</td>
+    <td>每月一次</td>
+    <td>中等风险</td>
+  </tr>
+  <tr>
+    <td>只读API</td>
+    <td>每季度一次</td>
+    <td>风险较低，但也要换</td>
+  </tr>
+</table>
+
+<p>怎么实现自动轮换？我写了个小脚本，大家可以参考：</p>
+
+<pre><code>#!/bin/bash
+# 密钥轮换脚本 - 每月执行一次
+
+# 生成新密钥对
+NEW_KEY=$(openssl rand -hex 32)
+
+# 更新Hyperliquid API密钥
+curl -X POST https://api.hyperliquid.xyz/info \
+  -H "Content-Type: application/json" \
+  -d '{"type": "rotateKey", "newKey": "'$NEW_KEY'"}'
+
+# 更新本地配置文件
+sed -i "s/API_KEY=.*/API_KEY=$NEW_KEY/" /etc/trading-bot.conf
+
+# 记录日志
+echo "$(date) - 密钥已轮换" >> /var/log/key-rotation.log</code></pre>
+
+<div class="tip">
+  <p><strong>小技巧：</strong>可以用cron定时任务来跑这个脚本。比如每月1号凌晨3点执行一次。</p>
+</div>
+
+<h3>三、避免明文存储：密钥不是便利贴</h3>
+
+<p>明文存储密钥，就像把银行卡密码写在便利贴上贴在电脑屏幕前。太危险了。</p>
+<p>我见过最离谱的案例：有人把API密钥写在Python脚本里，然后脚本上传到了GitHub公开仓库。结果不到10分钟，账户里的USDC全被转走了。</p>
+
+<p>正确的做法是什么？</p>
+
+<ul>
+  <li><strong>环境变量：</strong>把密钥存在环境变量里，代码里用 <code>os.getenv()</code> 读取</li>
+  <li><strong>密钥管理服务：</strong>比如AWS Secrets Manager、HashiCorp Vault</li>
+  <li><strong>加密配置文件：</strong>用GPG或openssl加密配置文件，运行时解密</li>
+</ul>
+
+<p>举个例子，用环境变量的方式：</p>
+
+<pre><code># 在.bashrc或.zshrc里设置
+export HYPERLIQUID_API_KEY="your-api-key-here"
+export HYPERLIQUID_SECRET="your-secret-here"
+
+# Python代码里读取
+import os
+api_key = os.getenv("HYPERLIQUID_API_KEY")
+secret = os.getenv("HYPERLIQUID_SECRET")</code></pre>
+
+<div class="warning">
+  <p><strong>千万别做这些事：</strong></p>
+  <ul>
+    <li>不要把密钥写在代码里</li>
+    <li>不要把密钥上传到GitHub</li>
+    <li>不要把密钥放在日志文件里</li>
+    <li>不要在聊天工具里发密钥</li>
+  </ul>
+</div>
+
+<h3>四、知识体系图</h3>
+
+<p>下面这张图，帮你理清API安全的三个核心环节：</p>
+
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="400" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#2c3e50">API安全三大防线</text>
+  
+  <!-- 第一道防线：IP白名单 -->
+  <rect x="50" y="70" width="200" height="60" rx="10" fill="#3498db" opacity="0.9"/>
+  <text x="150" y="100" text-anchor="middle" font-size="16" fill="white" font-weight="bold">IP白名单</text>
+  <text x="150" y="120" text-anchor="middle" font-size="12" fill="white">只允许指定IP访问</text>
+  
+  <!-- 箭头 -->
+  <line x1="250" y1="100" x2="300" y2="100" stroke="#3498db" stroke-width="3"/>
+  <polygon points="300,95 310,100 300,105" fill="#3498db"/>
+  
+  <!-- 第二道防线：密钥轮换 -->
+  <rect x="310" y="70" width="200" height="60" rx="10" fill="#e74c3c" opacity="0.9"/>
+  <text x="410" y="100" text-anchor="middle" font-size="16" fill="white" font-weight="bold">密钥轮换</text>
+  <text x="410" y="120" text-anchor="middle" font-size="12" fill="white">定期更换API密钥</text>
+  
+  <!-- 箭头 -->
+  <line x1="510" y1="100" x2="560" y2="100" stroke="#e74c3c" stroke-width="3"/>
+  <polygon points="560,95 570,100 560,105" fill="#e74c3c"/>
+  
+  <!-- 第三道防线：避免明文存储 -->
+  <rect x="570" y="70" width="200" height="60" rx="10" fill="#27ae60" opacity="0.9"/>
+  <text x="670" y="100" text-anchor="middle" font-size="16" fill="white" font-weight="bold">避免明文存储</text>
+  <text x="670" y="120" text-anchor="middle" font-size="12" fill="white">加密存储密钥</text>
+  
+  <!-- 详细说明 -->
+  <rect x="50" y="170" width="200" height="180" rx="8" fill="#ebf5fb" stroke="#3498db" stroke-width="1"/>
+  <text x="150" y="195" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">IP白名单详解</text>
+  <text x="65" y="220" font-size="12" fill="#34495e">• 绑定交易服务器IP</text>
+  <text x="65" y="240" font-size="12" fill="#34495e">• 使用弹性公网IP</text>
+  <text x="65" y="260" font-size="12" fill="#34495e">• 定期检查白名单</text>
+  <text x="65" y="280" font-size="12" fill="#34495e">• 测试IP变更影响</text>
+  <text x="65" y="300" font-size="12" fill="#34495e">• 多IP场景管理</text>
+  
+  <rect x="300" y="170" width="200" height="180" rx="8" fill="#fdedec" stroke="#e74c3c" stroke-width="1"/>
+  <text x="400" y="195" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">密钥轮换详解</text>
+  <text x="315" y="220" font-size="12" fill="#34495e">• 高频交易：每周</text>
+  <text x="315" y="240" font-size="12" fill="#34495e">• 普通交易：每月</text>
+  <text x="315" y="260" font-size="12" fill="#34495e">• 只读API：每季度</text>
+  <text x="315" y="280" font-size="12" fill="#34495e">• 自动化脚本轮换</text>
+  <text x="315" y="300" font-size="12" fill="#34495e">• 记录轮换日志</text>
+  
+  <rect x="550" y="170" width="200" height="180" rx="8" fill="#e8f8f5" stroke="#27ae60" stroke-width="1"/>
+  <text x="650" y="195" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">避免明文存储详解</text>
+  <text x="565" y="220" font-size="12" fill="#34495e">• 环境变量存储</text>
+  <text x="565" y="240" font-size="12" fill="#34495e">• 密钥管理服务</text>
+  <text x="565" y="260" font-size="12" fill="#34495e">• 加密配置文件</text>
+  <text x="565" y="280" font-size="12" fill="#34495e">• 禁止上传GitHub</text>
+  <text x="565" y="300" font-size="12" fill="#34495e">• 禁止日志输出</text>
+  
+  <!-- 底部总结 -->
+  <rect x="50" y="370" width="700" height="20" rx="5" fill="#2c3e50" opacity="0.8"/>
+  <text x="400" y="384" text-anchor="middle" font-size="12" fill="white">三道防线缺一不可，共同保障API安全</text>
+</svg>
+
+<h3>五、避坑指南</h3>
+
+<p>最后，分享几个我踩过的坑：</p>
+
+<div class="highlight">
+  <p><strong>我曾经...</strong>把API密钥写在一个测试脚本里，然后忘了删。结果那个脚本被同事上传到了内部GitLab。虽然没泄露到外网，但内部人员也能看到。从那以后，我所有脚本里都只用环境变量。</p>
+</div>
+
+<p>还有一次，我帮一个朋友排查问题，发现他的API密钥居然写在了一个文本文件里，文件名就叫"密钥.txt"。嗯，这跟把密码写在便利贴上贴电脑上有什么区别？</p>
+
+<p>记住一句话：<strong>密钥的安全，就是资金的安全。</strong>别嫌麻烦，该做的防护一个都不能少。</p>
+
+<div class="tip">
+  <p><strong>最后的小建议：</strong>每周花5分钟检查一下你的API密钥状态。看看有没有异常访问记录，密钥有没有过期。这5分钟，可能帮你省下几万U。</p>
+</div>
+
+<hr>
+<p style="text-align:center; color:#7f8c8d; font-size:12px;">公众号:蓝海资料掘金营，微信deep3321</p>
+        <div class="footer-nav">
+            <a href="20.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="22.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

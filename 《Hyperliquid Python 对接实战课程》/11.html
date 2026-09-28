@@ -1,0 +1,486 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第11章 下单操作（三）</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="active">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="">第28章 部署与运维</a></li>
+<li><a href="29.html" class="">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第十一章：下单操作（三）：止损单、止盈单、追踪止损单的实现</h2>
+
+<p>止损单、止盈单、追踪止损单——这三个东西，说白了就是帮你「管住手」的工具。我见过太多人，明明策略跑得好好的，结果因为手动平仓慢了半拍，利润全吐回去。嗯，我自己早期也吃过这个亏。</p>
+
+<p>今天我们就来聊聊，在 Hyperliquid 上怎么用 Python 实现这三种订单。别急，我会把每个细节都拆开讲清楚。</p>
+
+<h3>11.1 止损单（Stop Loss）</h3>
+
+<p>止损单的逻辑很简单：当价格触及某个不利位置时，自动平仓。但 Hyperliquid 的止损单，和我们传统交易所的有点不一样。</p>
+
+<p>它其实是一个「条件触发 + 市价单」的组合。你设置一个触发价格，一旦市场价碰到它，系统就帮你发一个市价平仓单。</p>
+
+<div class="highlight">
+  <p><strong>核心要点：</strong>止损单不是挂单，而是条件单。触发后立即以市价成交，不保证滑点。</p>
+</div>
+
+<p>来看代码实现：</p>
+
+<pre><code>import asyncio
+from hyperliquid import HyperliquidClient
+
+async def place_stop_loss(client, symbol, position_side, stop_price, size):
+    """
+    设置止损单
+    :param client: Hyperliquid 客户端实例
+    :param symbol: 交易对，如 "ETH-USD"
+    :param position_side: 持仓方向，"LONG" 或 "SHORT"
+    :param stop_price: 止损触发价格
+    :param size: 止损数量（合约张数）
+    """
+    # 根据持仓方向决定触发条件
+    if position_side == "LONG":
+        # 多头：价格跌破止损价时触发
+        trigger_condition = "lte"  # less than or equal
+    else:
+        # 空头：价格涨破止损价时触发
+        trigger_condition = "gte"  # greater than or equal
+    
+    # 构建止损单参数
+    order_params = {
+        "symbol": symbol,
+        "side": "SELL" if position_side == "LONG" else "BUY",
+        "size": str(size),
+        "order_type": {
+            "trigger": {
+                "trigger_price": str(stop_price),
+                "trigger_condition": trigger_condition,
+                "is_market": True  # 市价触发
+            }
+        },
+        "reduce_only": True  # 只减仓，不开新仓
+    }
+    
+    try:
+        response = await client.place_order(**order_params)
+        print(f"止损单已设置：触发价 {stop_price}")
+        return response
+    except Exception as e:
+        print(f"止损单设置失败：{e}")
+        return None</code></pre>
+
+<div class="tip">
+  <p><strong>个人经验：</strong>我在项目中遇到过一个问题——止损单的 <code>reduce_only</code> 参数一定要设为 <code>True</code>。否则，如果你持仓不够，系统可能会给你开反向仓位，那可就麻烦了。</p>
+</div>
+
+<h3>11.2 止盈单（Take Profit）</h3>
+
+<p>止盈单和止损单是「镜像关系」。一个保护本金，一个锁定利润。实现方式几乎一样，只是触发方向相反。</p>
+
+<p>你想想看，做多的时候，止损设在下方，止盈设在上方。做空则反过来。这个逻辑很直观，但代码里要注意触发条件的设置。</p>
+
+<pre><code>async def place_take_profit(client, symbol, position_side, target_price, size):
+    """
+    设置止盈单
+    """
+    if position_side == "LONG":
+        # 多头：价格涨到目标价时触发
+        trigger_condition = "gte"
+    else:
+        # 空头：价格跌到目标价时触发
+        trigger_condition = "lte"
+    
+    order_params = {
+        "symbol": symbol,
+        "side": "SELL" if position_side == "LONG" else "BUY",
+        "size": str(size),
+        "order_type": {
+            "trigger": {
+                "trigger_price": str(target_price),
+                "trigger_condition": trigger_condition,
+                "is_market": True
+            }
+        },
+        "reduce_only": True
+    }
+    
+    try:
+        response = await client.place_order(**order_params)
+        print(f"止盈单已设置：目标价 {target_price}")
+        return response
+    except Exception as e:
+        print(f"止盈单设置失败：{e}")
+        return None</code></pre>
+
+<div class="warning">
+  <p><strong>注意：</strong>止盈单和止损单不要设置相同的触发价格。我曾经见过有人把止损止盈设在同一价位，结果两个单子互相打架，系统直接报错。</p>
+</div>
+
+<h3>11.3 追踪止损单（Trailing Stop）</h3>
+
+<p>追踪止损单就更有意思了。它像一个「会移动的止损线」。价格往有利方向走，止损线就跟着移动；价格回调，止损线不动。</p>
+
+<p>说白了，就是帮你「锁定利润的同时，给行情留点喘息空间」。</p>
+
+<p>Hyperliquid 的追踪止损单，需要你设置两个参数：</p>
+
+<ul>
+  <li><strong>激活价格（activation price）：</strong> 价格达到这个位置，追踪才开始生效</li>
+  <li><strong>回调幅度（callback rate）：</strong> 从最高点回调多少百分比，触发止损</li>
+</ul>
+
+<p>举个例子：你做多 ETH，当前价格 3000。你设置激活价 3100，回调幅度 2%。当价格涨到 3100 时，追踪开始。如果价格继续涨到 3200，止损线就上移到 3136（3200 - 2%）。如果价格从 3200 跌回 3136，止损触发。</p>
+
+<pre><code>async def place_trailing_stop(client, symbol, position_side, 
+                              activation_price, callback_rate, size):
+    """
+    设置追踪止损单
+    :param callback_rate: 回调幅度，如 0.02 表示 2%
+    """
+    order_params = {
+        "symbol": symbol,
+        "side": "SELL" if position_side == "LONG" else "BUY",
+        "size": str(size),
+        "order_type": {
+            "trailing_stop": {
+                "activation_price": str(activation_price),
+                "callback_rate": str(callback_rate),
+                "is_market": True
+            }
+        },
+        "reduce_only": True
+    }
+    
+    try:
+        response = await client.place_order(**order_params)
+        print(f"追踪止损已设置：激活价 {activation_price}，回调 {callback_rate*100}%")
+        return response
+    except Exception as e:
+        print(f"追踪止损设置失败：{e}")
+        return None</code></pre>
+
+<div class="tip">
+  <p><strong>我的建议：</strong>回调幅度不要设得太小。比如 0.5% 这种，行情稍微一波动就触发了。我个人习惯用 1.5% - 3%，具体看品种的波动率。</p>
+</div>
+
+<h3>11.4 三种订单的对比</h3>
+
+<p>为了方便你理解，我整理了一个表格：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>订单类型</th>
+      <th>触发条件</th>
+      <th>适用场景</th>
+      <th>注意事项</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>止损单</td>
+      <td>价格触及固定价位</td>
+      <td>控制最大亏损</td>
+      <td>滑点可能较大</td>
+    </tr>
+    <tr>
+      <td>止盈单</td>
+      <td>价格触及固定价位</td>
+      <td>锁定目标利润</td>
+      <td>可能错过更大行情</td>
+    </tr>
+    <tr>
+      <td>追踪止损</td>
+      <td>价格从高点回调一定比例</td>
+      <td>趋势行情中保护利润</td>
+      <td>震荡行情容易频繁触发</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>11.5 实战中的组合策略</h3>
+
+<p>在实际交易中，我很少只用一种订单。通常的做法是：</p>
+
+<ol>
+  <li><strong>开仓时：</strong>同时挂上止损单和止盈单</li>
+  <li><strong>行情启动后：</strong>取消止盈单，换成追踪止损单</li>
+  <li><strong>追踪止损触发后：</strong>如果还想做，重新评估再入场</li>
+</ol>
+
+<p>这样做的好处是：开仓时风险可控，行情走起来后利润能最大化。</p>
+
+<pre><code>async def combined_strategy(client, symbol, position_side, 
+                            entry_price, stop_loss, take_profit,
+                            trailing_activation, callback_rate, size):
+    """
+    组合策略：先挂止损止盈，行情启动后切换为追踪止损
+    """
+    # 第一步：设置止损和止盈
+    sl_task = place_stop_loss(client, symbol, position_side, stop_loss, size)
+    tp_task = place_take_profit(client, symbol, position_side, take_profit, size)
+    await asyncio.gather(sl_task, tp_task)
+    
+    # 第二步：监控价格，达到激活价后切换
+    while True:
+        current_price = await client.get_mark_price(symbol)
+        
+        if position_side == "LONG" and current_price >= trailing_activation:
+            # 取消止盈单，设置追踪止损
+            await client.cancel_all_orders(symbol)
+            await place_trailing_stop(client, symbol, position_side, 
+                                      trailing_activation, callback_rate, size)
+            print("已切换为追踪止损模式")
+            break
+            
+        elif position_side == "SHORT" and current_price <= trailing_activation:
+            await client.cancel_all_orders(symbol)
+            await place_trailing_stop(client, symbol, position_side,
+                                      trailing_activation, callback_rate, size)
+            print("已切换为追踪止损模式")
+            break
+        
+        await asyncio.sleep(1)  # 每秒检查一次</code></pre>
+
+<div class="warning">
+  <p><strong>避坑指南：</strong>我曾经在切换订单时忘记取消旧的止盈单，结果追踪止损和止盈单同时生效，仓位被平了两次。嗯，从那以后我每次切换前都会先 <code>cancel_all_orders</code>。</p>
+</div>
+
+<h3>11.6 核心逻辑流程图</h3>
+
+<p>下面这张图，帮你理清三种订单的关系和切换逻辑：</p>
+
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="500" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">订单类型与切换逻辑</text>
+  
+  <!-- 开仓节点 -->
+  <ellipse cx="400" cy="90" rx="80" ry="30" fill="#3498db" opacity="0.9"/>
+  <text x="400" y="96" text-anchor="middle" font-size="16" fill="white" font-weight="bold">开仓</text>
+  
+  <!-- 箭头：开仓到止损止盈 -->
+  <line x1="400" y1="120" x2="400" y2="160" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 止损止盈节点 -->
+  <rect x="250" y="160" width="300" height="60" rx="10" fill="#e74c3c" opacity="0.8"/>
+  <text x="400" y="185" text-anchor="middle" font-size="14" fill="white">同时设置止损单 + 止盈单</text>
+  <text x="400" y="205" text-anchor="middle" font-size="12" fill="#f1c40f">风险可控，利润锁定</text>
+  
+  <!-- 箭头：止损止盈到监控 -->
+  <line x1="400" y1="220" x2="400" y2="260" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 监控节点 -->
+  <rect x="250" y="260" width="300" height="60" rx="10" fill="#2ecc71" opacity="0.8"/>
+  <text x="400" y="285" text-anchor="middle" font-size="14" fill="white">监控价格是否达到激活价</text>
+  <text x="400" y="305" text-anchor="middle" font-size="12" fill="#2c3e50">每秒检查一次</text>
+  
+  <!-- 分支判断 -->
+  <polygon points="400,320 430,350 400,380 370,350" fill="#f39c12" opacity="0.9"/>
+  <text x="400" y="355" text-anchor="middle" font-size="12" fill="white">达到？</text>
+  
+  <!-- 否的箭头 -->
+  <line x1="370" y1="350" x2="200" y2="350" stroke="#e74c3c" stroke-width="2"/>
+  <text x="180" y="345" text-anchor="end" font-size="12" fill="#e74c3c">否</text>
+  <line x1="200" y1="350" x2="200" y2="290" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="200" y1="290" x2="250" y2="290" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+  
+  <!-- 是的箭头 -->
+  <line x1="430" y1="350" x2="550" y2="350" stroke="#2ecc71" stroke-width="2"/>
+  <text x="560" y="345" text-anchor="start" font-size="12" fill="#2ecc71">是</text>
+  
+  <!-- 切换节点 -->
+  <rect x="550" y="320" width="200" height="60" rx="10" fill="#9b59b6" opacity="0.8"/>
+  <text x="650" y="345" text-anchor="middle" font-size="14" fill="white">取消止盈单</text>
+  <text x="650" y="365" text-anchor="middle" font-size="14" fill="white">设置追踪止损</text>
+  
+  <!-- 箭头：切换到结束 -->
+  <line x1="650" y1="380" x2="650" y2="430" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 结束节点 -->
+  <ellipse cx="650" cy="460" rx="80" ry="25" fill="#1abc9c" opacity="0.9"/>
+  <text x="650" y="466" text-anchor="middle" font-size="14" fill="white" font-weight="bold">追踪止损生效</text>
+  
+  <!-- 箭头定义 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2c3e50"/>
+    </marker>
+  </defs>
+  
+  <!-- 图例 -->
+  <rect x="20" y="440" width="120" height="50" rx="5" fill="white" stroke="#ccc"/>
+  <text x="30" y="460" font-size="11" fill="#2c3e50">■ 初始设置</text>
+  <text x="30" y="478" font-size="11" fill="#2c3e50">■ 动态切换</text>
+  <rect x="30" y="452" width="10" height="10" fill="#e74c3c"/>
+  <rect x="30" y="470" width="10" height="10" fill="#9b59b6"/>
+</svg>
+
+<p>这张图展示了从开仓到最终追踪止损生效的完整流程。你想想看，是不是比手动操作省心多了？</p>
+
+<div class="highlight">
+  <p><strong>总结一下：</strong>止损单保命，止盈单锁利，追踪止损单让利润奔跑。三者配合使用，才能构建一个完整的风险管理体系。我个人建议，哪怕是小资金，也至少把止损单挂上——这是交易员的底线。</p>
+</div>
+
+<footer>
+  <p>公众号：蓝海资料掘金营，微信 deep3321</p>
+</footer>
+        <div class="footer-nav">
+            <a href="10.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="12.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

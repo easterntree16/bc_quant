@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第13章 模拟交易</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 认识Hyperliquid</a></li>
+<li><a href="02.html" class="">第2章 钱包准备与安全</a></li>
+<li><a href="03.html" class="">第3章 跨链入金</a></li>
+<li><a href="04.html" class="">第4章 账户与API设置</a></li>
+<li><a href="05.html" class="">第5章 现货交易基础</a></li>
+<li><a href="06.html" class="">第6章 永续合约入门</a></li>
+<li><a href="07.html" class="">第7章 做多与做空</a></li>
+<li><a href="08.html" class="">第8章 订单类型详解</a></li>
+<li><a href="09.html" class="">第9章 杠杆与风险管理</a></li>
+<li><a href="10.html" class="">第10章 资金费率详解</a></li>
+<li><a href="11.html" class="">第11章 K线图与指标</a></li>
+<li><a href="12.html" class="">第12章 交易策略入门</a></li>
+<li><a href="13.html" class="active">第13章 模拟交易</a></li>
+<li><a href="14.html" class="">第14章 Gas费优化</a></li>
+<li><a href="15.html" class="">第15章 滑点控制</a></li>
+<li><a href="16.html" class="">第16章 流动性陷阱</a></li>
+<li><a href="17.html" class="">第17章 合约参数检查</a></li>
+<li><a href="18.html" class="">第18章 钓鱼与假网站</a></li>
+<li><a href="19.html" class="">第19章 授权与合约风险</a></li>
+<li><a href="20.html" class="">第20章 提现注意事项</a></li>
+<li><a href="21.html" class="">第21章 API安全</a></li>
+<li><a href="22.html" class="">第22章 行情波动应对</a></li>
+<li><a href="23.html" class="">第23章 仓位管理</a></li>
+<li><a href="24.html" class="">第24章 情绪管理</a></li>
+<li><a href="25.html" class="">第25章 税务与合规</a></li>
+<li><a href="26.html" class="">第26章 社区与信息源</a></li>
+<li><a href="27.html" class="">第27章 常见错误代码</a></li>
+<li><a href="28.html" class="">第28章 客服与申诉</a></li>
+<li><a href="29.html" class="">第29章 进阶工具</a></li>
+<li><a href="30.html" class="">第30章 总结与行动计划</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>第十三章：模拟交易——测试网使用、模拟资金配置、策略回测</h2>
+
+<p>说实话，我见过太多新手一上来就冲进主网。</p>
+<p>结果呢？爆仓、被割、心态崩了。</p>
+<p>我自己在Hyperliquid上踩过的坑，至少有三分之一是可以在测试网里提前发现的。可惜当时没人告诉我这些。</p>
+<p>今天这章，我就把测试网的正确用法、资金配置的潜规则、还有回测的那些坑，一次性讲清楚。</p>
+
+<h3>13.1 测试网到底有什么用？</h3>
+
+<p>很多人觉得测试网就是「模拟器」，随便玩玩就行。</p>
+<p>嗯，这个想法很危险。</p>
+<p>测试网的核心价值，不是让你熟悉界面——那五分钟就够了。它的真正作用是：</p>
+
+<ul>
+  <li><strong>验证你的策略逻辑</strong>：你的开仓条件、止损设置、仓位管理，在真实市场里会不会出bug？</li>
+  <li><strong>测试网络延迟和滑点</strong>：Hyperliquid的订单簿深度、撮合速度，在测试网里能提前感受</li>
+  <li><strong>心理建设</strong>：模拟资金亏完，总比真金白银亏完强吧？</li>
+</ul>
+
+<div class="highlight">
+  <p><strong>我个人习惯</strong>：每次开发新策略，先在测试网跑至少100笔交易。不是看赚了多少，而是看「会不会出现我没预料到的异常情况」。</p>
+</div>
+
+<h3>13.2 测试网使用指南</h3>
+
+<p>Hyperliquid的测试网地址和主网不同。你需要：</p>
+
+<ol>
+  <li>访问测试网入口（通常是 testnet.hyperliquid.xyz）</li>
+  <li>连接测试网钱包（别用主网钱包！）</li>
+  <li>从水龙头领取测试代币</li>
+</ol>
+
+<p>这里有个坑：测试网的流动性远不如主网。你挂一个单，可能半天没人接。所以测试网更适合做「逻辑验证」，而不是「滑点测试」。</p>
+
+<div class="warning">
+  <p><strong>我曾经</strong>在测试网跑了一个高频策略，回测数据漂亮得不行。结果上主网第一天，滑点直接吃掉了我一个月的利润。为什么？因为测试网的订单簿深度是假的。</p>
+</div>
+
+<h3>13.3 模拟资金配置：别太「大方」</h3>
+
+<p>测试网一般会给你100万模拟USDC。</p>
+<p>很多人一看：哇，这么多钱！然后全仓干进去。</p>
+<p>这其实是个坏习惯。你想想看，主网上你只有1000U，你敢全仓吗？不敢吧？那为什么测试网就敢？</p>
+
+<p><strong>我的建议</strong>：模拟资金配置应该模拟你的真实资金规模。</p>
+
+<table>
+  <tr>
+    <th>真实资金</th>
+    <th>模拟资金建议</th>
+    <th>理由</th>
+  </tr>
+  <tr>
+    <td>1000 USDC</td>
+    <td>1000 模拟U</td>
+    <td>模拟真实仓位压力</td>
+  </tr>
+  <tr>
+    <td>10000 USDC</td>
+    <td>10000 模拟U</td>
+    <td>测试杠杆和风控</td>
+  </tr>
+  <tr>
+    <td>100000 USDC</td>
+    <td>50000 模拟U</td>
+    <td>大资金需要更保守</td>
+  </tr>
+</table>
+
+<p>说白了，测试网不是让你过瘾的，是让你「犯错」的。资金规模越真实，犯错的教训越有价值。</p>
+
+<h3>13.4 策略回测：别被数据骗了</h3>
+
+<p>回测是每个交易员的必修课。但Hyperliquid上的回测，有几个特殊的地方需要注意。</p>
+
+<h4>13.4.1 回测数据源</h4>
+
+<p>Hyperliquid的链上数据是公开的。你可以从Dune Analytics或者直接通过API拉取历史K线数据。</p>
+
+<pre><code># 伪代码示例：拉取Hyperliquid历史数据
+import requests
+
+url = "https://api.hyperliquid.xyz/info"
+payload = {
+    "type": "candleSnapshot",
+    "coin": "BTC",
+    "interval": "1h",
+    "startTime": 1700000000000,
+    "endTime": 1705000000000
+}
+response = requests.post(url, json=payload)
+data = response.json()</code></pre>
+
+<p>嗯，这里要注意：Hyperliquid的API返回的数据格式和中心化交易所不太一样。时间戳是毫秒级的，价格是字符串格式。我刚开始写回测脚本时，就因为类型转换问题，算出来的收益率差了10倍。</p>
+
+<h4>13.4.2 回测的三大陷阱</h4>
+
+<ul>
+  <li><strong>幸存者偏差</strong>：你只回测了BTC，但你的策略可能只适合BTC的走势。换到ARB上试试？</li>
+  <li><strong>未来函数</strong>：回测时用了「未来数据」，比如用收盘价计算开仓信号。这在实盘中根本做不到。</li>
+  <li><strong>手续费忽略</strong>：Hyperliquid的吃单手续费是0.05%，挂单是0.02%。高频策略里，手续费能吃掉你一半利润。</li>
+</ul>
+
+<div class="tip">
+  <p><strong>我的经验</strong>：回测时，把手续费设置成实际值的1.5倍。这样如果回测还能赚钱，实盘大概率也能赚。如果回测刚好打平，实盘基本就是亏。</p>
+</div>
+
+<h3>13.5 知识体系框架</h3>
+
+<p>下面这张图，是我自己整理的一套模拟交易流程。你可以照着这个框架来搭建自己的测试体系。</p>
+
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="10" width="780" height="480" fill="#f0f8ff" stroke="#4a90d9" stroke-width="2" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="45" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">模拟交易知识体系</text>
+  
+  <!-- 第一层：三个核心模块 -->
+  <rect x="50" y="70" width="200" height="60" fill="#e8f4f8" stroke="#3498db" stroke-width="2" rx="8"/>
+  <text x="150" y="105" text-anchor="middle" font-size="16" font-weight="bold" fill="#2980b9">测试网使用</text>
+  
+  <rect x="300" y="70" width="200" height="60" fill="#e8f4f8" stroke="#3498db" stroke-width="2" rx="8"/>
+  <text x="400" y="105" text-anchor="middle" font-size="16" font-weight="bold" fill="#2980b9">模拟资金配置</text>
+  
+  <rect x="550" y="70" width="200" height="60" fill="#e8f4f8" stroke="#3498db" stroke-width="2" rx="8"/>
+  <text x="650" y="105" text-anchor="middle" font-size="16" font-weight="bold" fill="#2980b9">策略回测</text>
+  
+  <!-- 箭头：第一层到第二层 -->
+  <line x1="150" y1="130" x2="150" y2="170" stroke="#3498db" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="400" y1="130" x2="400" y2="170" stroke="#3498db" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="650" y1="130" x2="650" y2="170" stroke="#3498db" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 第二层：子模块 -->
+  <rect x="30" y="170" width="240" height="100" fill="#fff9e6" stroke="#f39c12" stroke-width="1.5" rx="6"/>
+  <text x="150" y="195" text-anchor="middle" font-size="13" font-weight="bold" fill="#e67e22">测试网要点</text>
+  <text x="150" y="215" text-anchor="middle" font-size="11" fill="#555">• 钱包连接</text>
+  <text x="150" y="235" text-anchor="middle" font-size="11" fill="#555">• 水龙头领币</text>
+  <text x="150" y="255" text-anchor="middle" font-size="11" fill="#555">• 流动性差异</text>
+  
+  <rect x="280" y="170" width="240" height="100" fill="#fff9e6" stroke="#f39c12" stroke-width="1.5" rx="6"/>
+  <text x="400" y="195" text-anchor="middle" font-size="13" font-weight="bold" fill="#e67e22">资金配置原则</text>
+  <text x="400" y="215" text-anchor="middle" font-size="11" fill="#555">• 模拟真实规模</text>
+  <text x="400" y="235" text-anchor="middle" font-size="11" fill="#555">• 杠杆比例一致</text>
+  <text x="400" y="255" text-anchor="middle" font-size="11" fill="#555">• 风控规则相同</text>
+  
+  <rect x="530" y="170" width="240" height="100" fill="#fff9e6" stroke="#f39c12" stroke-width="1.5" rx="6"/>
+  <text x="650" y="195" text-anchor="middle" font-size="13" font-weight="bold" fill="#e67e22">回测注意事项</text>
+  <text x="650" y="215" text-anchor="middle" font-size="11" fill="#555">• 数据源选择</text>
+  <text x="650" y="235" text-anchor="middle" font-size="11" fill="#555">• 避免未来函数</text>
+  <text x="650" y="255" text-anchor="middle" font-size="11" fill="#555">• 手续费计算</text>
+  
+  <!-- 箭头：第二层到第三层 -->
+  <line x1="150" y1="270" x2="150" y2="310" stroke="#f39c12" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="400" y1="270" x2="400" y2="310" stroke="#f39c12" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="650" y1="270" x2="650" y2="310" stroke="#f39c12" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 第三层：汇总 -->
+  <rect x="200" y="310" width="400" height="60" fill="#e8f8f5" stroke="#27ae60" stroke-width="2" rx="8"/>
+  <text x="400" y="340" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e8449">模拟交易验证通过</text>
+  <text x="400" y="358" text-anchor="middle" font-size="12" fill="#555">再考虑上主网实盘</text>
+  
+  <!-- 箭头：汇总到最终 -->
+  <line x1="400" y1="370" x2="400" y2="410" stroke="#27ae60" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 最终 -->
+  <rect x="250" y="410" width="300" height="50" fill="#fdedec" stroke="#e74c3c" stroke-width="2" rx="25"/>
+  <text x="400" y="440" text-anchor="middle" font-size="16" font-weight="bold" fill="#c0392b">主网实盘交易</text>
+  
+  <!-- 箭头定义 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3498db"/>
+    </marker>
+  </defs>
+</svg>
+
+<h3>13.6 避坑指南汇总</h3>
+
+<p>最后，我把这些年踩过的坑，浓缩成几条实用建议：</p>
+
+<ul>
+  <li><strong>测试网不是游乐场</strong>：每次操作都当作实盘来对待。我见过有人在测试网用100倍杠杆乱开单，结果实盘也习惯性满仓——爆得很快。</li>
+  <li><strong>回测数据要清洗</strong>：Hyperliquid的链上数据偶尔会有空值或异常值。我写过一个脚本专门处理这些脏数据，不然回测结果会失真。</li>
+  <li><strong>模拟资金别太多</strong>：100万模拟U会让你产生「亏了也无所谓」的错觉。建议手动改成你真实资金的1-2倍。</li>
+  <li><strong>记录每一笔模拟交易</strong>：包括开仓理由、平仓原因、盈亏情况。这些记录比回测数据更有价值。</li>
+</ul>
+
+<div class="highlight">
+  <p><strong>一句话总结</strong>：模拟交易不是走形式，是你和市场的第一次「正式对话」。认真对待它，主网会回报你。</p>
+</div>
+
+<footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #888; font-size: 14px;">
+  公众号：蓝海资料掘金营，微信deep3321
+</footer>
+        <div class="footer-nav">
+            <a href="12.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="14.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

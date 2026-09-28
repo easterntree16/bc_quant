@@ -1,0 +1,416 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第19章 策略框架搭建（一）</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="active">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="">第28章 部署与运维</a></li>
+<li><a href="29.html" class="">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>策略框架搭建（一）：策略基类设计、回测与实盘模式切换</h2>
+
+<p>做量化交易，说白了就是跟不确定性打交道。我见过太多人一上来就写策略逻辑，结果回测和实盘跑出来的数据完全对不上。嗯，这里有个核心问题——<strong>策略框架没搭好</strong>。</p>
+
+<p>我个人习惯，先设计一个策略基类。所有策略都从这个基类继承。这样回测和实盘只需要切换一个参数，代码复用率极高。今天我们就来聊聊这个基类怎么设计，以及模式切换的坑怎么填。</p>
+
+<h3>为什么需要策略基类？</h3>
+
+<p>你想想看，一个策略在回测时，需要历史数据、模拟撮合、计算盈亏。到了实盘，需要连接交易所、处理实时行情、管理订单状态。这两者的逻辑完全不同，但策略的核心信号生成逻辑是一样的。</p>
+
+<p>我在项目中遇到过，有人把回测和实盘写成了两套代码。结果回测赚了30%，实盘亏了20%。为什么？因为两套代码的细节处理不一致。比如滑点、手续费、订单类型，稍微差一点，结果就天差地别。</p>
+
+<p>所以，<strong>基类的核心作用</strong>就是：把策略的信号生成逻辑固定下来，把回测和实盘的差异封装到子类或配置中。</p>
+
+<h3>策略基类的核心设计</h3>
+
+<p>我们先看一个精简版的基类设计。这个基类包含了策略生命周期的主要方法。</p>
+
+<pre><code>from abc import ABC, abstractmethod
+from enum import Enum
+
+class Mode(Enum):
+    BACKTEST = "backtest"
+    LIVE = "live"
+
+class BaseStrategy(ABC):
+    def __init__(self, mode: Mode, config: dict):
+        self.mode = mode
+        self.config = config
+        self.position = 0
+        self.capital = config.get("initial_capital", 10000)
+        self.trades = []
+
+    @abstractmethod
+    def on_data(self, data):
+        """处理每一条行情数据，生成交易信号"""
+        pass
+
+    def on_order(self, order):
+        """订单状态更新回调"""
+        pass
+
+    def on_trade(self, trade):
+        """成交回调"""
+        self.trades.append(trade)
+        self.position += trade.quantity
+
+    def calculate_pnl(self):
+        """计算当前盈亏"""
+        return sum(t.pnl for t in self.trades)
+
+    def run(self):
+        """启动策略，根据模式选择执行逻辑"""
+        if self.mode == Mode.BACKTEST:
+            self._run_backtest()
+        elif self.mode == Mode.LIVE:
+            self._run_live()
+
+    def _run_backtest(self):
+        """回测模式：从历史数据循环"""
+        raise NotImplementedError
+
+    def _run_live(self):
+        """实盘模式：连接交易所，订阅行情"""
+        raise NotImplementedError
+</code></pre>
+
+<p>这个基类有几个关键点：</p>
+
+<ul>
+  <li><strong>Mode 枚举</strong>：明确区分回测和实盘模式</li>
+  <li><strong>抽象方法 on_data</strong>：子类必须实现，这是策略的核心</li>
+  <li><strong>生命周期回调</strong>：on_order、on_trade 等，方便扩展</li>
+  <li><strong>run 方法</strong>：根据模式自动选择执行路径</li>
+</ul>
+
+<div class="tip">
+  <strong>我的小技巧</strong>：在 on_data 里只做信号判断，不要直接下单。把下单逻辑放到另一个方法里。这样回测时可以模拟撮合，实盘时可以调用交易所 API。职责单一，调试起来也方便。
+</div>
+
+<h3>回测与实盘模式切换</h3>
+
+<p>模式切换的核心，其实就是一句话：<strong>同一个策略，不同的执行引擎</strong>。</p>
+
+<p>回测时，我们用一个循环遍历历史数据，模拟市场环境。实盘时，我们连接 WebSocket，实时接收行情。但策略的 on_data 方法，接收的数据格式应该保持一致。</p>
+
+<p>我曾经犯过一个错误：回测时数据是 pandas DataFrame，实盘时数据是字典。结果 on_data 里写了一大堆 if-else 来判断数据类型。后来我统一了数据格式，用 NamedTuple 或者简单的 dataclass，问题就解决了。</p>
+
+<pre><code>from dataclasses import dataclass
+
+@dataclass
+class MarketData:
+    symbol: str
+    timestamp: int
+    price: float
+    volume: float
+    bid: float
+    ask: float
+</code></pre>
+
+<p>这样，无论回测还是实盘，on_data 接收的都是 MarketData 对象。代码干净，逻辑清晰。</p>
+
+<h3>一个完整的策略示例</h3>
+
+<p>我们写一个简单的移动平均线策略，继承自 BaseStrategy。</p>
+
+<pre><code>class MovingAverageStrategy(BaseStrategy):
+    def __init__(self, mode, config):
+        super().__init__(mode, config)
+        self.short_window = config.get("short_window", 5)
+        self.long_window = config.get("long_window", 20)
+        self.prices = []
+
+    def on_data(self, data: MarketData):
+        self.prices.append(data.price)
+        if len(self.prices) &lt; self.long_window:
+            return
+
+        short_ma = sum(self.prices[-self.short_window:]) / self.short_window
+        long_ma = sum(self.prices[-self.long_window:]) / self.long_window
+
+        if short_ma &gt; long_ma and self.position == 0:
+            self._place_order("buy", data.price, 1)
+        elif short_ma &lt; long_ma and self.position &gt; 0:
+            self._place_order("sell", data.price, 1)
+
+    def _place_order(self, side, price, quantity):
+        # 回测时直接模拟成交
+        if self.mode == Mode.BACKTEST:
+            trade = Trade(side, price, quantity)
+            self.on_trade(trade)
+        # 实盘时调用交易所 API
+        elif self.mode == Mode.LIVE:
+            # 这里调用 Hyperliquid 的 SDK
+            pass
+</code></pre>
+
+<div class="highlight">
+  <strong>核心思想</strong>：on_data 只做信号判断，_place_order 负责执行。这样回测和实盘的差异被隔离在 _place_order 内部。你只需要修改这一个方法，就能切换模式。
+</div>
+
+<h3>框架结构图</h3>
+
+<p>下面这张图展示了整个策略框架的层次关系。我习惯用 SVG 画这种结构图，清晰直观。</p>
+
+<svg width="700" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="700" height="400" fill="#f0f8ff" rx="10"/>
+
+  <!-- 基类 -->
+  <rect x="250" y="20" width="200" height="60" rx="8" fill="#4a90d9" stroke="#2c5f8a" stroke-width="2"/>
+  <text x="350" y="55" text-anchor="middle" fill="white" font-size="16" font-weight="bold">BaseStrategy</text>
+
+  <!-- 箭头 -->
+  <line x1="350" y1="80" x2="350" y2="120" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 子类 -->
+  <rect x="150" y="120" width="200" height="50" rx="8" fill="#5cb85c" stroke="#3d8b3d" stroke-width="2"/>
+  <text x="250" y="150" text-anchor="middle" fill="white" font-size="14">MovingAverageStrategy</text>
+
+  <rect x="400" y="120" width="200" height="50" rx="8" fill="#5cb85c" stroke="#3d8b3d" stroke-width="2"/>
+  <text x="500" y="150" text-anchor="middle" fill="white" font-size="14">RSIStrategy</text>
+
+  <!-- 箭头 -->
+  <line x1="250" y1="170" x2="250" y2="210" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="500" y1="170" x2="500" y2="210" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 模式切换 -->
+  <rect x="100" y="210" width="250" height="50" rx="8" fill="#f0ad4e" stroke="#c77a1a" stroke-width="2"/>
+  <text x="225" y="240" text-anchor="middle" fill="white" font-size="14">回测引擎 (BacktestEngine)</text>
+
+  <rect x="400" y="210" width="250" height="50" rx="8" fill="#f0ad4e" stroke="#c77a1a" stroke-width="2"/>
+  <text x="525" y="240" text-anchor="middle" fill="white" font-size="14">实盘引擎 (LiveEngine)</text>
+
+  <!-- 箭头 -->
+  <line x1="225" y1="260" x2="225" y2="300" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="525" y1="260" x2="525" y2="300" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 数据源 -->
+  <rect x="50" y="300" width="250" height="50" rx="8" fill="#d9534f" stroke="#b52b27" stroke-width="2"/>
+  <text x="175" y="330" text-anchor="middle" fill="white" font-size="14">历史数据 (CSV/DB)</text>
+
+  <rect x="400" y="300" width="250" height="50" rx="8" fill="#d9534f" stroke="#b52b27" stroke-width="2"/>
+  <text x="525" y="330" text-anchor="middle" fill="white" font-size="14">实时行情 (WebSocket)</text>
+
+  <!-- 箭头定义 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+
+  <!-- 图例 -->
+  <rect x="20" y="370" width="12" height="12" fill="#4a90d9"/>
+  <text x="38" y="381" font-size="12" fill="#333">基类</text>
+  <rect x="100" y="370" width="12" height="12" fill="#5cb85c"/>
+  <text x="118" y="381" font-size="12" fill="#333">策略子类</text>
+  <rect x="200" y="370" width="12" height="12" fill="#f0ad4e"/>
+  <text x="218" y="381" font-size="12" fill="#333">执行引擎</text>
+  <rect x="310" y="370" width="12" height="12" fill="#d9534f"/>
+  <text x="328" y="381" font-size="12" fill="#333">数据源</text>
+</svg>
+
+<div class="warning">
+  <strong>注意</strong>：实盘引擎里一定要加熔断机制。我见过有人策略在回测时跑得好好的，实盘一上线，行情剧烈波动，策略疯狂下单，几分钟就把本金亏光了。所以，在 _place_order 里加一个最大持仓限制，或者每日最大亏损限制，很有必要。
+</div>
+
+<h3>配置管理</h3>
+
+<p>策略的参数，比如移动平均线的窗口大小、初始资金、手续费率，都应该放在配置文件里。不要硬编码在代码中。</p>
+
+<pre><code># config.yaml
+strategy:
+  name: moving_average
+  short_window: 5
+  long_window: 20
+  initial_capital: 10000
+  commission: 0.001
+
+mode: backtest
+data_path: "./data/btc_usdt.csv"
+</code></pre>
+
+<p>在 Python 中读取配置，我习惯用 yaml 库。这样修改参数只需要改配置文件，不需要改代码。</p>
+
+<pre><code>import yaml
+
+with open("config.yaml", "r") as f:
+    config = yaml.safe_load(f)
+
+mode = Mode(config["mode"])
+strategy = MovingAverageStrategy(mode, config["strategy"])
+strategy.run()
+</code></pre>
+
+<div class="tip">
+  <strong>避坑指南</strong>：我曾经把手续费率写死在代码里，结果换了交易所，手续费不同，回测结果完全失真。后来我把所有参数都放到配置文件里，换交易所只需要改一个文件。省心多了。
+</div>
+
+<h3>总结</h3>
+
+<p>策略基类设计，说白了就是<strong>抽象与隔离</strong>。把不变的信号逻辑抽象出来，把变化的执行逻辑隔离出去。这样，你的策略就能在回测和实盘之间无缝切换。</p>
+
+<p>我个人习惯，每次写新策略前，先花10分钟设计基类接口。虽然看起来多花了时间，但后期调试和维护能省下大把时间。你想想看，如果回测和实盘共用一套信号逻辑，出问题的时候，你只需要排查一个地方，而不是两套代码。</p>
+
+<p>嗯，今天就聊到这里。记住：框架搭好了，策略才能跑得稳。</p>
+
+<hr />
+<footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+        <div class="footer-nav">
+            <a href="18.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="20.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

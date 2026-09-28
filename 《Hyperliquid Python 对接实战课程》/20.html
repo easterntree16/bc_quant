@@ -1,0 +1,578 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第20章 策略框架搭建（二）</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="active">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="">第28章 部署与运维</a></li>
+<li><a href="29.html" class="">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>策略框架搭建（二）：信号生成模块、风险管理模块、订单执行模块</h2>
+
+<p>上一章我们把策略框架的骨架搭好了。今天咱们来填肉——把三个核心模块讲透：信号生成、风险管理、订单执行。这三个模块，说白了就是策略的「大脑」、「心脏」和「手脚」。</p>
+
+<p>我个人习惯，写策略前会先画一张模块关系图。这样代码写起来才不会乱。来，先看看我画的这张图：</p>
+
+<div style="text-align:center; margin:20px 0;">
+<svg width="720" height="420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4A90D9"/>
+    </marker>
+    <linearGradient id="boxGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E3F2FD;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#BBDEFB;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="boxGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFF3E0;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#FFE0B2;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="boxGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8F5E9;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#C8E6C9;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="boxGrad4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FCE4EC;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#F8BBD0;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="115%" height="115%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- 背景 -->
+  <rect x="0" y="0" width="720" height="420" rx="12" fill="#FAFAFA" stroke="#E0E0E0" stroke-width="1.5"/>
+
+  <!-- 标题 -->
+  <text x="360" y="35" text-anchor="middle" font-size="18" font-weight="bold" fill="#333">策略框架核心模块关系图</text>
+
+  <!-- 数据源 -->
+  <rect x="260" y="55" width="200" height="50" rx="10" fill="url(#boxGrad1)" stroke="#64B5F6" stroke-width="2" filter="url(#shadow)"/>
+  <text x="360" y="85" text-anchor="middle" font-size="14" font-weight="bold" fill="#1565C0">📡 市场数据源</text>
+
+  <!-- 箭头：数据源 -> 信号生成 -->
+  <line x1="360" y1="105" x2="360" y2="140" stroke="#4A90D9" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- 信号生成模块 -->
+  <rect x="210" y="145" width="300" height="70" rx="12" fill="url(#boxGrad2)" stroke="#FFB74D" stroke-width="2" filter="url(#shadow)"/>
+  <text x="360" y="172" text-anchor="middle" font-size="15" font-weight="bold" fill="#E65100">🧠 信号生成模块</text>
+  <text x="360" y="195" text-anchor="middle" font-size="12" fill="#BF360C">技术指标 · 模式识别 · 多因子打分</text>
+
+  <!-- 箭头：信号生成 -> 风险管理 -->
+  <line x1="360" y1="215" x2="360" y2="250" stroke="#4A90D9" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- 风险管理模块 -->
+  <rect x="210" y="255" width="300" height="70" rx="12" fill="url(#boxGrad3)" stroke="#81C784" stroke-width="2" filter="url(#shadow)"/>
+  <text x="360" y="282" text-anchor="middle" font-size="15" font-weight="bold" fill="#1B5E20">🛡️ 风险管理模块</text>
+  <text x="360" y="305" text-anchor="middle" font-size="12" fill="#2E7D32">仓位计算 · 止损止盈 · 最大回撤控制</text>
+
+  <!-- 箭头：风险管理 -> 订单执行 -->
+  <line x1="360" y1="325" x2="360" y2="355" stroke="#4A90D9" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- 订单执行模块 -->
+  <rect x="210" y="360" width="300" height="50" rx="12" fill="url(#boxGrad4)" stroke="#F06292" stroke-width="2" filter="url(#shadow)"/>
+  <text x="360" y="390" text-anchor="middle" font-size="15" font-weight="bold" fill="#880E4F">⚡ 订单执行模块</text>
+
+  <!-- 反馈回路 -->
+  <path d="M 515 385 Q 560 385 560 300 Q 560 180 515 180" fill="none" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowhead)"/>
+  <text x="570" y="290" font-size="11" fill="#757575" transform="rotate(90,570,290)">反馈循环</text>
+
+  <!-- 图例 -->
+  <rect x="30" y="55" width="12" height="12" fill="url(#boxGrad1)" stroke="#64B5F6" stroke-width="1"/>
+  <text x="48" y="66" font-size="11" fill="#555">数据输入</text>
+  <rect x="30" y="75" width="12" height="12" fill="url(#boxGrad2)" stroke="#FFB74D" stroke-width="1"/>
+  <text x="48" y="86" font-size="11" fill="#555">策略逻辑</text>
+  <rect x="30" y="95" width="12" height="12" fill="url(#boxGrad3)" stroke="#81C784" stroke-width="1"/>
+  <text x="48" y="106" font-size="11" fill="#555">风险控制</text>
+  <rect x="30" y="115" width="12" height="12" fill="url(#boxGrad4)" stroke="#F06292" stroke-width="1"/>
+  <text x="48" y="126" font-size="11" fill="#555">执行层</text>
+</svg>
+</div>
+
+<p>你看，数据从市场进来，经过信号生成模块判断方向，然后交给风险管理模块算仓位和止损，最后订单执行模块负责把单子发出去。每个环节都环环相扣。我在项目中遇到过不少新手，信号写得很漂亮，但风控一塌糊涂，结果爆仓了——嗯，这种教训太深刻了。</p>
+
+<h3>一、信号生成模块：策略的「大脑」</h3>
+
+<p>信号生成模块，说白了就是回答一个问题：现在该做多、做空，还是观望？</p>
+
+<p>我个人习惯把信号生成拆成三层：</p>
+
+<ol>
+  <li><strong>数据预处理层</strong>：清洗、对齐、计算衍生指标</li>
+  <li><strong>信号计算层</strong>：跑技术指标、模式识别、多因子打分</li>
+  <li><strong>信号聚合层</strong>：把多个子信号合并成一个最终决策</li>
+</ol>
+
+<p>来看一个具体的代码实现。这是我在 Hyperliquid 上跑过的一个均值回归策略的信号生成器：</p>
+
+<pre><code>class SignalGenerator:
+    """
+    信号生成器 - 均值回归策略示例
+    """
+    def __init__(self, lookback: int = 20, z_threshold: float = 2.0):
+        self.lookback = lookback
+        self.z_threshold = z_threshold
+        self.price_buffer = []  # 价格缓存
+
+    def update_price(self, price: float):
+        """更新价格数据"""
+        self.price_buffer.append(price)
+        if len(self.price_buffer) > self.lookback * 2:
+            self.price_buffer.pop(0)
+
+    def compute_zscore(self) -> float:
+        """计算当前价格的Z-Score"""
+        if len(self.price_buffer) &lt; self.lookback:
+            return 0.0
+
+        recent = self.price_buffer[-self.lookback:]
+        mean = sum(recent) / len(recent)
+        variance = sum((x - mean) ** 2 for x in recent) / len(recent)
+        std = variance ** 0.5
+
+        if std == 0:
+            return 0.0
+
+        current_price = self.price_buffer[-1]
+        zscore = (current_price - mean) / std
+        return zscore
+
+    def generate_signal(self) -> dict:
+        """
+        生成交易信号
+        返回: {'action': 'buy'/'sell'/'hold', 'strength': 0.0~1.0, 'zscore': float}
+        """
+        zscore = self.compute_zscore()
+
+        if zscore &gt; self.z_threshold:
+            # 价格偏高，做空信号
+            strength = min((zscore - self.z_threshold) / self.z_threshold, 1.0)
+            return {'action': 'sell', 'strength': strength, 'zscore': zscore}
+        elif zscore &lt; -self.z_threshold:
+            # 价格偏低，做多信号
+            strength = min((abs(zscore) - self.z_threshold) / self.z_threshold, 1.0)
+            return {'action': 'buy', 'strength': strength, 'zscore': zscore}
+        else:
+            return {'action': 'hold', 'strength': 0.0, 'zscore': zscore}
+</code></pre>
+
+<div class="tip">
+  <strong>💡 我的经验：</strong>信号强度（strength）这个字段很重要。它不只是告诉你方向，还告诉你「多确信」。我一般会把 strength 传给风控模块，让它根据置信度动态调整仓位。比如 strength=0.3 时只开 30% 仓位，strength=0.9 时满仓干。
+</div>
+
+<p>你想想看，如果信号生成模块只输出「买」或「卖」，那风控模块就没办法做精细化的仓位管理了。所以，<strong>信号一定要带强度信息</strong>。</p>
+
+<h3>二、风险管理模块：策略的「心脏」</h3>
+
+<p>风险管理模块，我愿称之为策略的心脏。心脏停了，人就没了。风控没做好，账户就归零了。</p>
+
+<p>我在 Hyperliquid 上见过太多人，策略信号很准，但因为没设止损，一次黑天鹅就爆仓了。嗯，我自己早期也吃过这个亏——有一次 ETH 插针，我的网格策略没设硬止损，直接穿了清算价，亏了 30%。从那以后，我把风控模块写成了策略里最「啰嗦」的部分。</p>
+
+<p>一个完整的风险管理模块，至少包含以下功能：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>功能</th>
+      <th>说明</th>
+      <th>实现要点</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>仓位计算</td>
+      <td>根据信号强度和账户余额计算开仓数量</td>
+      <td>考虑杠杆、保证金比例、最大仓位限制</td>
+    </tr>
+    <tr>
+      <td>止损管理</td>
+      <td>设置硬止损和移动止损</td>
+      <td>硬止损用固定价格，移动止损用 ATR 动态调整</td>
+    </tr>
+    <tr>
+      <td>止盈管理</td>
+      <td>分批止盈或追踪止盈</td>
+      <td>可以设多个目标价位，分批出场</td>
+    </tr>
+    <tr>
+      <td>最大回撤控制</td>
+      <td>当日/当周亏损超过阈值时暂停交易</td>
+      <td>记录每日盈亏，超过阈值自动熔断</td>
+    </tr>
+    <tr>
+      <td>相关性检查</td>
+      <td>避免多个相关品种同时开仓</td>
+      <td>维护一个持仓相关性矩阵</td>
+    </tr>
+</tbody>
+</table>
+
+<p>来看一个具体的仓位计算实现：</p>
+
+<pre><code>class RiskManager:
+    """
+    风险管理器 - 仓位计算 + 止损止盈
+    """
+    def __init__(self, account_balance: float, max_risk_per_trade: float = 0.02):
+        self.account_balance = account_balance
+        self.max_risk_per_trade = max_risk_per_trade  # 单笔最大风险比例 2%
+        self.max_position_ratio = 0.5  # 最大仓位比例 50%
+        self.daily_loss_limit = 0.08   # 日亏损上限 8%
+
+    def calculate_position_size(self, signal_strength: float, entry_price: float,
+                                stop_loss_price: float, leverage: int = 1) -> dict:
+        """
+        计算开仓数量
+        :param signal_strength: 信号强度 0.0~1.0
+        :param entry_price: 入场价格
+        :param stop_loss_price: 止损价格
+        :param leverage: 杠杆倍数
+        :return: 仓位信息
+        """
+        # 1. 根据信号强度调整风险比例
+        risk_per_trade = self.max_risk_per_trade * signal_strength
+
+        # 2. 计算每单位价格波动带来的亏损
+        price_risk = abs(entry_price - stop_loss_price)
+        if price_risk == 0:
+            return {'size': 0, 'reason': 'stop_loss_too_tight'}
+
+        # 3. 计算可开仓数量（考虑杠杆）
+        risk_amount = self.account_balance * risk_per_trade
+        raw_size = risk_amount / price_risk
+
+        # 4. 应用杠杆
+        leveraged_size = raw_size * leverage
+
+        # 5. 检查最大仓位限制
+        max_size = (self.account_balance * self.max_position_ratio) / entry_price
+        final_size = min(leveraged_size, max_size)
+
+        return {
+            'size': round(final_size, 4),
+            'risk_amount': round(risk_amount, 2),
+            'leverage': leverage,
+            'stop_loss': stop_loss_price
+        }
+
+    def check_daily_loss_limit(self, daily_pnl: float) -> bool:
+        """检查是否触发日亏损上限"""
+        loss_ratio = abs(daily_pnl) / self.account_balance
+        if loss_ratio >= self.daily_loss_limit:
+            return True  # 触发熔断
+        return False
+</code></pre>
+
+<div class="warning">
+  <strong>⚠️ 避坑指南：</strong>我曾经犯过一个错误——把止损价格设得太近，结果被市场噪音反复扫损。后来我改用 ATR（平均真实波幅）来动态计算止损距离，效果好了很多。建议止损距离至少是 1.5 倍 ATR。
+</div>
+
+<p>这里有个细节要注意：<strong>风控模块一定要独立于信号模块运行</strong>。什么意思？就是即使信号模块挂了，风控模块还能独立执行止损和熔断。我在 Hyperliquid 上就是这么设计的——风控逻辑跑在一个单独的协程里，每 100ms 检查一次持仓状态。</p>
+
+<h3>三、订单执行模块：策略的「手脚」</h3>
+
+<p>信号算好了，仓位算好了，接下来就是执行。订单执行模块，说白了就是把「想买」变成「买到了」。</p>
+
+<p>Hyperliquid 的订单执行有几个关键点：</p>
+
+<ul>
+  <li><strong>订单类型</strong>：限价单 vs 市价单。我个人习惯用限价单，除非信号特别强才用市价单</li>
+  <li><strong>滑点控制</strong>：限价单要设置合理的价格偏移，避免一直吃不到单</li>
+  <li><strong>订单生命周期管理</strong>：下单 -> 监控 -> 成交/取消 -> 重试</li>
+  <li><strong>错误处理</strong>：网络超时、余额不足、价格保护等异常情况</li>
+</ul>
+
+<p>来看一个订单执行器的核心实现：</p>
+
+<pre><code>class OrderExecutor:
+    """
+    订单执行器 - 对接 Hyperliquid API
+    """
+    def __init__(self, hyperliquid_client, max_retries: int = 3):
+        self.client = hyperliquid_client
+        self.max_retries = max_retries
+        self.pending_orders = {}  # 维护未成交订单
+
+    async def execute_market_order(self, symbol: str, side: str, size: float,
+                                   slippage_bps: int = 5) -> dict:
+        """
+        执行市价单（带滑点保护）
+        :param slippage_bps: 允许的滑点，单位基点（1bps = 0.01%）
+        """
+        # 获取当前最优价格
+        orderbook = await self.client.get_orderbook(symbol)
+        if side == 'buy':
+            price = orderbook['asks'][0]['price'] * (1 + slippage_bps / 10000)
+        else:
+            price = orderbook['bids'][0]['price'] * (1 - slippage_bps / 10000)
+
+        # 构建订单
+        order = {
+            'symbol': symbol,
+            'side': side,
+            'size': size,
+            'order_type': 'market',
+            'price': price,
+            'reduce_only': False
+        }
+
+        # 发送订单（带重试）
+        for attempt in range(self.max_retries):
+            try:
+                response = await self.client.place_order(order)
+                if response['status'] == 'filled':
+                    return {'status': 'filled', 'order_id': response['oid'],
+                            'fill_price': response['avg_price']}
+                elif response['status'] == 'pending':
+                    # 市价单一般不会pending，但以防万一
+                    self.pending_orders[response['oid']] = order
+                    return {'status': 'pending', 'order_id': response['oid']}
+            except Exception as e:
+                if attempt == self.max_retries - 1:
+                    return {'status': 'failed', 'error': str(e)}
+                await asyncio.sleep(0.1 * (attempt + 1))  # 退避重试
+
+        return {'status': 'failed', 'error': 'max_retries_exceeded'}
+
+    async def cancel_all_orders(self, symbol: str = None):
+        """取消所有未成交订单"""
+        if symbol:
+            orders = await self.client.get_open_orders(symbol)
+        else:
+            orders = await self.client.get_open_orders()
+
+        for order in orders:
+            await self.client.cancel_order(order['oid'])
+            self.pending_orders.pop(order['oid'], None)
+</code></pre>
+
+<div class="tip">
+  <strong>💡 我的经验：</strong>订单执行模块一定要做「幂等性处理」。什么意思？就是同一个订单不要因为网络重试而重复发送。我一般会在发送前生成一个唯一的 client_order_id，Hyperliquid 支持这个字段，重复的 ID 会被自动拒绝。
+</div>
+
+<p>你想想看，如果网络抖动了一下，你的订单其实已经成交了，但客户端没收到确认，又发了一次——那就变成双倍仓位了。这种 bug 在实盘中是要命的。</p>
+
+<h3>三个模块如何协作？</h3>
+
+<p>最后，我简单说一下这三个模块怎么串起来。在我的策略框架里，主循环大概是这样的：</p>
+
+<pre><code>async def strategy_loop():
+    """策略主循环"""
+    signal_gen = SignalGenerator(lookback=20, z_threshold=2.0)
+    risk_mgr = RiskManager(account_balance=10000.0, max_risk_per_trade=0.02)
+    executor = OrderExecutor(hyperliquid_client=client)
+
+    while True:
+        # 1. 获取最新价格
+        price = await get_latest_price('ETH')
+        signal_gen.update_price(price)
+
+        # 2. 生成信号
+        signal = signal_gen.generate_signal()
+        if signal['action'] == 'hold':
+            await asyncio.sleep(1)
+            continue
+
+        # 3. 计算仓位和止损
+        stop_loss = price * 0.98 if signal['action'] == 'buy' else price * 1.02
+        position = risk_mgr.calculate_position_size(
+            signal_strength=signal['strength'],
+            entry_price=price,
+            stop_loss_price=stop_loss,
+            leverage=2
+        )
+
+        if position['size'] == 0:
+            await asyncio.sleep(1)
+            continue
+
+        # 4. 执行订单
+        result = await executor.execute_market_order(
+            symbol='ETH',
+            side=signal['action'],
+            size=position['size'],
+            slippage_bps=5
+        )
+
+        # 5. 记录日志
+        logger.info(f"Signal: {signal['action']}, Size: {position['size']}, "
+                    f"Result: {result['status']}")
+
+        await asyncio.sleep(1)
+</code></pre>
+
+<p>嗯，这个循环看起来简单，但每个环节都有很多细节。我在 Hyperliquid 上跑策略时，还会加一个「预热阶段」——先跑 100 个 tick 的数据，让信号生成器的缓存填满，再开始真正交易。这个小技巧帮我避免了不少开局就乱开仓的情况。</p>
+
+<p>好了，三个模块的核心逻辑就讲到这里。记住一句话：<strong>信号是方向，风控是底线，执行是保障</strong>。三者缺一不可。</p>
+
+<div class="highlight">
+  <p><strong>📌 本章核心要点：</strong></p>
+  <ul>
+    <li>信号生成模块要输出「方向 + 强度」，不要只输出方向</li>
+    <li>风险管理模块要独立运行，不能依赖信号模块</li>
+    <li>订单执行模块必须做幂等性处理和重试机制</li>
+    <li>三个模块通过主循环串联，数据流是单向的：信号 -> 风控 -> 执行</li>
+  </ul>
+</div>
+
+<footer style="margin-top:40px; padding-top:20px; border-top:1px solid #E0E0E0; text-align:center; color:#888; font-size:13px;">
+  公众号：蓝海资料掘金营，微信 deep3321
+</footer>
+        <div class="footer-nav">
+            <a href="19.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="21.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

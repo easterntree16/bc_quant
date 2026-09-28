@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第13章 WebSocket 实战（一）</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="active">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="">第28章 部署与运维</a></li>
+<li><a href="29.html" class="">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>WebSocket 实战（一）：实时订单簿数据流、增量更新与全量快照</h2>
+
+<p>做量化交易，最核心的就是数据。尤其是订单簿数据，它直接反映了市场的深度和流动性。我个人习惯把订单簿比作市场的「心电图」——跳得快不快、跳得稳不稳，全看它。</p>
+
+<p>今天我们就来聊聊，怎么用 WebSocket 从 Hyperliquid 拿到这份「心电图」，并且保证数据不丢、不乱、不延迟。</p>
+
+<h3>为什么需要 WebSocket？</h3>
+
+<p>你想想看，如果用 REST API 去轮询订单簿，每秒钟拉一次，延迟至少几百毫秒。这在高频场景下根本没法用。WebSocket 就不一样了，它是一条长连接，服务器主动往你这边推数据。说白了，就是「你躺着，数据自己送上门」。</p>
+
+<p>我在项目中遇到过最夸张的情况：用 REST 轮询时，订单簿中间层数据已经变了三次，我这边才拿到第一次的快照。那笔交易亏得我印象深刻。嗯，从那以后，所有实时数据我都改用 WebSocket 了。</p>
+
+<h3>Hyperliquid 的 WebSocket 架构</h3>
+
+<p>Hyperliquid 的 WebSocket 接口设计得挺清爽。它主要提供两种数据流：</p>
+
+<ul>
+  <li><strong>全量快照（snapshot）</strong>：当前订单簿的完整状态，包含所有档位的买盘和卖盘</li>
+  <li><strong>增量更新（delta）</strong>：每次变化只推送变化的部分，比如某档位价格变了、某档位被吃掉了</li>
+</ul>
+
+<p>这两种数据必须配合使用。你不能只靠增量更新，因为万一中间断连了，你的本地数据就跟服务器对不上了。正确的做法是：先拿一次全量快照作为基准，然后不断叠加增量更新。</p>
+
+<div class="highlight">
+  <p><strong>核心原则</strong>：全量快照是地基，增量更新是砖瓦。地基不稳，房子迟早塌。</p>
+</div>
+
+<p>下面这张图展示了整个数据流的处理逻辑：</p>
+
+<svg width="720" height="420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4A90D9"/>
+    </marker>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="720" height="420" fill="#F0F8FF" rx="12"/>
+  
+  <!-- 标题 -->
+  <text x="360" y="35" text-anchor="middle" font-size="18" font-weight="bold" fill="#2C3E50">订单簿数据流处理流程</text>
+  
+  <!-- WebSocket 连接 -->
+  <rect x="260" y="60" width="200" height="50" rx="8" fill="#4A90D9"/>
+  <text x="360" y="90" text-anchor="middle" fill="white" font-size="14" font-weight="bold">WebSocket 连接</text>
+  
+  <!-- 箭头 -->
+  <line x1="360" y1="110" x2="360" y2="145" stroke="#4A90D9" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- 判断分支 -->
+  <polygon points="360,150 420,190 360,230 300,190" fill="#F39C12" stroke="#E67E22" stroke-width="2"/>
+  <text x="360" y="195" text-anchor="middle" fill="white" font-size="12" font-weight="bold">消息类型</text>
+  
+  <!-- 左侧：全量快照 -->
+  <line x1="300" y1="190" x2="120" y2="190" stroke="#4A90D9" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <rect x="20" y="165" width="100" height="50" rx="8" fill="#27AE60"/>
+  <text x="70" y="190" text-anchor="middle" fill="white" font-size="12" font-weight="bold">全量快照</text>
+  
+  <!-- 右侧：增量更新 -->
+  <line x1="420" y1="190" x2="600" y2="190" stroke="#4A90D9" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <rect x="600" y="165" width="100" height="50" rx="8" fill="#E74C3C"/>
+  <text x="650" y="190" text-anchor="middle" fill="white" font-size="12" font-weight="bold">增量更新</text>
+  
+  <!-- 全量快照处理 -->
+  <line x1="70" y1="215" x2="70" y2="260" stroke="#27AE60" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <rect x="10" y="260" width="120" height="45" rx="8" fill="#2ECC71"/>
+  <text x="70" y="285" text-anchor="middle" fill="white" font-size="11">替换本地订单簿</text>
+  
+  <!-- 增量更新处理 -->
+  <line x1="650" y1="215" x2="650" y2="260" stroke="#E74C3C" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <rect x="590" y="260" width="120" height="45" rx="8" fill="#FF6B6B"/>
+  <text x="650" y="285" text-anchor="middle" fill="white" font-size="11">合并到本地订单簿</text>
+  
+  <!-- 合并箭头 -->
+  <line x1="130" y1="282" x2="250" y2="340" stroke="#7F8C8D" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="590" y1="282" x2="470" y2="340" stroke="#7F8C8D" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- 最终输出 -->
+  <rect x="260" y="335" width="200" height="50" rx="8" fill="#8E44AD"/>
+  <text x="360" y="365" text-anchor="middle" fill="white" font-size="14" font-weight="bold">实时订单簿数据</text>
+  
+  <!-- 说明 -->
+  <text x="360" y="410" text-anchor="middle" fill="#7F8C8D" font-size="11">全量快照做基准 → 增量更新持续叠加 → 保持本地数据与服务器一致</text>
+</svg>
+
+<h3>实战：连接并订阅订单簿</h3>
+
+<p>好，理论说完了，咱们直接上代码。我个人习惯用 <code>websockets</code> 这个库，它比 <code>socket.io</code> 轻量，而且原生支持 asyncio。</p>
+
+<pre><code>import asyncio
+import json
+import websockets
+
+async def subscribe_orderbook():
+    uri = "wss://api.hyperliquid.xyz/ws"
+    
+    async with websockets.connect(uri) as ws:
+        # 订阅 BTC 订单簿
+        subscribe_msg = {
+            "type": "subscribe",
+            "channel": "orderbook",
+            "coin": "BTC"
+        }
+        await ws.send(json.dumps(subscribe_msg))
+        
+        # 持续接收消息
+        async for message in ws:
+            data = json.loads(message)
+            print(f"收到消息类型: {data.get('type')}")
+            # 后续处理...
+</code></pre>
+
+<div class="tip">
+  <p><strong>小提示</strong>：订阅时记得把 <code>coin</code> 参数换成你实际要交易的币种。我刚开始测试时忘了改，盯着 ETH 的订单簿看了半天，还以为市场没波动呢。</p>
+</div>
+
+<h3>处理全量快照</h3>
+
+<p>第一次连接成功后，服务器会先推送一个全量快照。它的结构大概是这样的：</p>
+
+<pre><code>{
+    "type": "snapshot",
+    "data": {
+        "bids": [
+            ["10000.5", "1.2"],
+            ["9999.8", "0.5"]
+        ],
+        "asks": [
+            ["10001.0", "0.8"],
+            ["10001.5", "1.0"]
+        ]
+    }
+}
+</code></pre>
+
+<p>注意，价格和数量都是字符串。为什么不用浮点数？因为浮点数有精度问题。你想想看，0.1 + 0.2 在 Python 里等于多少？0.30000000000000004。这在交易系统里是不能接受的。所以 Hyperliquid 很聪明地用了字符串。</p>
+
+<p>收到快照后，我建议直接替换掉本地存储的订单簿，而不是合并。因为快照代表的是当前时刻的完整状态，任何本地残留数据都是过时的。</p>
+
+<pre><code>class OrderBook:
+    def __init__(self):
+        self.bids = {}  # 价格 -> 数量
+        self.asks = {}
+    
+    def apply_snapshot(self, snapshot):
+        """全量快照：直接替换"""
+        self.bids = {float(price): float(qty) 
+                     for price, qty in snapshot['bids']}
+        self.asks = {float(price): float(qty) 
+                     for price, qty in snapshot['asks']}
+        print(f"快照已应用：{len(self.bids)} 档买盘，{len(self.asks)} 档卖盘")
+</code></pre>
+
+<h3>处理增量更新</h3>
+
+<p>快照之后，服务器就开始推送增量更新了。增量更新的格式是这样的：</p>
+
+<pre><code>{
+    "type": "delta",
+    "data": {
+        "bids": [["10000.5", "0"]],   # 数量为0表示删除该档位
+        "asks": [["10002.0", "1.5"]]  # 新增或更新档位
+    }
+}
+</code></pre>
+
+<p>这里有个关键点：<strong>数量为 0 表示该价格档位被完全吃掉了</strong>，需要从本地订单簿中删除。数量大于 0 则更新或新增。</p>
+
+<div class="warning">
+  <p><strong>避坑指南</strong>：我曾经遇到过一个问题——增量更新里的价格在本地订单簿中找不到。这种情况通常是因为网络延迟导致快照还没到，增量先到了。解决方案是：如果增量中的价格不在本地，直接忽略它，等下一次快照来修正。</p>
+</div>
+
+<pre><code>def apply_delta(self, delta):
+    """增量更新：合并到现有订单簿"""
+    for price_str, qty_str in delta['bids']:
+        price = float(price_str)
+        qty = float(qty_str)
+        
+        if qty == 0:
+            # 删除该档位
+            self.bids.pop(price, None)
+        else:
+            # 更新或新增
+            self.bids[price] = qty
+    
+    # 卖盘同理
+    for price_str, qty_str in delta['asks']:
+        price = float(price_str)
+        qty = float(qty_str)
+        
+        if qty == 0:
+            self.asks.pop(price, None)
+        else:
+            self.asks[price] = qty
+</code></pre>
+
+<h3>保持数据一致性</h3>
+
+<p>在实际运行中，WebSocket 连接可能会断开。断开后重连时，必须重新获取全量快照。你不能假设增量更新是连续的。</p>
+
+<p>我建议的流程是：</p>
+
+<ol>
+  <li>建立 WebSocket 连接</li>
+  <li>订阅订单簿频道</li>
+  <li>等待全量快照，替换本地数据</li>
+  <li>持续接收增量更新，合并到本地</li>
+  <li>如果连接断开，回到第 1 步</li>
+</ol>
+
+<p>这个流程看起来简单，但实际做起来有个坑：<strong>快照和增量之间可能有时间差</strong>。也就是说，你收到快照的那一瞬间，市场可能已经变了。等你开始处理增量时，中间有几笔更新已经丢了。</p>
+
+<p>怎么解决？Hyperliquid 的增量更新里带了一个序列号（seqNum），你可以用它来检查是否有遗漏。如果发现序列号不连续，说明中间有数据丢了，这时候需要重新请求一次全量快照。</p>
+
+<pre><code>def check_sequence(self, new_seq):
+    """检查序列号是否连续"""
+    if self.last_seq is not None and new_seq != self.last_seq + 1:
+        print(f"警告：序列号不连续！期望 {self.last_seq + 1}，实际 {new_seq}")
+        # 触发重新获取快照
+        return False
+    self.last_seq = new_seq
+    return True
+</code></pre>
+
+<div class="highlight">
+  <p><strong>重要提醒</strong>：序列号检查不是可选项，是必选项。我在生产环境中遇到过两次序列号跳变，都是因为服务器端短暂重启导致的。如果不检查，你的订单簿会慢慢「漂移」，最终跟真实市场差出好几个档位。</p>
+</div>
+
+<h3>性能优化建议</h3>
+
+<p>订单簿数据量很大，尤其是深度比较深的币种。我见过 BTC 的订单簿有上百档数据，每秒更新几十次。如果处理不当，CPU 很快就跑满了。</p>
+
+<p>几个优化点：</p>
+
+<ul>
+  <li><strong>使用字典而不是列表</strong>：价格作为 key，查找速度是 O(1)</li>
+  <li><strong>避免频繁排序</strong>：只在需要计算买卖价差或深度时排序</li>
+  <li><strong>批量处理增量</strong>：如果短时间内收到多个增量，可以合并后再更新</li>
+  <li><strong>使用 <code>decimal</code> 模块</strong>：如果对精度要求极高，别用 float</li>
+</ul>
+
+<p>嗯，说到 decimal，我踩过一个坑。有一次我用 float 做价格比较，结果两个看起来一样的价格，因为浮点误差被判为不相等，导致订单簿里出现了重复档位。排查了半天才发现是精度问题。从那以后，涉及价格比较的地方我都用 decimal 了。</p>
+
+<h3>完整代码示例</h3>
+
+<p>最后，我把上面所有的逻辑整合成一个完整的类。你可以直接拿去用：</p>
+
+<pre><code>import asyncio
+import json
+import websockets
+from decimal import Decimal
+
+class HyperliquidOrderBook:
+    def __init__(self, coin="BTC"):
+        self.coin = coin
+        self.bids = {}
+        self.asks = {}
+        self.last_seq = None
+        self.ws = None
+    
+    async def connect(self):
+        uri = "wss://api.hyperliquid.xyz/ws"
+        self.ws = await websockets.connect(uri)
+        
+        # 订阅
+        msg = {"type": "subscribe", "channel": "orderbook", "coin": self.coin}
+        await self.ws.send(json.dumps(msg))
+        
+        async for message in self.ws:
+            data = json.loads(message)
+            if data['type'] == 'snapshot':
+                self._apply_snapshot(data['data'])
+            elif data['type'] == 'delta':
+                self._apply_delta(data['data'])
+    
+    def _apply_snapshot(self, data):
+        self.bids = {Decimal(price): Decimal(qty) 
+                     for price, qty in data['bids']}
+        self.asks = {Decimal(price): Decimal(qty) 
+                     for price, qty in data['asks']}
+        self.last_seq = data.get('seqNum')
+    
+    def _apply_delta(self, data):
+        # 检查序列号
+        seq = data.get('seqNum')
+        if seq and self.last_seq and seq != self.last_seq + 1:
+            print("序列号不连续，需要重新获取快照")
+            return
+        
+        self.last_seq = seq
+        
+        # 处理买盘增量
+        for price_str, qty_str in data['bids']:
+            price = Decimal(price_str)
+            qty = Decimal(qty_str)
+            if qty == 0:
+                self.bids.pop(price, None)
+            else:
+                self.bids[price] = qty
+        
+        # 处理卖盘增量
+        for price_str, qty_str in data['asks']:
+            price = Decimal(price_str)
+            qty = Decimal(qty_str)
+            if qty == 0:
+                self.asks.pop(price, None)
+            else:
+                self.asks[price] = qty
+    
+    def get_best_bid(self):
+        return max(self.bids.keys()) if self.bids else None
+    
+    def get_best_ask(self):
+        return min(self.asks.keys()) if self.asks else None
+    
+    def get_spread(self):
+        bid = self.get_best_bid()
+        ask = self.get_best_ask()
+        if bid and ask:
+            return float(ask - bid)
+        return None
+</code></pre>
+
+<p>这个类封装了连接、订阅、快照处理、增量更新和序列号检查。你只需要实例化它，然后调用 <code>connect()</code> 方法，就能拿到实时订单簿了。</p>
+
+<p>实际跑起来之后，你可以用 <code>get_best_bid()</code> 和 <code>get_best_ask()</code> 获取当前最优买卖价，计算价差，或者进一步做策略判断。</p>
+
+<p>好了，WebSocket 订单簿的基础就讲到这里。记住三个关键词：<strong>全量快照做基准、增量更新持续叠加、序列号检查保一致</strong>。把这三点做好，你的订单簿数据就不会出大问题。</p>
+
+<hr>
+<footer>
+  <p style="text-align: center; color: #7F8C8D; font-size: 12px;">公众号：蓝海资料掘金营，微信 deep3321</p>
+</footer>
+        <div class="footer-nav">
+            <a href="12.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="14.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>

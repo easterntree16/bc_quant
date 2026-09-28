@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>看懂Hyperliquid链上数据：从入门到实战 · 课程介绍</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0b0e1a;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            line-height: 1.5;
+            color: #1e1e2f;
+        }
+        .course-card {
+            max-width: 1280px;
+            width: 100%;
+            background: #f9faff;
+            border-radius: 2.5rem;
+            padding: 3rem 3.5rem;
+            position: relative;
+            box-shadow: 0 0 0 6px rgba(255, 50, 50, 0.25), 0 0 0 12px rgba(255, 80, 80, 0.08);
+        }
+        .course-card::before {
+            content: "";
+            position: absolute;
+            inset: -12px;
+            border-radius: calc(2.5rem + 12px);
+            background: linear-gradient(145deg, #ff3b3b, #d9001a, #b3001a, #ff4d4d);
+            z-index: -1;
+            opacity: 0.35;
+            filter: blur(2px);
+        }
+        .course-title {
+            font-size: 3.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #b31b1b, #e62e2e, #ff5e5e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            border-left: 8px solid #e62e2e;
+            padding-left: 1.5rem;
+        }
+        .subhead {
+            font-size: 1.1rem;
+            color: #4a4a6a;
+            margin-bottom: 2.5rem;
+            padding-left: 2.3rem;
+            border-bottom: 1px solid rgba(200, 50, 50, 0.15);
+            padding-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .subhead span {
+            background: #f0e6e6;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            color: #a52a2a;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1.2rem 0;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 2px solid rgba(230, 46, 46, 0.25);
+            padding-bottom: 0.5rem;
+        }
+        .section-title i {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #e62e2e;
+            border-radius: 50%;
+        }
+        .section-title small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #6b6b8a;
+            margin-left: 0.5rem;
+        }
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1rem 0;
+        }
+        .info-block {
+            background: rgba(255, 245, 245, 0.6);
+            padding: 1.5rem 2rem;
+            border-radius: 2rem;
+            border: 1px solid rgba(230, 46, 46, 0.15);
+        }
+        .info-block h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #b31b1b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .info-block ul {
+            list-style: none;
+            padding: 0;
+        }
+        .info-block li {
+            padding: 0.4rem 0 0.4rem 1.8rem;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23e62e2e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>') left center no-repeat;
+            background-size: 1rem;
+            margin-bottom: 0.2rem;
+            color: #2d2d44;
+        }
+        .info-block li strong {
+            color: #a02929;
+        }
+        .syllabus-list {
+            margin: 1.8rem 0;
+            padding: 0;
+            list-style: none;
+        }
+        .syllabus-list li {
+            padding: 0.9rem 0 0.9rem 2.8rem;
+            border-bottom: 1px solid rgba(200, 60, 60, 0.08);
+            font-size: 1.05rem;
+            position: relative;
+            line-height: 1.6;
+        }
+        .syllabus-list li:last-child {
+            border-bottom: none;
+        }
+        .syllabus-list li::before {
+            content: attr(data-index);
+            position: absolute;
+            left: 0.2rem;
+            top: 0.9rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #c92a2a;
+            background: rgba(230, 46, 46, 0.08);
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 40px;
+        }
+        .syllabus-list li strong {
+            color: #b31b1b;
+            font-weight: 600;
+        }
+        .syllabus-desc {
+            display: block;
+            margin-top: 0.1rem;
+            font-size: 0.95rem;
+            color: #4b4b68;
+            letter-spacing: 0.01em;
+        }
+        .footer {
+            margin-top: 3.5rem;
+            padding-top: 1.8rem;
+            border-top: 2px solid rgba(230, 46, 46, 0.2);
+            text-align: center;
+        }
+        .footer a {
+            display: inline-block;
+            background: linear-gradient(135deg, #fce8e8, #fff);
+            padding: 0.9rem 2.8rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #a02929;
+            text-decoration: none;
+            border: 1px solid rgba(200, 50, 50, 0.3);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(200, 30, 30, 0.08);
+        }
+        .footer a:hover {
+            background: linear-gradient(135deg, #ffd9d9, #ffe6e6);
+            border-color: #c92a2a;
+            box-shadow: 0 8px 18px rgba(200, 30, 30, 0.15);
+            transform: scale(1.01);
+            color: #8a1f1f;
+        }
+        @media (max-width: 800px) {
+            .course-card { padding: 2rem 1.5rem; }
+            .course-title { font-size: 2.4rem; }
+            .grid-2col { grid-template-columns: 1fr; gap: 1.2rem; }
+            .section-title { font-size: 1.6rem; }
+            .syllabus-list li { padding-left: 2.4rem; font-size: 0.98rem; }
+            .footer a { padding: 0.7rem 1.5rem; width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .course-card { padding: 1.5rem 1rem; border-radius: 2rem; }
+            .course-title { font-size: 2rem; border-left-width: 6px; padding-left: 0.8rem; }
+            .subhead { font-size: 0.9rem; padding-left: 1rem; flex-wrap: wrap; }
+            .info-block { padding: 1.2rem 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="course-card">
+    <h1 class="course-title">看懂Hyperliquid链上数据：从入门到实战</h1>
+    <div class="subhead">
+        <span>🔗 链上数据 · 系统级实战</span>
+        <span>v2.0 · 30 章体系</span>
+    </div>
+    <div class="grid-2col">
+        <div class="info-block">
+            <h3>🎯 受益人群</h3>
+            <ul>
+                <li><strong>区块链数据分析师</strong> — 深入Hyperliquid链上数据底层</li>
+                <li><strong>量化交易开发者</strong> — 构建基于链上数据的交易策略</li>
+                <li><strong>DeFi研究员/开发者</strong> — 理解DEX链上数据全貌</li>
+                <li><strong>Web3安全工程师</strong> — 监控链上异常与风险</li>
+                <li><strong>高校学生/研究者</strong> — 区块链数据科学实践</li>
+                <li><strong>加密资产投资者</strong> — 用数据驱动决策</li>
+            </ul>
+        </div>
+        <div class="info-block">
+            <h3>📈 学员收益</h3>
+            <ul>
+                <li><strong>掌握Hyperliquid链上数据全貌</strong> — 从RPC到智能合约，从订单簿到清算</li>
+                <li><strong>独立搭建数据采集与分析环境</strong> — Python + Web3.py 实战</li>
+                <li><strong>开发实时监控与量化数据系统</strong> — 订单流、资金费率、大户追踪</li>
+                <li><strong>构建链上指标与可视化看板</strong> — Matplotlib + 实时仪表盘</li>
+                <li><strong>识别套利与风险机会</strong> — 清算套利、跨交易所价差</li>
+                <li><strong>完成两个实战项目</strong> — 个人数据看板 + 监控机器人</li>
+            </ul>
+        </div>
+    </div>
+    <div class="section-title">
+        <i></i> 课程大纲 <small>· 30 大章节，体系化进阶</small>
+    </div>
+    <ul class="syllabus-list">
+        <li data-index="1"><strong>Hyperliquid生态全景</strong> — 什么是Hyperliquid、为什么链上数据重要、Hyperliquid与其他DEX的对比、生态核心组件（链、订单簿、预言机）</li>
+        <li data-index="2"><strong>HyperLiquid链基础</strong> — HyperEVM架构、共识机制、区块浏览器入门、交易生命周期</li>
+        <li data-index="3"><strong>RPC节点与数据源</strong> — 公共RPC节点、WebSocket实时数据流、数据索引服务（如HyperIndex）、数据延迟与可靠性</li>
+        <li data-index="4"><strong>链上数据结构解析</strong> — 交易结构、事件日志、状态数据、账户模型</li>
+        <li data-index="5"><strong>Python环境搭建</strong> — Python安装、Web3.py库安装、连接HyperLiquid RPC、第一个查询脚本</li>
+        <li data-index="6"><strong>查询账户信息</strong> — 获取账户余额、查询持仓信息、解析账户历史交易、监控账户变动</li>
+        <li data-index="7"><strong>订单簿数据深度解析</strong> — 获取订单簿快照、解析买单和卖单、计算市场深度、识别大额挂单</li>
+        <li data-index="8"><strong>交易数据实战</strong> — 获取最新交易记录、解析交易对与价格、计算交易量、识别异常交易</li>
+        <li data-index="9"><strong>K线数据获取与处理</strong> — 获取K线数据、OHLCV数据结构、K线数据存储、绘制K线图</li>
+        <li data-index="10"><strong>资金费率与衍生品数据</strong> — 获取资金费率、解析永续合约数据、计算多空比、监控爆仓数据</li>
+        <li data-index="11"><strong>预言机数据</strong> — HyperLiquid预言机机制、获取喂价数据、验证价格有效性、监控预言机异常</li>
+        <li data-index="12"><strong>链上清算数据分析</strong> — 清算机制原理、获取清算事件、解析清算数据、监控清算风险</li>
+        <li data-index="13"><strong>大户地址追踪</strong> — 识别大户地址、分析持仓变化、追踪资金流向、构建大户监控系统</li>
+        <li data-index="14"><strong>Gas费与网络状态</strong> — 获取当前Gas价格、分析网络拥堵情况、优化交易Gas设置、Gas费历史趋势</li>
+        <li data-index="15"><strong>智能合约交互</strong> — 合约ABI解析、调用只读函数、发送交易调用合约、事件监听实战</li>
+        <li data-index="16"><strong>数据存储方案</strong> — CSV文件存储、SQLite数据库存储、PostgreSQL存储方案、数据备份策略</li>
+        <li data-index="17"><strong>数据可视化基础</strong> — Matplotlib绘制折线图、绘制柱状图、绘制散点图、图表美化技巧</li>
+        <li data-index="18"><strong>实时数据监控系统</strong> — WebSocket实时订阅、数据流处理、告警系统设计、监控面板搭建</li>
+        <li data-index="19"><strong>量化交易数据准备</strong> — 历史数据回放、因子计算、特征工程、数据清洗与预处理</li>
+        <li data-index="20"><strong>链上数据分析框架</strong> — 数据采集层设计、数据处理层设计、分析引擎设计、可视化层设计</li>
+        <li data-index="21"><strong>市场微观结构分析</strong> — 订单流分析、买卖压力指标、成交量分布、时间加权平均价格</li>
+        <li data-index="22"><strong>链上指标构建</strong> — 构建活跃地址指标、构建网络价值指标、构建流动性指标、构建市场情绪指标</li>
+        <li data-index="23"><strong>套利机会识别</strong> — 跨交易所价差分析、资金费率套利、清算套利、闪电贷套利</li>
+        <li data-index="24"><strong>风险管理与风控</strong> — 仓位风险评估、波动率计算、最大回撤分析、VaR模型实现</li>
+        <li data-index="25"><strong>数据API服务开发</strong> — Flask搭建API服务、RESTful接口设计、API认证与限流、API文档生成</li>
+        <li data-index="26"><strong>自动化交易信号</strong> — 基于链上数据的信号生成、信号回测框架、信号执行策略、绩效评估</li>
+        <li data-index="27"><strong>HyperLiquid生态工具</strong> — HyperLiquid官方工具、第三方数据分析平台、社区开发工具、工具选型建议</li>
+        <li data-index="28"><strong>性能优化与最佳实践</strong> — 异步编程优化、缓存策略、批量查询优化、代码性能剖析</li>
+        <li data-index="29"><strong>实战项目一：构建个人链上数据看板</strong> — 需求分析、系统设计、前端展示、部署上线</li>
+        <li data-index="30"><strong>实战项目二：链上数据监控机器人</strong> — 机器人架构设计、Telegram通知集成、多链支持、运维与监控</li>
+    </ul>
+    <div class="footer">
+        <a href="http://124.221.106.7/wendang/" target="_blank">
+            点击此处查看：50个+行业、500+细分领域、10w+门课程资料-大目录汇总
+        </a>
+    </div>
+</div>
+</body>
+</html>

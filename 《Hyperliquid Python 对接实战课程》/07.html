@@ -1,0 +1,492 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>第7章 REST API 实战（二）</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1e9f0 100%);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+        /* 双边框设计：外边框 + 内阴影 */
+        .double-border {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.2), inset 0 1px 0 0 #fff8e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 0;
+        }
+        .sidebar {
+            background: #fefcf5;
+            border-right: 2px solid #fdebb3;
+            padding: 24px 16px;
+        }
+        .sidebar h3 {
+            font-size: 1.4rem;
+            color: #b45f06;
+            border-left: 5px solid #f39c12;
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+        .chapter-list {
+            list-style: none;
+        }
+        .chapter-list li {
+            margin-bottom: 6px;
+        }
+        .chapter-list a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-radius: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .chapter-list a:hover {
+            background: #fdebd0;
+            transform: translateX(3px);
+        }
+        .chapter-list .active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 5px rgba(59,130,246,0.3);
+        }
+        .main-content {
+            padding: 30px 35px;
+            background: white;
+        }
+        .footer-nav {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            display: flex;
+            justify-content: space-between;
+        }
+        .footer-nav a {
+            padding: 8px 24px;
+            background: #f1f5f9;
+            text-decoration: none;
+            color: #1e40af;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-nav a:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #64748b;
+            border-top: 1px dashed #e2e8f0;
+            font-size: 0.9rem;
+        }
+        h2 { color: #1e3a8a; border-left: 6px solid #f59e0b; padding-left: 15px; margin: 20px 0 15px; }
+        h3 { color: #2c3e50; margin: 20px 0 10px; }
+        pre {
+            background: #2d2f36; color: #f8f8f2; padding: 15px; border-radius: 12px;
+            overflow-x: auto; font-family: 'JetBrains Mono', monospace; margin: 15px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0; background: #fefce8;
+        }
+        th, td {
+            border: 1px solid #fcd34d; padding: 10px; text-align: left;
+        }
+        th { background: #fffbeb; }
+        .tip, .warning, .highlight {
+            padding: 12px 18px; border-radius: 16px; margin: 15px 0;
+        }
+        .tip { background: #e0f2fe; border-left: 6px solid #0ea5e9; }
+        .warning { background: #fee2e2; border-left: 6px solid #ef4444; }
+        .highlight { background: #fef9c3; border: 1px solid #facc15; }
+    </style>
+</head>
+<body>
+<div class="double-border">
+<div class="container">
+    <div class="sidebar">
+        <h3>📚 课程目录</h3>
+        <ul class="chapter-list">
+            <li><a href="01.html" class="">第1章 Hyperliquid 生态概览</a></li>
+<li><a href="02.html" class="">第2章 环境准备</a></li>
+<li><a href="03.html" class="">第3章 Hyperliquid API 基础</a></li>
+<li><a href="04.html" class="">第4章 账户与钱包</a></li>
+<li><a href="05.html" class="">第5章 签名机制详解</a></li>
+<li><a href="06.html" class="">第6章 REST API 实战（一）</a></li>
+<li><a href="07.html" class="active">第7章 REST API 实战（二）</a></li>
+<li><a href="08.html" class="">第8章 REST API 实战（三）</a></li>
+<li><a href="09.html" class="">第9章 下单操作（一）</a></li>
+<li><a href="10.html" class="">第10章 下单操作（二）</a></li>
+<li><a href="11.html" class="">第11章 下单操作（三）</a></li>
+<li><a href="12.html" class="">第12章 WebSocket 基础</a></li>
+<li><a href="13.html" class="">第13章 WebSocket 实战（一）</a></li>
+<li><a href="14.html" class="">第14章 WebSocket 实战（二）</a></li>
+<li><a href="15.html" class="">第15章 WebSocket 实战（三）</a></li>
+<li><a href="16.html" class="">第16章 错误处理与重试机制</a></li>
+<li><a href="17.html" class="">第17章 日志与监控</a></li>
+<li><a href="18.html" class="">第18章 性能优化</a></li>
+<li><a href="19.html" class="">第19章 策略框架搭建（一）</a></li>
+<li><a href="20.html" class="">第20章 策略框架搭建（二）</a></li>
+<li><a href="21.html" class="">第21章 策略框架搭建（三）</a></li>
+<li><a href="22.html" class="">第22章 实战策略（一）</a></li>
+<li><a href="23.html" class="">第23章 实战策略（二）</a></li>
+<li><a href="24.html" class="">第24章 实战策略（三）</a></li>
+<li><a href="25.html" class="">第25章 实战策略（四）</a></li>
+<li><a href="26.html" class="">第26章 数据存储与分析</a></li>
+<li><a href="27.html" class="">第27章 安全最佳实践</a></li>
+<li><a href="28.html" class="">第28章 部署与运维</a></li>
+<li><a href="29.html" class="">第29章 测试与调试</a></li>
+<li><a href="30.html" class="">第30章 项目实战</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>REST API 实战（二）：账户余额、持仓与未成交订单</h2>
+
+<p>好，咱们接着聊。上一节我们把 API 的基础通信搭好了，拿到了一个简单的测试结果。今天要干点真活——查账户余额、看持仓、还有那些挂出去没成交的单子。</p>
+
+<p>这三个接口，说白了就是交易员的「仪表盘」。你想想看，做量化交易，第一件事就是知道自己有多少子弹、仓位情况怎么样、还有哪些单子挂在市场上没动。没有这些信息，你就是在闭着眼睛交易。</p>
+
+<h3>1. 获取账户余额</h3>
+
+<p>先看余额接口。Hyperliquid 的余额查询，返回的是你账户里所有资产的信息。我个人习惯在每次交易前都先拉一次余额，确保资金足够，避免下单时被拒。</p>
+
+<p>接口路径是 <code>/info</code>，请求类型是 POST，但注意——它用的是 POST 请求来查询信息，不是 GET。我第一次对接时还愣了一下，心想怎么查询也用 POST？后来发现这是 Hyperliquid 的设计风格，所有请求统一走 POST，省得搞混。</p>
+
+<p>来看代码：</p>
+
+<pre><code>import requests
+import json
+
+BASE_URL = "https://api.hyperliquid.xyz"
+
+def get_account_balance(address):
+    """获取账户余额"""
+    payload = {
+        "type": "clearinghouseState",
+        "user": address
+    }
+    
+    headers = {
+        "Content-Type": "application/json"
+    }
+    
+    response = requests.post(
+        f"{BASE_URL}/info",
+        data=json.dumps(payload),
+        headers=headers
+    )
+    
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"请求失败: {response.status_code}")
+        return None
+
+# 使用示例
+address = "0x你的钱包地址"
+balance_data = get_account_balance(address)
+print(json.dumps(balance_data, indent=2))
+</code></pre>
+
+<p>返回的数据结构大概是这样的：</p>
+
+<pre><code>{
+    "assetPositions": [],
+    "crossMarginSummary": {
+        "accountValue": "10000.0",
+        "totalMarginUsed": "0.0",
+        "totalNtlPos": "0.0",
+        "totalRawUsd": "10000.0"
+    },
+    "marginSummary": {
+        "accountValue": "10000.0",
+        "totalMarginUsed": "0.0",
+        "totalNtlPos": "0.0",
+        "totalRawUsd": "10000.0"
+    },
+    "time": 1234567890,
+    "withdrawable": "10000.0"
+}
+</code></pre>
+
+<div class="highlight">
+  <p><strong>关键字段说明：</strong></p>
+  <ul>
+    <li><code>accountValue</code>：账户总价值（含未实现盈亏）</li>
+    <li><code>totalMarginUsed</code>：已使用的保证金</li>
+    <li><code>withdrawable</code>：可提现金额</li>
+    <li><code>assetPositions</code>：持仓列表（后面会讲）</li>
+  </ul>
+</div>
+
+<div class="tip">
+  <p>💡 小技巧：<code>withdrawable</code> 这个字段特别有用。我在做风控系统时，直接用这个值来判断还能不能开新仓，省得自己算一遍。</p>
+</div>
+
+<h3>2. 获取持仓信息</h3>
+
+<p>持仓信息其实就在刚才的余额接口里——<code>assetPositions</code> 字段。但为了清晰，我一般单独封装一个函数来解析它。</p>
+
+<p>为什么会这样设计？因为 Hyperliquid 把余额和持仓放在同一个响应里，减少了一次网络请求。嗯，这里要注意，如果你只想要持仓，还是得调同一个接口，然后自己过滤。</p>
+
+<pre><code>def get_positions(address):
+    """获取当前持仓"""
+    balance_data = get_account_balance(address)
+    if not balance_data:
+        return []
+    
+    positions = balance_data.get("assetPositions", [])
+    parsed_positions = []
+    
+    for pos in positions:
+        # 每个持仓包含 position 和 type 两个字段
+        position_info = pos.get("position", {})
+        parsed_positions.append({
+            "coin": position_info.get("coin"),
+            "size": position_info.get("szi"),  # 带符号的持仓量
+            "entry_price": position_info.get("entryPx"),
+            "unrealized_pnl": position_info.get("unrealizedPnl"),
+            "liquidation_price": position_info.get("liquidationPx"),
+            "leverage": position_info.get("leverage", {}).get("value")
+        })
+    
+    return parsed_positions
+
+# 使用示例
+positions = get_positions(address)
+for pos in positions:
+    print(f"{pos['coin']}: 持仓 {pos['size']}, 开仓价 {pos['entry_price']}")
+</code></pre>
+
+<div class="warning">
+  <p>⚠️ 注意：<code>szi</code> 字段是带符号的。正数表示多头，负数表示空头。我曾经在写策略时忘了处理符号，结果把空头当多头算，差点爆仓。</p>
+</div>
+
+<p>持仓数据里还有一个很重要的字段——<code>liquidationPrice</code>。这个就是你的爆仓价。我个人习惯在每次拿到持仓后，都检查一下当前价格离爆仓价有多远。如果太近，就得考虑减仓或者加保证金了。</p>
+
+<h3>3. 获取未成交订单</h3>
+
+<p>未成交订单，也叫「挂单」或「Open Orders」。这个接口单独走 <code>/info</code> 的另一个类型。</p>
+
+<pre><code>def get_open_orders(address):
+    """获取未成交订单"""
+    payload = {
+        "type": "openOrders",
+        "user": address
+    }
+    
+    response = requests.post(
+        f"{BASE_URL}/info",
+        data=json.dumps(payload),
+        headers={"Content-Type": "application/json"}
+    )
+    
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"请求失败: {response.status_code}")
+        return []
+
+# 使用示例
+orders = get_open_orders(address)
+for order in orders:
+    print(f"订单 {order['oid']}: {order['coin']} {order['side']} {order['sz']} @ {order['limitPx']}")
+</code></pre>
+
+<p>返回的每个订单包含这些信息：</p>
+
+<table>
+  <tr>
+    <th>字段</th>
+    <th>说明</th>
+    <th>示例</th>
+  </tr>
+  <tr>
+    <td>oid</td>
+    <td>订单ID</td>
+    <td>123456789</td>
+  </tr>
+  <tr>
+    <td>coin</td>
+    <td>交易对</td>
+    <td>BTC</td>
+  </tr>
+  <tr>
+    <td>side</td>
+    <td>买卖方向</td>
+    <td>B / A</td>
+  </tr>
+  <tr>
+    <td>sz</td>
+    <td>订单数量</td>
+    <td>0.1</td>
+  </tr>
+  <tr>
+    <td>limitPx</td>
+    <td>限价价格</td>
+    <td>50000.0</td>
+  </tr>
+  <tr>
+    <td>orderType</td>
+    <td>订单类型</td>
+    <td>Limit / Ioc</td>
+  </tr>
+  <tr>
+    <td>timestamp</td>
+    <td>下单时间</td>
+    <td>1234567890</td>
+  </tr>
+</table>
+
+<div class="highlight">
+  <p><strong>实战经验：</strong>我在做网格交易策略时，每5秒拉一次未成交订单，检查哪些单子还没成交。如果某个订单挂了太久（比如超过10分钟），我会先撤单，然后重新挂一个更优的价格。这样能提高成交率，避免价格跑了单子还挂在那。</p>
+</div>
+
+<h3>4. 整合：一个完整的账户监控函数</h3>
+
+<p>把上面三个功能整合到一起，写一个监控函数。这样你跑策略时，一个调用就能拿到所有关键信息。</p>
+
+<pre><code>def monitor_account(address):
+    """监控账户状态"""
+    print("=" * 50)
+    print("账户监控报告")
+    print("=" * 50)
+    
+    # 1. 余额
+    balance = get_account_balance(address)
+    if balance:
+        summary = balance.get("crossMarginSummary", {})
+        print(f"\n💰 账户总价值: {summary.get('accountValue')} USD")
+        print(f"💸 可提现金额: {balance.get('withdrawable')} USD")
+    
+    # 2. 持仓
+    positions = get_positions(address)
+    if positions:
+        print(f"\n📊 当前持仓 ({len(positions)} 个):")
+        for pos in positions:
+            pnl = float(pos['unrealized_pnl'])
+            pnl_str = f"+{pnl}" if pnl >= 0 else str(pnl)
+            print(f"  {pos['coin']}: {pos['size']} 张 | 盈亏: {pnl_str} USD")
+    else:
+        print("\n📊 当前无持仓")
+    
+    # 3. 未成交订单
+    orders = get_open_orders(address)
+    if orders:
+        print(f"\n📋 未成交订单 ({len(orders)} 个):")
+        for order in orders:
+            print(f"  #{order['oid']}: {order['coin']} {order['side']} {order['sz']} @ {order['limitPx']}")
+    else:
+        print("\n📋 无未成交订单")
+    
+    print("=" * 50)
+
+# 使用示例
+monitor_account(address)
+</code></pre>
+
+<h3>5. 核心逻辑流程图</h3>
+
+<p>下面这张图，帮你理清这三个接口的关系和调用流程：</p>
+
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="500" fill="#f0f8ff" rx="10"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">账户信息查询流程</text>
+  
+  <!-- 入口 -->
+  <rect x="300" y="70" width="200" height="50" rx="25" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="400" y="100" text-anchor="middle" fill="white" font-size="16" font-weight="bold">用户请求</text>
+  
+  <!-- 箭头 -->
+  <line x1="400" y1="120" x2="400" y2="160" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 三个并行接口 -->
+  <rect x="50" y="170" width="200" height="60" rx="10" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+  <text x="150" y="195" text-anchor="middle" fill="white" font-size="14" font-weight="bold">clearinghouseState</text>
+  <text x="150" y="215" text-anchor="middle" fill="white" font-size="12">获取余额+持仓</text>
+  
+  <rect x="300" y="170" width="200" height="60" rx="10" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+  <text x="400" y="195" text-anchor="middle" fill="white" font-size="14" font-weight="bold">openOrders</text>
+  <text x="400" y="215" text-anchor="middle" fill="white" font-size="12">获取未成交订单</text>
+  
+  <rect x="550" y="170" width="200" height="60" rx="10" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+  <text x="650" y="195" text-anchor="middle" fill="white" font-size="14" font-weight="bold">orderStatus</text>
+  <text x="650" y="215" text-anchor="middle" fill="white" font-size="12">查询特定订单</text>
+  
+  <!-- 箭头 -->
+  <line x1="150" y1="230" x2="150" y2="280" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="400" y1="230" x2="400" y2="280" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="650" y1="230" x2="650" y2="280" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 返回数据 -->
+  <rect x="50" y="290" width="200" height="80" rx="10" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="150" y="315" text-anchor="middle" fill="white" font-size="13">返回数据</text>
+  <text x="150" y="335" text-anchor="middle" fill="white" font-size="11">accountValue</text>
+  <text x="150" y="352" text-anchor="middle" fill="white" font-size="11">withdrawable, positions</text>
+  
+  <rect x="300" y="290" width="200" height="80" rx="10" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="400" y="315" text-anchor="middle" fill="white" font-size="13">返回数据</text>
+  <text x="400" y="335" text-anchor="middle" fill="white" font-size="11">订单列表</text>
+  <text x="400" y="352" text-anchor="middle" fill="white" font-size="11">oid, coin, side, sz</text>
+  
+  <rect x="550" y="290" width="200" height="80" rx="10" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+  <text x="650" y="315" text-anchor="middle" fill="white" font-size="13">返回数据</text>
+  <text x="650" y="335" text-anchor="middle" fill="white" font-size="11">订单详情</text>
+  <text x="650" y="352" text-anchor="middle" fill="white" font-size="11">状态、成交记录</text>
+  
+  <!-- 箭头 -->
+  <line x1="150" y1="370" x2="150" y2="410" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="400" y1="370" x2="400" y2="410" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="650" y1="370" x2="650" y2="410" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 汇总 -->
+  <rect x="200" y="420" width="400" height="50" rx="25" fill="#9b59b6" stroke="#8e44ad" stroke-width="2"/>
+  <text x="400" y="450" text-anchor="middle" fill="white" font-size="16" font-weight="bold">整合输出：账户监控报告</text>
+  
+  <!-- 箭头定义 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="tip">
+  <p>💡 实际开发中，我建议把这三个接口的调用频率分开。余额和持仓可以每30秒拉一次，未成交订单每5秒拉一次。因为订单状态变化快，而余额变化慢。这样既及时又省资源。</p>
+</div>
+
+<p>好了，今天的内容就到这。这三个接口是交易系统的基础设施，你写策略、做风控、搞监控都离不开它们。代码我已经贴出来了，建议你直接跑一遍，看看自己的账户里有什么。</p>
+
+<p>记住，做量化交易，数据是第一位的。先把数据拿准了，再谈策略。</p>
+
+<footer>
+  <p>公众号：蓝海资料掘金营，微信 deep3321</p>
+</footer>
+        <div class="footer-nav">
+            <a href="06.html">← 上一章</a>
+            <a href="index.html">📖 返回目录</a>
+            <a href="08.html">下一章 →</a>
+        </div>
+        <footer>公众号:蓝海资料掘金营，微信deep3321</footer>
+    </div>
+</div>
+</div>
+</body>
+</html>
