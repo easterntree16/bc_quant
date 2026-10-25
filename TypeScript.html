@@ -1,0 +1,2964 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TypeScript 保姆级学习教程</title>
+<style>
+  :root{
+    --primary:#3178c6;
+    --primary-dark:#245e9e;
+    --primary-light:#eaf2fb;
+    --bg:#f4f6f9;
+    --card:#ffffff;
+    --text:#1f2933;
+    --text-secondary:#5b6b7b;
+    --border:#e3e8ef;
+    --stage1:#0f9d6e;
+    --stage2:#d97706;
+    --stage3:#7c5cf0;
+    --code-bg:#f6f8fa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.75;font-size:15px;
+  }
+  ::selection{background:rgba(49,120,198,.18)}
+
+  #progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:1000;background:linear-gradient(90deg,#3178c6,#7db9e8);transition:width .08s linear}
+
+  /* ===== 头部 ===== */
+  header.hero{
+    background:linear-gradient(135deg,#16324f 0%,#245e9e 55%,#3178c6 100%);
+    color:#fff;padding:56px 24px 44px;
+  }
+  .hero-inner{max-width:1160px;margin:0 auto}
+  .hero .badge{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:2px 12px;border-radius:999px;font-size:13px;letter-spacing:1px;margin-bottom:16px}
+  .hero h1{font-size:34px;font-weight:700;margin-bottom:10px;letter-spacing:.5px}
+  .hero h1 .ts{color:#ffd54a}
+  .hero p.sub{font-size:16px;opacity:.92;max-width:900px}
+  .hero .stats{display:flex;gap:28px;margin-top:22px;flex-wrap:wrap}
+  .hero .stats .s{font-size:13px;opacity:.85}
+  .hero .stats .s b{display:block;font-size:22px;opacity:1;color:#ffd54a;font-weight:700}
+
+  /* ===== 布局 ===== */
+  .layout{display:flex;max-width:1240px;margin:0 auto;gap:32px;padding:0 24px;align-items:flex-start}
+
+  /* 侧边导航 */
+  nav.sidebar{
+    position:sticky;top:16px;width:250px;flex-shrink:0;
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:16px 8px;margin-top:-28px;box-shadow:0 4px 16px rgba(30,60,100,.06);
+    max-height:calc(100vh - 32px);overflow-y:auto;
+  }
+  nav.sidebar .nav-title{font-size:12px;color:var(--text-secondary);letter-spacing:2px;padding:6px 12px 8px;font-weight:600}
+  nav.sidebar a{
+    display:block;padding:5px 12px;font-size:13px;color:#3d4b5c;text-decoration:none;
+    border-radius:7px;border-left:3px solid transparent;transition:all .15s;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  nav.sidebar a:hover{background:var(--primary-light);color:var(--primary-dark)}
+  nav.sidebar a.active{background:var(--primary-light);color:var(--primary-dark);border-left-color:var(--primary);font-weight:600}
+  nav.sidebar .grp{font-size:11px;color:#93a2b4;padding:10px 12px 3px;letter-spacing:1px;font-weight:700}
+  nav.sidebar .grp:first-of-type{padding-top:2px}
+
+  /* 主内容 */
+  main.content{flex:1;min-width:0;padding:28px 0 80px}
+
+  /* ===== 章节卡片 ===== */
+  article.chapter{
+    background:var(--card);border:1px solid var(--border);border-radius:14px;
+    padding:28px 32px 30px;margin-bottom:26px;
+    box-shadow:0 2px 10px rgba(30,60,100,.05);
+    scroll-margin-top:20px;
+  }
+  .ch-head{display:flex;align-items:flex-start;gap:16px;border-bottom:2px solid #eef2f7;padding-bottom:16px;margin-bottom:18px}
+  .ch-num{
+    font-size:20px;font-weight:800;color:#fff;background:var(--primary);
+    min-width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    box-shadow:0 3px 8px rgba(49,120,198,.35);
+  }
+  .ch-head h2{font-size:21px;font-weight:700;line-height:1.4}
+  .ch-meta{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+  .tag{font-size:12px;padding:2px 10px;border-radius:999px;font-weight:500}
+  .tag.st0{background:#e8f0fa;color:var(--primary-dark)}
+  .tag.st1{background:#e6f7f0;color:var(--stage1)}
+  .tag.st2{background:#fdf3e3;color:var(--stage2)}
+  .tag.st3{background:#f0ebfe;color:var(--stage3)}
+  .tag.time{background:#f1f3f6;color:var(--text-secondary)}
+
+  .ch-body h3{font-size:15.5px;font-weight:700;color:var(--primary-dark);margin:18px 0 8px;display:flex;align-items:center;gap:8px}
+  .ch-body h3::before{content:"";width:4px;height:15px;background:var(--primary);border-radius:2px}
+  .ch-body h4{font-size:14.5px;font-weight:600;color:var(--text);margin:14px 0 4px}
+  .ch-body p{margin:6px 0;font-size:14.5px}
+  .ch-body ul,.ch-body ol{padding-left:22px;margin:6px 0}
+  .ch-body li{margin-bottom:4px;font-size:14.5px}
+  .goal ul,.points ul{list-style:none}
+  .goal li,.points li{padding-left:22px;position:relative;margin-bottom:5px}
+  .goal li::before{content:"✔";position:absolute;left:0;color:var(--stage1);font-size:13px;top:1px}
+  .points li::before{content:"▸";position:absolute;left:2px;color:var(--primary);font-size:14px;top:0}
+
+  .sec{margin:10px 0 6px}
+  .sec h4{font-size:14.5px;font-weight:600;color:var(--text);margin-bottom:4px}
+
+  /* 代码 */
+  pre.code{
+    background:var(--code-bg);border:1px solid var(--border);border-left:3px solid var(--primary);
+    border-radius:8px;padding:12px 16px;font-size:13px;overflow-x:auto;margin:10px 0;
+    font-family:Consolas,"Courier New",monospace;line-height:1.65;color:#243447;
+  }
+  pre.code .cm{color:#6b8aa6}
+  pre.code .kw{color:#8b3a8f;font-weight:600}
+  pre.code .st{color:#2e7d32}
+  pre.code .nm{color:#b3541e}
+  code.inline{background:var(--code-bg);border-radius:4px;padding:1px 7px;font-size:13px;color:#c0392b;font-family:Consolas,monospace;border:1px solid #edf0f4}
+  pre.code code{font-family:inherit;background:none;color:inherit;padding:0;border:none;font-size:inherit}
+
+  /* 信息盒 */
+  .box{border-radius:10px;padding:12px 16px;margin:12px 0;font-size:14px;border:1px solid}
+  .box .box-t{font-weight:700;font-size:13px;letter-spacing:1px;margin-bottom:4px}
+  .box.concept{background:#eef6ff;border-color:#bcd8f5}
+  .box.concept .box-t{color:var(--primary-dark)}
+  .box.scene{background:#f0faf4;border-color:#bfe8d3}
+  .box.scene .box-t{color:#0b7a55}
+  .box.steps{background:#fffbeb;border-color:#f5dfae}
+  .box.steps .box-t{color:#a15c00}
+  .box.steps ol{margin:4px 0 2px;padding-left:20px}
+  .box.steps li{margin-bottom:5px}
+  .box.case{background:#f7f3ff;border-color:#d9c9fa}
+  .box.case .box-t{color:#6b46c9}
+  .box.case pre.code{background:#ffffff;border-color:#e6ddfb;border-left-color:#7c5cf0}
+  .box.warn{background:#fef2f2;border-color:#f5c2c2}
+  .box.warn .box-t{color:#b91c1c}
+  .box p{margin:4px 0}
+
+  .summary{background:#f6f9fc;border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-top:18px;font-size:14px}
+  .summary b{color:var(--primary-dark)}
+
+  /* 表格 */
+  table.tools{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0}
+  table.tools th{background:#eef2f7;color:var(--text);padding:8px 12px;text-align:left;font-weight:600;border:1px solid var(--border)}
+  table.tools td{border:1px solid var(--border);padding:8px 12px;vertical-align:top}
+  table.tools tr:hover td{background:#f8fbfe}
+  table.tools td code{background:var(--code-bg);border-radius:4px;padding:1px 7px;font-size:12.5px;color:#c0392b;font-family:Consolas,monospace}
+
+  /* 总览 */
+  section.overview{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:26px;box-shadow:0 2px 10px rgba(30,60,100,.05)}
+  .overview h2{font-size:21px;font-weight:700;margin-bottom:6px}
+  .overview .desc{color:var(--text-secondary);font-size:14px;margin-bottom:16px}
+  .route{display:flex;gap:14px;flex-wrap:wrap}
+  .route .stage{flex:1;min-width:230px;border-radius:12px;padding:18px 20px;color:#fff;position:relative}
+  .route .stage.s1{background:linear-gradient(135deg,#0f9d6e,#34c493)}
+  .route .stage.s2{background:linear-gradient(135deg,#d97706,#f0a23c)}
+  .route .stage.s3{background:linear-gradient(135deg,#7c5cf0,#9b84f5)}
+  .route .stage h3{font-size:17px;margin-bottom:6px}
+  .route .stage p{font-size:13px;opacity:.95;line-height:1.65}
+  .route .stage .chs{margin-top:10px;font-size:12.5px;background:rgba(255,255,255,.18);border-radius:8px;padding:8px 12px}
+  .route .arrow{align-self:center;font-size:26px;color:#b9c4d0;font-weight:700}
+  .guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px}
+  .guide .g{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+  .guide .g b{color:var(--primary-dark);font-size:14px}
+  .guide .g p{font-size:13px;color:var(--text-secondary);margin-top:2px}
+
+  .appendix{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 32px;margin-bottom:26px;box-shadow:0 2px 10px rgba(30,60,100,.05)}
+  .appendix h2{font-size:19px;font-weight:700;margin-bottom:12px;color:var(--primary-dark)}
+  .appendix h3{font-size:15.5px;margin:18px 0 8px;color:var(--text)}
+  .appendix ul{padding-left:22px;font-size:14px}
+  .appendix li{margin-bottom:4px}
+
+  #toTop{
+    position:fixed;right:22px;bottom:22px;width:42px;height:42px;border-radius:50%;
+    background:var(--primary);color:#fff;border:none;font-size:18px;cursor:pointer;
+    box-shadow:0 4px 14px rgba(49,120,198,.4);opacity:0;pointer-events:none;transition:opacity .25s;z-index:999;
+  }
+  #toTop.show{opacity:1;pointer-events:auto}
+  #toTop:hover{background:var(--primary-dark)}
+
+  footer{text-align:center;color:#93a2b4;font-size:13px;padding:0 0 40px}
+
+  @media (max-width:920px){
+    nav.sidebar{display:none}
+    article.chapter,.overview,.appendix{padding:22px 18px}
+    .hero h1{font-size:27px}
+    .route .arrow{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge">TYPE-SAFE TUTORIAL · 保姆级</span>
+    <h1>TypeScript <span class="ts">保姆级学习教程</span></h1>
+    <p class="sub">从「完全不会」到「独立开发真实项目」：每一章都按「基础知识 → 基本原理 → 应用场景 → 实操步骤 → 实际案例」展开，15 章 + 附录，100+ 可运行代码示例，3 个完整实战项目。</p>
+    <div class="stats">
+      <div class="s"><b>15</b>章完整体系</div>
+      <div class="s"><b>100+</b>代码示例</div>
+      <div class="s"><b>40+</b>实操步骤</div>
+      <div class="s"><b>3</b>综合实战</div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-title">目录导航</div>
+    <a href="#overview">📖 学习指南</a>
+    <div class="grp">◈ 准备篇</div>
+    <a href="#ch1">01 入门与环境搭建</a>
+    <div class="grp">◈ 阶段一 · 基础</div>
+    <a href="#ch2">02 基础类型系统</a>
+    <a href="#ch3">03 接口与对象类型</a>
+    <a href="#ch4">04 函数</a>
+    <a href="#ch5">05 类与面向对象</a>
+    <a href="#ch6">06 泛型</a>
+    <div class="grp">◈ 阶段二 · 进阶</div>
+    <a href="#ch7">07 高级类型系统</a>
+    <a href="#ch8">08 模块与声明文件</a>
+    <a href="#ch9">09 tsconfig 深入</a>
+    <a href="#ch10">10 工具链与质量</a>
+    <div class="grp">◈ 阶段三 · 高级</div>
+    <a href="#ch11">11 装饰器与元编程</a>
+    <a href="#ch12">12 异步编程类型</a>
+    <a href="#ch13">13 框架与运行时</a>
+    <a href="#ch14">14 设计模式与最佳实践</a>
+    <a href="#ch15">15 综合实战项目</a>
+    <div class="grp">◈ 附录</div>
+    <a href="#appendix">速查表 · 资源 · 面试</a>
+  </nav>
+
+  <main class="content">
+
+    <!-- ============ 学习指南 ============ -->
+    <section class="overview" id="overview">
+      <h2>📖 学习指南：这本教程怎么用</h2>
+      <p class="desc">本教程是大纲的「完整展开版」。它假设你只会 JavaScript 基础（变量、函数、数组、对象），不需要任何 TypeScript 经验。每一步都有可复制的命令和代码，请打开电脑跟着敲。</p>
+      <div class="guide">
+        <div class="g"><b>🎯 每章统一结构</b><p>基础知识 → 基本原理 → 应用场景 → 实操步骤 → 实际案例 → 本章小结</p></div>
+        <div class="g"><b>⌨️ 动手第一</b><p>代码都标了注释，请手动敲一遍。只看不敲，等于白学。</p></div>
+        <div class="g"><b>🧩 建议顺序</b><p>前 6 章是地基，必须按顺序；7-10 章按需；11-15 章挑感兴趣的先看。</p></div>
+        <div class="g"><b>🛠 环境要求</b><p>Node.js 18+、VSCode（或任意编辑器）。第 1 章有完整安装步骤。</p></div>
+      </div>
+      <div class="route">
+        <div class="stage s1">
+          <h3>阶段一 · 基础篇</h3>
+          <p>类型系统、接口、函数、类、泛型 —— 掌握日常开发 80% 的核心语法与心智模型。</p>
+          <div class="chs">第 2 ~ 6 章</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="stage s2">
+          <h3>阶段二 · 进阶篇</h3>
+          <p>高级类型、模块、工程配置、工具链 —— 从「会写」到「会配」，读得懂开源库。</p>
+          <div class="chs">第 7 ~ 10 章</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="stage s3">
+          <h3>阶段三 · 高级篇</h3>
+          <p>装饰器、异步、框架集成、最佳实践、综合实战 —— 把 TS 用到真实项目里。</p>
+          <div class="chs">第 11 ~ 15 章</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 第1章 ============ -->
+    <article class="chapter" id="ch1">
+      <div class="ch-head">
+        <div class="ch-num">01</div>
+        <div>
+          <h2>TypeScript 入门与环境搭建</h2>
+          <div class="ch-meta"><span class="tag st0">准备篇</span><span class="tag time">约 2 小时</span><span class="tag time">前置：JavaScript 基础</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>理解 TypeScript 是什么、为什么需要它、它是怎么工作的</li>
+            <li>从零搭建开发环境，编译并运行第一个 TS 程序</li>
+            <li>认识 tsconfig.json，掌握最常用的编译配置</li>
+          </ul>
+        </div>
+
+        <h3>1.1 什么是 TypeScript</h3>
+        <p>TypeScript（简称 TS）是由微软在 2012 年发布的开源编程语言，主导者是 C# 之父 Anders Hejlsberg。它只有一个核心目标：<b>给 JavaScript 加上类型系统</b>。</p>
+        <p>最准确的一句话定义：<b>TypeScript 是 JavaScript 的超集</b>。意思是——任何一段合法的 JavaScript 代码，本身就是合法的 TypeScript 代码。你可以在 <code class="inline">.ts</code> 文件里只写纯 JS，编译器也能正常通过。TS 是在 JS 之上「增量叠加」的能力，而不是一门全新的语言。</p>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：TS 是怎么工作的</div>
+          <p>你写的 <code class="inline">.ts</code> 文件不会直接被浏览器或 Node 运行。它要经过一个叫 <b>tsc</b>（TypeScript Compiler，TS 官方编译器）的程序处理，分两步：</p>
+          <ol>
+            <li><b>类型检查</b>：读完全部代码，根据你写的类型标注做静态分析，发现类型不匹配就报错（但不会中断生成）。</li>
+            <li><b>转译</b>：把类型标注「擦除」掉，生成一份干净的 JavaScript 文件（.js）。</li>
+          </ol>
+          <pre class="code"><code>// 你写的 .ts 文件
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+// tsc 编译后生成的 .js 文件（类型全部被擦除）
+function add(a, b) {
+  return a + b;
+}</code></pre>
+          <p>关键结论：<b>类型只存在于编译期，运行时根本不存在</b>。所以 TS 不会让程序变慢（零运行时开销），类型系统纯粹是开发阶段的「护栏」。</p>
+        </div>
+
+        <h3>1.2 为什么需要 TypeScript（应用场景）</h3>
+        <div class="box scene">
+          <div class="box-t">🎯 应用场景</div>
+          <ul>
+            <li><b>大型前端项目</b>：React / Vue 官方脚手架默认支持 TS。项目上百个文件时，JS 的「自由」会变成灾难——改一个函数签名，调用它的地方全崩，还得靠人肉找。</li>
+            <li><b>Node.js 后端</b>：NestJS、Fastify 等主流框架直接以 TS 为一等公民。</li>
+            <li><b>开源库 / npm 包</b>：给库加上类型声明，用户写代码时就能获得智能提示。</li>
+            <li><b>团队协作</b>：类型就是「接口契约」——别人定义的函数，你不用看实现就知道怎么调用；重构时有编译器兜底。</li>
+            <li><b>长期维护</b>：半年后回看自己的代码，类型标注是最好的文档。</li>
+          </ul>
+        </div>
+        <div class="box concept">
+          <div class="box-t">🧠 一个直观对比：同样的 bug，JS 和 TS 的区别</div>
+          <pre class="code"><code>// 纯 JavaScript：错误要等运行时才暴露
+function getPrice(item) {
+  return item.price * item.count;
+}
+getPrice({ price: "9.9", count: 3 });  // 结果 "9.99.9" 字符串拼接，没人发现
+
+// TypeScript：写代码的当下就报错
+function getPrice(item: { price: number; count: number }): number {
+  return item.price * item.count;
+}
+getPrice({ price: "9.9", count: 3 });  // ❌ 类型 "string" 不能赋值给类型 "number"</code></pre>
+        </div>
+
+        <h3>1.3 实操：搭建开发环境（保姆级步骤）</h3>
+        <div class="box steps">
+          <div class="box-t">⚙️ 操作步骤（Windows / macOS 通用）</div>
+          <ol>
+            <li><b>安装 Node.js</b>：打开 <code class="inline">nodejs.org</code>，下载 LTS 版本（18 或更高），一路默认安装。装完打开终端（Windows 用 PowerShell，macOS 用终端），输入 <code class="inline">node -v</code> 和 <code class="inline">npm -v</code>，能打印版本号即成功。</li>
+            <li><b>安装 TypeScript</b>：终端执行 <code class="inline">npm install -g typescript</code>（全局安装）。验证：<code class="inline">tsc -v</code>，能看到类似 <code class="inline">Version 5.x.x</code>。</li>
+            <li><b>安装编辑器</b>：推荐 VSCode（code.visualstudio.com）。TS 的语法提示、跳转、自动补全由官方插件内置，无需额外安装；可选装扩展：Prettier（格式化）、Error Lens（错误行内显示）。</li>
+            <li><b>创建项目目录</b>：终端执行：</li>
+          </ol>
+          <pre class="code"><code>mkdir my-ts-learn
+cd my-ts-learn
+npm init -y        # 生成 package.json</code></pre>
+          <ol start="5">
+            <li><b>写第一个程序</b>：新建文件 <code class="inline">hello.ts</code>，粘贴下面的代码。</li>
+          </ol>
+          <pre class="code"><code>// hello.ts —— 你的第一个 TypeScript 程序
+const message: string = "Hello, TypeScript!";
+const year: number = 2026;
+console.log(`${message} 今年是 ${year} 年。`);</code></pre>
+          <ol start="6">
+            <li><b>编译并运行</b>：</li>
+          </ol>
+          <pre class="code"><code>tsc hello.ts      # 编译，生成 hello.js
+node hello.js     # 运行，输出：Hello, TypeScript! 今年是 2026 年。</code></pre>
+          <ol start="7">
+            <li><b>试试类型检查</b>：把 <code class="inline">const year: number = 2026</code> 改成 <code class="inline">const year: number = "2026"</code>，再执行 <code class="inline">tsc hello.ts</code>，会看到红色报错：<code class="inline">Type 'string' is not assignable to type 'number'</code> —— 这就是 TS 在保护你。</li>
+            <li><b>（推荐）直接运行 .ts</b>：每次编译再运行太麻烦，安装 <code class="inline">tsx</code> 可以直接跑 TS 文件：<code class="inline">npm install -D tsx</code>，然后 <code class="inline">npx tsx hello.ts</code>。教程后续示例都建议用这种方式。</li>
+            <li><b>生成配置文件</b>：执行 <code class="inline">tsc --init</code>，会生成 <code class="inline">tsconfig.json</code>，这是 TS 项目的「总开关」，第 9 章会详解。现在只需知道它存在即可。</li>
+          </ol>
+        </div>
+
+        <h3>1.4 实际案例：一个带类型的温度转换工具</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例：把 C 语言风格的「无类型思维」切换过来</div>
+          <pre class="code"><code>// temp.ts —— 温度转换工具
+// ① 函数参数和返回值都标了类型：参数只能是数字，返回的一定是数字
+function celsiusToFahrenheit(c: number): number {
+  return (c * 9) / 5 + 32;
+}
+
+function fahrenheitToCelsius(f: number): number {
+  return ((f - 32) * 5) / 9;
+}
+
+// ② 变量类型由初始值自动推断（不需要写，TS 自己会算）
+const t1 = celsiusToFahrenheit(25);   // t1 被推断为 number
+const t2 = fahrenheitToCelsius(77);   // t2 被推断为 number
+
+console.log(`25°C = ${t1.toFixed(1)}°F`);   // 25°C = 77.0°F
+console.log(`77°F = ${t2.toFixed(1)}°C`);   // 77°F = 25.0°C
+
+// ③ 故意传错类型，编译器立刻报警
+celsiusToFahrenheit("热死了");        // ❌ 参数类型不匹配
+celsiusToFahrenheit(undefined);       // ❌ 同上</code></pre>
+          <p>在 VSCode 里把鼠标悬停在 <code class="inline">t1</code> 上，编辑器会显示 <code class="inline">const t1: number</code> —— 这就是类型推断 + IDE 智能提示，是 TS 开发体验的核心。</p>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>TS = JS + 类型系统；tsc 负责「检查 + 擦除」，类型零运行时开销；装好 Node 和 tsc 后，<code class="inline">tsc 文件名.ts</code> 编译、<code class="inline">npx tsx 文件名.ts</code> 直接跑。练习：自己写一个计算圆面积、矩形面积的程序，参数全部标注类型，并故意传错类型观察报错。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第2章 ============ -->
+    <article class="chapter" id="ch2">
+      <div class="ch-head">
+        <div class="ch-num">02</div>
+        <div>
+          <h2>基础类型与类型系统</h2>
+          <div class="ch-meta"><span class="tag st1">基础篇</span><span class="tag time">约 3 小时</span><span class="tag time">前置：第 1 章</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>掌握全部基础类型：原始类型、数组、元组、any/unknown/never/void</li>
+            <li>理解类型推断与类型注解的区别，知道何时该写注解</li>
+            <li>掌握联合类型、字面量类型、类型别名、类型断言</li>
+          </ul>
+        </div>
+
+        <h3>2.1 原始类型</h3>
+        <p>TS 的原始类型和 JS 一一对应，只是可以显式标注。逐个过一遍：</p>
+        <pre class="code"><code>// number —— 所有数字（整数、小数、负数、NaN、Infinity）
+let age: number = 30;
+let price: number = 9.99;
+let notANumber: number = NaN;
+
+// string —— 文本，支持单引号、双引号、模板字符串
+let name: string = "Alice";
+let greeting: string = `你好，${name}！`;
+
+// boolean —— 布尔
+let isDone: boolean = false;
+
+// bigint —— 大整数（超出 number 安全范围时用），字面量末尾加 n
+let big: bigint = 9007199254740993n;
+
+// symbol —— 唯一标识
+const key: symbol = Symbol("id");
+
+// null 与 undefined —— 两种「空」
+let a: null = null;          // 明确表示「这里没有值」
+let b: undefined = undefined; // 表示「变量还没定义」
+let c: undefined;             // 没赋值时，类型就是 undefined</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：为什么 null 和 undefined 要分开</div>
+          <p>在 JS 里它们语义不同：<code class="inline">null</code> 是「开发者主动放的空」，<code class="inline">undefined</code> 是「系统给的未定义」。TS 保留了这个区分，并在严格模式下（第 9 章讲）强制你处理它们——这是 TS 消灭「半个 bug 王国」的关键设计：很多线上崩溃都源于「某个值其实是 null，但代码以为它有值」。</p>
+        </div>
+
+        <h3>2.2 类型推断 vs 类型注解</h3>
+        <p>给变量写类型有两条路，TS 都支持：</p>
+        <pre class="code"><code>// ① 类型注解（type annotation）：显式写出类型
+let count: number = 42;
+
+// ② 类型推断（type inference）：让 TS 从初始值自动推导
+let count2 = 42;   // TS 自动推断 count2 是 number
+
+// 推断是默认行为，且推荐优先使用
+let message = "hello";      // message: string
+let isOk = true;            // isOk: boolean
+const pi = 3.14;            // pi: 3.14（const 推断出字面量类型！）</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：推断的规则</div>
+          <ul>
+            <li><b>let 声明</b>：根据初始值推断「宽」类型（<code class="inline">let x = 1</code> → <code class="inline">number</code>，之后可以改成 2、3）。</li>
+            <li><b>const 声明</b>：推断「窄」的<b>字面量类型</b>（<code class="inline">const x = 1</code> → <code class="inline">1</code>，因为它永远不变）。</li>
+            <li><b>函数返回值</b>：根据 return 语句推断（<code class="inline">function f() { return "a" }</code> → 返回类型 <code class="inline">string</code>）。</li>
+            <li>经验法则：<b>能推断就不写注解</b>；函数<b>参数必须写</b>（TS 无法凭空知道调用方会传什么）；希望「限制」变量只能是什么值时写注解。</li>
+          </ul>
+        </div>
+
+        <h3>2.3 数组与元组</h3>
+        <pre class="code"><code>// 数组的两种写法，完全等价
+let nums1: number[] = [1, 2, 3];
+let nums2: Array&lt;number&gt; = [1, 2, 3];   // 泛型写法，第 6 章细讲
+
+let names: string[] = ["a", "b"];
+let matrix: number[][] = [[1, 2], [3, 4]];   // 二维数组
+
+// 数组声明后不能塞别的类型
+nums1.push("x");   // ❌ 参数类型 "string" 不能赋值给 "number"
+
+// 元组 tuple：固定长度、每个位置类型固定 —— 常用于「成对数据」
+let point: [number, number] = [10, 20];   // 坐标
+let httpStatus: [number, string] = [200, "OK"];
+
+// 只读数组：只允许读，不允许改 —— 函数传参防篡改利器
+let ro: readonly number[] = [1, 2, 3];
+ro.push(4);        // ❌ 只读数组不能 push
+// 只读元组
+let rc: readonly [number, string] = [200, "OK"];</code></pre>
+        <div class="box scene">
+          <div class="box-t">🎯 应用场景</div>
+          <ul>
+            <li>数组：任何「一堆同类型数据」——用户列表、日志行、坐标数组。</li>
+            <li>元组：CSV 解析结果、键值对列表、API 的 <code class="inline">[状态码, 消息]</code> 返回。</li>
+            <li>只读数组：把内部数据暴露给外部时，防止被意外修改。</li>
+          </ul>
+        </div>
+
+        <h3>2.4 特殊类型：any / unknown / never / void</h3>
+        <pre class="code"><code>// any —— 「不管类型」，TS 的逃生舱。能不用就不用！
+let anything: any = 42;
+anything = "改成字符串也行";
+anything.toUpperCase();   // 不报错，但运行时可能崩 —— 类型保护完全失效
+
+// unknown —— 安全的 any：它「不知道是什么」，但逼你先检查再用
+let input: unknown = JSON.parse('{"a":1}');
+input.a;                  // ❌ unknown 类型上不能访问属性，必须先收窄
+if (typeof input === "object" &amp;&amp; input !== null) {
+  // 此时 input 收窄为 object，可以安全访问
+  console.log("是一个对象");
+}
+
+// never —— 「永远不可能的值」：函数抛异常、无限循环、穷尽检查
+function fail(msg: string): never {
+  throw new Error(msg);    // 抛异常的函数永远不会正常返回
+}
+function infinite(): never {
+  while (true) {}          // 死循环也不会返回
+}
+
+// void —— 「没有返回值」
+function log(message: string): void {
+  console.log(message);    // 没有 return，或 return undefined
+}</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：四个特殊类型的心智模型</div>
+          <ul>
+            <li><b>any</b>：关闭检查。危险在于「传染」——任何碰过 any 的变量都会失去类型，最好当成「这里有个类型漏洞」来对待。</li>
+            <li><b>unknown</b>：any 的安全替代。它代表「未知值」，TS 强制你先做类型收窄（typeof、instanceof 等）才能用。处理 <code class="inline">JSON.parse</code>、用户输入、第三方数据时优先用它。</li>
+            <li><b>never</b>：空集。它是所有类型的子类型，可以赋给任何类型；但没有任何值可以赋给它（除了 never 本身）。在 switch 穷尽检查中价值巨大（第 7 章演示）。</li>
+            <li><b>void</b>：函数「不返回有意义的值」。用于事件处理函数、日志函数等。</li>
+          </ul>
+        </div>
+
+        <h3>2.5 联合类型、字面量类型与类型别名</h3>
+        <pre class="code"><code>// 联合类型（Union）：一个值「可能是 A 或 B」，用 | 连接
+let id: string | number = 101;    // 数字 ID
+id = "A-101";                     // 换成字符串 ID 也行
+id = true;                        // ❌ boolean 不在联合里
+
+// 字面量类型：把「具体的值」当类型用 —— 枚举式的约束
+let direction: "left" | "right" | "up" | "down" = "left";
+direction = "sideways";           // ❌ 不在可选值里
+
+// 类型别名（type）：给一组类型起名字，可复用
+type Direction = "left" | "right" | "up" | "down";
+type ID = string | number;
+
+let d: Direction = "up";          // 用别名声明
+function move(dir: Direction) { /* ... */ }
+
+// 交叉类型（Intersection）：同时满足 A 和 B，用 & 连接
+type Named = { name: string };
+type Aged = { age: number };
+type Person = Named &amp; Aged;       // 既有 name 又有 age
+const p: Person = { name: "Tom", age: 20 };</code></pre>
+        <div class="box scene">
+          <div class="box-t">🎯 应用场景</div>
+          <ul>
+            <li>联合类型：接口返回「成功对象 | 失败对象」、函数参数「数字 ID | 字符串 ID」、表单字段「数字 | 空」。</li>
+            <li>字面量类型：按钮状态 <code class="inline">"primary" | "secondary" | "danger"</code>、排序方向、路由名 —— 比字符串散落各处安全得多。</li>
+            <li>类型别名：把业务类型收敛到一处定义，全项目复用。</li>
+          </ul>
+        </div>
+
+        <h3>2.6 类型断言（as）与非空断言（!）</h3>
+        <pre class="code"><code>// 类型断言：你比编译器更清楚，让它「别管了，按我说的来」
+// 注意：断言不改变运行时，只是欺骗类型系统 —— 慎用！
+const el = document.getElementById("app") as HTMLDivElement;
+const value: unknown = "123";
+const len = (value as string).length;   // 5
+
+// 非空断言：告诉 TS 「这个值绝对不是 null/undefined」
+function getConfig(): string | null {
+  return Math.random() &gt; 0.5 ? "production" : null;
+}
+const config = getConfig()!;            // 我保证它不是 null
+console.log(config.toUpperCase());      // 不报错（但运行时要真不为 null！）</code></pre>
+        <div class="box warn">
+          <div class="box-t">⚠️ 使用红线</div>
+          <p><code class="inline">as</code> 和 <code class="inline">!</code> 都是「绕开类型检查」，滥用会让 TS 失去意义。经验法则：能用类型收窄（typeof/判断）解决，就不要用断言；用断言时在旁边注释原因。</p>
+        </div>
+
+        <h3>2.7 实际案例：商品购物车的数据建模</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例：把「购物车」这个业务场景完整用类型描述出来</div>
+          <pre class="code"><code>// cart.ts —— 购物车案例
+// 商品分类：字面量联合类型，防止拼错
+type Category = "电子产品" | "图书" | "食品" | "服装";
+
+// 商品：number[] 不行，这里用元组和别名
+type Sku = string;   // 库存单位编号，如 "SKU-001"
+
+type Product = {
+  sku: Sku;
+  name: string;
+  price: number;
+  category: Category;
+  stock: number;
+  onSale?: boolean;        // 可选属性：有些商品没有折扣
+};
+
+// 购物车条目：商品 + 数量
+type CartItem = {
+  product: Product;
+  quantity: number;
+};
+
+// 购物车结算
+function checkout(items: CartItem[]): number {
+  return items.reduce((total, item) =&gt; {
+    const price = item.product.onSale ? item.product.price * 0.8 : item.product.price;
+    return total + price * item.quantity;
+  }, 0);
+}
+
+// 使用：类型错误会被立刻抓住
+const phone: Product = {
+  sku: "SKU-001",
+  name: "智能手机",
+  price: 2999,
+  category: "电子产品",
+  stock: 50,
+  onSale: true,
+};
+const book: Product = {
+  sku: "SKU-002",
+  name: "《TS 教程》",
+  price: 99,
+  category: "图书",     // 拼成 "图出" 会立刻报错 ❌
+  stock: 200,
+};
+
+const cart: CartItem[] = [
+  { product: phone, quantity: 2 },
+  { product: book, quantity: 1 },
+];
+
+console.log(`应付：¥${checkout(cart).toFixed(2)}`);
+// 计算：2999*0.8*2 + 99*1 = 4897.40</code></pre>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>原始类型 + 数组元组是地基；any 少用、unknown 多用；联合/字面量/别名是日常建模三件套；断言是最后手段。练习：给「图书借阅系统」建模——书（ISBN、书名、作者、价格、可借数量）、借阅记录（借书人、书、借出/归还时间）、函数「计算逾期罚款」。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第3章 ============ -->
+    <article class="chapter" id="ch3">
+      <div class="ch-head">
+        <div class="ch-num">03</div>
+        <div>
+          <h2>接口与对象类型</h2>
+          <div class="ch-meta"><span class="tag st1">基础篇</span><span class="tag time">约 2.5 小时</span><span class="tag time">前置：第 2 章</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>熟练用 interface 描述对象「长什么样」</li>
+            <li>掌握可选属性、只读属性、索引签名、接口继承</li>
+            <li>理解 interface 与 type 的区别与选型原则</li>
+          </ul>
+        </div>
+
+        <h3>3.1 什么是接口</h3>
+        <p>接口（interface）是 TS 描述「一个对象应该有哪些字段、每个字段什么类型」的语法。它不产生任何运行时代码，纯粹是编译期的「形状描述」。写接口相当于给对象画了一张「蓝图」或「合同」。</p>
+        <pre class="code"><code>// 定义一个 User 接口：任何符合这个形状的对象都是 User
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+// 使用：变量的类型标注为 User，就必须符合形状
+const u1: User = { id: 1, name: "张三", email: "zhang@example.com" };
+const u2: User = { id: 2, name: "李四" };         // ❌ 缺少 email
+const u3: User = { id: 3, name: "王五", email: "w@e.com", age: 20 }; // ❌ 多了 age（多余属性报错）
+
+// 把对象作为参数传入
+function sendEmail(user: User): void {
+  console.log(`发送邮件给 ${user.name} &lt;${user.email}&gt;`);
+}</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：结构化类型（鸭子类型）</div>
+          <p>TS 判断「一个对象是不是 User」，不看它来自哪个类，只看<b>形状是否匹配</b>——「只要长得像鸭子、叫起来像鸭子，它就是鸭子」。所以：</p>
+          <ul>
+            <li>用字面量直接创建的对象、类 new 出来的实例、JSON 解析出来的数据，只要字段类型对得上，都能当作 User 用。</li>
+            <li>这也意味着接口之间天然兼容：A 接口的对象可以赋给 B 接口的变量（如果 B 需要的字段 A 都有）。</li>
+          </ul>
+          <pre class="code"><code>// 形状兼容：这个对象虽然没标 User，但形状一样，就能用
+const someone = { id: 9, name: "老张", email: "z@x.com" };
+sendEmail(someone);   // ✅ 形状匹配即可
+
+// 多余属性检查只在「字面量直接赋值」时触发
+sendEmail({ id: 1, name: "a", email: "b@c.com", vip: true }); // ❌ 字面量多了 vip
+const withVip = { id: 1, name: "a", email: "b@c.com", vip: true };
+sendEmail(withVip);   // ✅ 先存进变量再传，多余属性被忽略</code></pre>
+        </div>
+
+        <h3>3.2 可选属性、只读属性</h3>
+        <pre class="code"><code>interface Product {
+  id: number;
+  name: string;
+  price: number;
+  description?: string;      // ?: 可选 —— 有可以，没有也行
+  readonly createdAt: string; // readonly —— 创建后不可修改
+}
+
+const p: Product = {
+  id: 1,
+  name: "鼠标",
+  price: 99,
+  // description 可以省略
+  createdAt: "2026-08-01",
+};
+
+p.createdAt = "2026-08-02";  // ❌ 只读属性不能赋值
+p.name = "无线鼠标";          // ✅ 普通属性可以改</code></pre>
+        <div class="box scene">
+          <div class="box-t">🎯 应用场景</div>
+          <ul>
+            <li><b>可选属性</b>：业务数据天然「有些字段不一定有」——备注、头像、折扣、扩展字段。</li>
+            <li><b>readonly</b>：数据库主键、创建时间、ID、配置常量——一旦产生就不该被改。</li>
+          </ul>
+        </div>
+
+        <h3>3.3 索引签名：当字段名不确定时</h3>
+        <pre class="code"><code>// 场景：一个「语言代码 → 翻译文本」的字典，键是动态的
+interface Translations {
+  [lang: string]: string;    // 任意字符串键，值都是 string
+}
+const t: Translations = {
+  zh: "你好",
+  en: "Hello",
+  fr: "Bonjour",
+};
+
+// 场景：表单错误信息，每个字段名可能报错
+interface FormErrors {
+  [field: string]: string | undefined;
+}
+const errors: FormErrors = {
+  username: "用户名不能为空",
+  // email 没填就不存在，访问返回 undefined
+};
+console.log(errors.email);   // undefined
+
+// 混合：既有已知字段，又有动态字段
+interface Settings {
+  theme: "light" | "dark";       // 已知字段
+  [key: string]: string | number | boolean | undefined;  // 动态字段类型要兼容已知字段
+}</code></pre>
+        <div class="box warn">
+          <div class="box-t">⚠️ 注意</div>
+          <p>索引签名要求<b>所有已知字段的类型都能赋给索引签名的值类型</b>（因为编译器无法保证运行时哪个键出现）。所以上面的 Settings 里，索引值类型写成了包含 string 的联合。</p>
+        </div>
+
+        <h3>3.4 接口继承（extends）</h3>
+        <pre class="code"><code>interface Animal {
+  name: string;
+  eat(): void;
+}
+// Dog 继承 Animal：自动拥有 name 和 eat
+interface Dog extends Animal {
+  breed: string;        // 新增字段
+  bark(): void;         // 新增方法
+}
+
+const dog: Dog = {
+  name: "旺财",
+  breed: "金毛",
+  eat() { console.log("吃饭"); },
+  bark() { console.log("汪汪"); },
+};
+
+// 多继承：一个接口可以继承多个
+interface Printable { print(): void }
+interface Serializable { toJSON(): string }
+interface Report extends Printable, Serializable {
+  title: string;
+}</code></pre>
+        <div class="box scene">
+          <div class="box-t">🎯 应用场景</div>
+          <p>领域建模的「父子关系」：动物→狗、账户→VIP账户、订单→退款订单。先定义通用基接口，再逐层细化，避免每个类型都重复写公共字段。</p>
+        </div>
+
+        <h3>3.5 interface 与 type 怎么选</h3>
+        <table class="tools">
+          <tr><th>对比项</th><th>interface</th><th>type 别名</th></tr>
+          <tr><td>描述对象形状</td><td>✅ 主职</td><td>✅ 也可以</td></tr>
+          <tr><td>联合 / 交叉 / 字面量 / 元组</td><td>❌ 不支持</td><td>✅ 独有能力</td></tr>
+          <tr><td>继承扩展</td><td>✅ extends，且可重复声明合并</td><td>✅ 用 &amp;，不可重复声明</td></tr>
+          <tr><td>声明合并（同名合并）</td><td>✅ 同名 interface 自动合并</td><td>❌ 同名报错</td></tr>
+          <tr><td>性能</td><td>编译错误信息更友好</td><td>复杂类型下报错冗长</td></tr>
+        </table>
+        <div class="box concept">
+          <div class="box-t">🧠 选型建议（官方推荐）</div>
+          <p><b>描述对象/类的形状 → 优先 interface</b>；需要联合、元组、字面量、条件类型等「类型运算」→ 用 type。两者可混用（interface 可以 extends 一个 type，type 可以包含 interface）。</p>
+        </div>
+
+        <h3>3.6 实际案例：订单系统建模</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例：电商订单的接口分层设计</div>
+          <pre class="code"><code>// order.ts —— 接口驱动的订单系统
+// 基础：金额单位统一用「分」避免浮点误差
+interface OrderLine {
+  sku: string;
+  title: string;
+  unitPriceCents: number;
+  quantity: number;
+}
+
+interface Address {
+  province: string;
+  city: string;
+  detail: string;
+  phone: string;
+  readonly createdAt?: string;
+}
+
+// 状态用字面量联合，杜绝「订单状态拼错」
+type OrderStatus = "pending" | "paid" | "shipped" | "completed" | "cancelled";
+
+// 主订单：继承公共字段 + 业务字段
+interface Order {
+  id: string;
+  lines: OrderLine[];
+  shipTo: Address;
+  status: OrderStatus;
+  readonly createdAt: string;
+  totalCents?: number;        // 未结算时为 undefined
+}
+
+// 函数：结算订单（参数是接口，返回结算信息）
+function settle(order: Order): { orderId: string; totalCents: number } {
+  const totalCents = order.lines.reduce(
+    (sum, l) =&gt; sum + l.unitPriceCents * l.quantity, 0
+  );
+  order.status = "paid";      // 更新状态
+  return { orderId: order.id, totalCents };
+}
+
+// 使用
+const myOrder: Order = {
+  id: "ORD-2026-0001",
+  lines: [
+    { sku: "SKU-1", title: "机械键盘", unitPriceCents: 39900, quantity: 1 },
+    { sku: "SKU-2", title: "鼠标垫", unitPriceCents: 2900, quantity: 2 },
+  ],
+  shipTo: { province: "广东", city: "深圳", detail: "科技园路 1 号", phone: "13800000000" },
+  status: "pending",
+  createdAt: "2026-08-18T10:00:00Z",
+};
+
+const result = settle(myOrder);
+console.log(`订单 ${result.orderId} 实付 ¥${(result.totalCents / 100).toFixed(2)}`);
+// 输出：订单 ORD-2026-0001 实付 ¥457.00</code></pre>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>interface 描述「形状」，鸭子类型让任意形状匹配的对象都能用；可选/只读/索引签名/继承覆盖了日常建模 90% 需求；对象形状用 interface，类型运算用 type。练习：为「图书馆」建模——Book、Member、Loan 三个接口，Loan 引用 Book 和 Member，再写一个借书函数检查可借数量。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第4章 ============ -->
+    <article class="chapter" id="ch4">
+      <div class="ch-head">
+        <div class="ch-num">04</div>
+        <div>
+          <h2>函数</h2>
+          <div class="ch-meta"><span class="tag st1">基础篇</span><span class="tag time">约 2.5 小时</span><span class="tag time">前置：第 2-3 章</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>掌握函数的参数、返回值类型标注</li>
+            <li>掌握可选参数、默认参数、剩余参数、函数重载</li>
+            <li>理解 this 类型与回调函数中的类型推断</li>
+          </ul>
+        </div>
+
+        <h3>4.1 函数的基本类型标注</h3>
+        <pre class="code"><code>// 普通函数：参数标类型，返回值标类型
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+// 函数表达式：给变量标注「函数类型」
+const multiply: (a: number, b: number) =&gt; number = (a, b) =&gt; a * b;
+
+// 用 type 给函数类型起名字 —— 复用方便
+type MathFn = (a: number, b: number) =&gt; number;
+const divide: MathFn = (a, b) =&gt; a / b;
+
+// 函数作为参数（回调）
+function compute(op: MathFn, x: number, y: number): number {
+  return op(x, y);
+}
+console.log(compute(add, 10, 5));        // 15
+console.log(compute(divide, 10, 5));     // 2
+
+// 无返回值用 void
+function logMsg(msg: string): void {
+  console.log(msg);
+}</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：参数类型为什么必须写，返回值可以推断</div>
+          <p>编译器看不到「调用方会传什么」，所以<b>参数类型无法推断，必须标注</b>（否则默认 any，等于没检查）。返回值则可以从 <code class="inline">return</code> 语句推断，但显式写出相当于「承诺」，防止实现改坏了没人发现。团队规范通常要求：<b>参数必写、返回值建议写</b>。</p>
+        </div>
+
+        <h3>4.2 可选参数、默认参数、剩余参数</h3>
+        <pre class="code"><code>// 可选参数：? 结尾，调用时可省略
+function greet(name: string, greeting?: string): string {
+  return greeting ? `${greeting}, ${name}!` : `你好, ${name}!`;
+}
+greet("张三");                 // 你好, 张三!
+greet("张三", "Good morning"); // Good morning, 张三!
+
+// 默认参数：带 = 值，比可选参数更常用（自动兜底）
+function greet2(name: string, greeting = "你好"): string {
+  return `${greeting}, ${name}!`;
+}
+
+// 注意规则：可选/默认参数必须放在必选参数后面！
+// function bad(a?: number, b: number) {}  // ❌
+
+// 剩余参数：...rest 收集多余参数，一定是数组
+function sumAll(...nums: number[]): number {
+  return nums.reduce((s, n) =&gt; s + n, 0);
+}
+sumAll(1, 2, 3, 4, 5);   // 15
+
+// 回调函数中的参数类型会自动推断
+const list = [1, 2, 3, 4];
+list.filter(n =&gt; n % 2 === 0);   // n 自动推断为 number，不用写
+list.map((n, index) =&gt; ({ n, index }));  // 参数和返回值都有提示</code></pre>
+
+        <h3>4.3 函数重载（Overload）</h3>
+        <p>同一个函数，根据<b>参数的类型/数量</b>不同，返回不同的类型。写法：先列多个「重载签名」，最后写一个「实现签名」。</p>
+        <pre class="code"><code>// 场景：format 函数 —— 传 Date 返回 "2026-08-18"；传 string 原样返回；传 number 转字符串
+function format(input: Date): string;          // 重载签名 1
+function format(input: string): string;        // 重载签名 2
+function format(input: number): string;        // 重载签名 3
+function format(input: Date | string | number): string {  // 实现签名（对调用方不可见）
+  if (input instanceof Date) {
+    return `${input.getFullYear()}-${String(input.getMonth() + 1).padStart(2, "0")}-${String(input.getDate()).padStart(2, "0")}`;
+  }
+  return String(input);
+}
+
+const d = format(new Date());   // "2026-08-18" 类型是 string
+const s = format("abc");        // "abc"
+const n = format(123);          // "123"</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：为什么要有重载</div>
+          <p>实现签名里的参数类型是联合类型，如果只写实现签名，调用方看到的返回类型也是「笼统的 string」。重载让 TS 能<b>根据你传入的参数类型，精确给出对应的返回类型</b>，IDE 提示也更准确。注意：重载签名必须能互相兼容，且实现签名对调用方隐藏。</p>
+        </div>
+
+        <h3>4.4 this 类型</h3>
+        <pre class="code"><code>// 场景：事件处理器、类外对象方法中的 this
+// 用「第一个参数 this」来标注 this 的类型
+interface Counter {
+  count: number;
+  increment(): void;
+  reset(): void;
+}
+
+const counter: Counter = {
+  count: 0,
+  increment() {
+    this.count++;    // this 是 Counter，能访问 count
+  },
+  reset() {
+    this.count = 0;
+  },
+};
+
+// 独立函数中 this 的类型
+function printCount(this: Counter): void {
+  console.log(`当前计数：${this.count}`);
+}
+printCount.call(counter);   // 当前计数：0
+counter.increment();
+counter.increment();
+printCount.call(counter);   // 当前计数：2
+// printCount();  // ❌ 直接调用时 this 不是 Counter，TS 会报错</code></pre>
+
+        <h3>4.5 实际案例：带类型的工具函数库</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例：防抖（debounce）+ 参数校验 —— 前端高频场景</div>
+          <pre class="code"><code>// utils.ts
+// ① 防抖：搜索框输入、窗口 resize 等高频事件，最后一次才执行
+function debounce&lt;T extends (...args: never[]) =&gt; void&gt;(
+  fn: T,
+  delay = 300
+): (...args: Parameters&lt;T&gt;) =&gt; void {
+  let timer: ReturnType&lt;typeof setTimeout&gt; | undefined;
+  return (...args) =&gt; {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() =&gt; fn(...args), delay);
+  };
+}
+// 上面用了泛型 T 和工具类型（第 6-7 章详解），现在先会用：
+// 用法 —— 原函数是什么签名，防抖后的函数就是什么签名，类型自动保留
+
+// ② 参数校验函数
+type Validator = (value: unknown) =&gt; string | null;   // 返回错误信息或 null
+
+const required: Validator = (value) =&gt;
+  value === "" || value === null || value === undefined ? "该字段必填" : null;
+
+const isEmail: Validator = (value) =&gt;
+  typeof value === "string" &amp;&amp; /\S+@\S+\.\S+/.test(value) ? null : "邮箱格式不正确";
+
+// ③ 表单校验器：一次校验多个字段
+interface Rule { field: string; validators: Validator[] }
+function validate(rules: Rule[], data: Record&lt;string, unknown&gt;): Record&lt;string, string&gt; {
+  const errors: Record&lt;string, string&gt; = {};
+  for (const rule of rules) {
+    for (const v of rule.validators) {
+      const err = v(data[rule.field]);
+      if (err) { errors[rule.field] = err; break; }
+    }
+  }
+  return errors;
+}
+
+// ④ 使用
+const formData = { username: "", email: "bad-email" };
+const rules: Rule[] = [
+  { field: "username", validators: [required] },
+  { field: "email", validators: [required, isEmail] },
+];
+console.log(validate(rules, formData));
+// { username: "该字段必填", email: "邮箱格式不正确" }</code></pre>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>参数必标注、返回值可推断；默认参数 &gt; 可选参数；重载解决「同函数不同类型返回」；回调自动推断是日常最爽体验。练习：写一个 <code class="inline">once</code> 函数（包装任意函数，只能调用一次），并给它加上完整类型。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第5章 ============ -->
+    <article class="chapter" id="ch5">
+      <div class="ch-head">
+        <div class="ch-num">05</div>
+        <div>
+          <h2>类与面向对象</h2>
+          <div class="ch-meta"><span class="tag st1">基础篇</span><span class="tag time">约 3 小时</span><span class="tag time">前置：第 3-4 章</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>掌握 class 语法与访问修饰符（public/private/protected）</li>
+            <li>掌握继承、抽象类、接口实现</li>
+            <li>理解 TS 的面向对象特性在编译后是什么样子</li>
+          </ul>
+        </div>
+
+        <h3>5.1 类的基本写法</h3>
+        <pre class="code"><code>// TS 的类 = JS 的类 + 类型标注（字段、方法、访问控制）
+class Person {
+  // 字段声明 + 类型（这是 TS 新增的，JS 没有）
+  name: string;
+  age: number;
+
+  // 构造函数：参数标注类型，给字段赋值
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+
+  // 方法：和函数一样的标注规则
+  introduce(): string {
+    return `我是 ${this.name}，今年 ${this.age} 岁`;
+  }
+}
+
+const alice = new Person("Alice", 25);
+console.log(alice.introduce());   // 我是 Alice，今年 25 岁</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：参数属性简写</div>
+          <p>「声明字段 + 构造函数赋值」很啰嗦，TS 提供语法糖：构造参数前加修饰符，自动完成声明和赋值。</p>
+          <pre class="code"><code>class Person2 {
+  // 一个 constructor 搞定声明 + 赋值
+  constructor(public name: string, public age: number) {}
+}
+const bob = new Person2("Bob", 30);
+console.log(bob.name);   // Bob</code></pre>
+        </div>
+
+        <h3>5.2 访问修饰符：public / private / protected</h3>
+        <pre class="code"><code>class BankAccount {
+  // public：默认，任何人都能访问
+  public owner: string;
+
+  // private：只有「本类内部」能访问（子类也不行）
+  private balance: number;
+
+  // protected：本类 + 子类内部能访问，外部不行
+  protected accountNo: string;
+
+  constructor(owner: string, accountNo: string, initBalance: number) {
+    this.owner = owner;
+    this.accountNo = accountNo;
+    this.balance = initBalance;
+  }
+
+  public deposit(amount: number): void {
+    this.balance += amount;      // 内部可以访问 private
+  }
+
+  public getBalance(): number {
+    return this.balance;
+  }
+}
+
+const acc = new BankAccount("张三", "6222 0000", 1000);
+acc.owner = "李四";              // ✅ public 可改
+acc.getBalance();                // ✅ 通过公开方法读取
+// acc.balance = 9999;           // ❌ private 外部不可访问
+// acc.accountNo;                // ❌ protected 外部不可访问</code></pre>
+        <div class="box warn">
+          <div class="box-t">⚠️ 关键认知：修饰符只在编译期有效</div>
+          <p>编译成 JS 后，private/protected 会被擦除，变成普通属性——运行时照样能访问。TS 的封装是「开发规范护栏」，不是「安全加密」。真正要防运行时篡改，得用 JS 的 <code class="inline">#privateField</code> 语法（TS 也支持）。</p>
+        </div>
+
+        <h3>5.3 readonly 与 static</h3>
+        <pre class="code"><code>class Config {
+  // readonly：初始化后不可改（可在声明处或构造函数里赋值）
+  readonly appName: string;
+
+  // static：属于「类本身」而不是实例，无需 new 就能访问
+  static version = "1.0.0";
+
+  // 私有静态：只有类内部能用（常用于单例模式，第 14 章）
+  private static instance: Config | null = null;
+
+  constructor(appName: string) {
+    this.appName = appName;
+  }
+
+  static getVersion(): string {
+    return Config.version;
+  }
+}
+
+console.log(Config.version);       // 1.0.0 —— 不用 new
+console.log(Config.getVersion());  // 1.0.0
+const c = new Config("MyApp");
+// c.appName = "Other";           // ❌ readonly 不可改
+// Config.instance;               // ❌ private static 外部不可访问</code></pre>
+
+        <h3>5.4 继承、抽象类、实现接口</h3>
+        <pre class="code"><code>// ① 继承：子类 extends 父类，用 super 调父类构造函数
+class Student extends Person {
+  grade: number;
+  constructor(name: string, age: number, grade: number) {
+    super(name, age);        // 必须先 super()
+    this.grade = grade;
+  }
+  // 重写父类方法
+  introduce(): string {
+    return super.introduce() + `，读 ${this.grade} 年级`;
+  }
+}
+const stu = new Student("小明", 12, 6);
+console.log(stu.introduce());   // 我是 小明，今年 12 岁，读 6 年级
+
+// ② 抽象类：定义「骨架」，细节交给子类。不能 new，只能被继承
+abstract class Shape {
+  abstract area(): number;      // 抽象方法：只声明，不实现
+
+  describe(): string {          // 普通方法：可以有实现
+    return `面积：${this.area()}`;
+  }
+}
+
+class Circle extends Shape {
+  constructor(private radius: number) { super(); }
+  area(): number { return Math.PI * this.radius ** 2; }
+}
+
+class Rectangle extends Shape {
+  constructor(private w: number, private h: number) { super(); }
+  area(): number { return this.w * this.h; }
+}
+
+const shapes: Shape[] = [new Circle(2), new Rectangle(3, 4)];
+shapes.forEach(s =&gt; console.log(s.describe()));
+// 面积：12.566370614359172
+// 面积：12
+
+// ③ 实现接口：class implements 接口，必须实现接口里所有成员
+interface Flyable {
+  fly(): void;
+}
+interface Swimmable {
+  swim(): void;
+}
+class Duck implements Flyable, Swimmable {
+  fly() { console.log("飞起来了"); }
+  swim() { console.log("游起来了"); }
+}</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：implements vs extends</div>
+          <ul>
+            <li><b>extends（继承）</b>：获得父类的实现代码，可以复用、重写。<b>是一个「是」的关系</b>（狗是一种动物）。</li>
+            <li><b>implements（实现）</b>：只要求「形状符合」，不获得任何代码。<b>是一个「能」的关系</b>（鸭子能飞、能游）。</li>
+            <li>实际项目更推荐「组合优先」：多用接口定义能力 + 组合，少建深层继承链。</li>
+          </ul>
+        </div>
+
+        <h3>5.5 实际案例：银行账户系统（完整封装）</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例：账户体系 —— 私有字段 + 抽象类 + 多态</div>
+          <pre class="code"><code>// bank.ts
+abstract class Account {
+  constructor(
+    protected readonly accountNo: string,   // 子类可读，外部不可改
+    protected balance: number               // 子类可读写
+  ) {}
+
+  abstract get type(): string;   // 抽象属性：子类必须实现
+
+  deposit(amount: number): void {
+    if (amount &lt;= 0) throw new Error("存款金额必须大于 0");
+    this.balance += amount;
+  }
+
+  withdraw(amount: number): void {
+    if (amount &gt; this.balance) throw new Error("余额不足");
+    this.balance -= amount;
+  }
+
+  getBalance(): number {
+    return this.balance;
+  }
+}
+
+// 储蓄账户：有利率
+class SavingsAccount extends Account {
+  constructor(accountNo: string, balance: number, private rate: number) {
+    super(accountNo, balance);
+  }
+  get type(): string { return "储蓄账户"; }
+  applyInterest(): void {
+    this.balance += this.balance * this.rate;
+  }
+}
+
+// 信用卡账户：允许透支（balance 可为负）
+class CreditAccount extends Account {
+  constructor(accountNo: string, limit: number) {
+    super(accountNo, 0);
+    this.limit = limit;
+  }
+  private limit: number;
+  get type(): string { return "信用卡"; }
+  withdraw(amount: number): void {          // 重写：多态
+    if (amount &gt; this.balance + this.limit) throw new Error("超出信用额度");
+    this.balance -= amount;
+  }
+}
+
+// 使用
+const savings = new SavingsAccount("SAV-001", 10000, 0.02);
+savings.deposit(5000);
+savings.applyInterest();
+console.log(`${savings.type} 余额：${savings.getBalance()}`);  // 储蓄账户 余额：15300
+
+const credit = new CreditAccount("CRD-001", 5000);
+credit.withdraw(3000);   // 透支成功
+console.log(`${credit.type} 可用额度：${credit.getBalance() + 5000 - 3000}`);</code></pre>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>class 语法 = JS class + 字段类型 + 访问控制；private/protected 是编译期护栏；抽象类定骨架、接口定能力、继承复代码。练习：实现一个「员工管理系统」——抽象类 Employee（工资计算方法抽象）、子类 Manager/Engineer 实现不同工资算法。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第6章 ============ -->
+    <article class="chapter" id="ch6">
+      <div class="ch-head">
+        <div class="ch-num">06</div>
+        <div>
+          <h2>泛型</h2>
+          <div class="ch-meta"><span class="tag st1">基础篇</span><span class="tag time">约 4 小时 ⭐重点</span><span class="tag time">前置：第 2-5 章</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>理解泛型的动机：让「函数/类/接口」适配多种类型且不丢失类型信息</li>
+            <li>掌握泛型函数、泛型接口、泛型类、泛型约束</li>
+            <li>掌握常用内置工具类型并能手写核心几个</li>
+          </ul>
+        </div>
+
+        <h3>6.1 为什么需要泛型（动机）</h3>
+        <p>写一个「返回数组第一个元素」的函数，你会怎么写？</p>
+        <pre class="code"><code>// 方案 A：any —— 能跑，但类型全丢了，用起来毫无提示
+function first(arr: any[]): any {
+  return arr[0];
+}
+const x = first([1, 2, 3]);     // x 是 any，之后调用 x.toFixed() 也不报错
+
+// 方案 B：写死 number —— 只适用于一种类型
+function firstNum(arr: number[]): number {
+  return arr[0];
+}
+
+// 方案 C：泛型 —— 类型参数化：调用时决定类型，并且「进去什么、出来什么」被绑定
+function first&lt;T&gt;(arr: T[]): T {
+  return arr[0];
+}
+const a = first([1, 2, 3]);      // a: number
+const b = first(["x", "y"]);     // b: string
+const c = first([{ id: 1 }, { id: 2 }]);  // c: { id: number }
+// 传入和返回的类型一致，TS 自动推断 T</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：泛型 = 类型的「参数化」</div>
+          <p>普通函数参数化<b>值</b>：<code class="inline">function add(a, b)</code>。泛型参数化<b>类型</b>：<code class="inline">function first&lt;T&gt;(arr: T[])</code>。<code class="inline">&lt;T&gt;</code> 是一个「类型占位符」，调用时被具体类型替换（如 number、string），替换后整个函数的类型关系（参数与返回类型一致）依然被严格检查。它把「类型安全」和「通用性」同时保住了。</p>
+        </div>
+
+        <h3>6.2 泛型函数与泛型接口、泛型类</h3>
+        <pre class="code"><code>// 泛型函数：显式指定类型参数（调用时可省略，让 TS 推断）
+function identity&lt;T&gt;(value: T): T {
+  return value;
+}
+identity&lt;number&gt;(42);   // 显式
+identity("hello");      // 推断为 string
+
+// 泛型接口
+interface Box&lt;T&gt; {
+  value: T;
+}
+const numBox: Box&lt;number&gt; = { value: 1 };
+const strBox: Box&lt;string&gt; = { value: "a" };
+
+// 泛型类：经典例子 —— 通用栈
+class Stack&lt;T&gt; {
+  private items: T[] = [];
+  push(item: T): void { this.items.push(item); }
+  pop(): T | undefined { return this.items.pop(); }
+  get size(): number { return this.items.length; }
+}
+
+const numStack = new Stack&lt;number&gt;();
+numStack.push(1);
+numStack.push(2);
+// numStack.push("x");   // ❌ 只能放 number
+console.log(numStack.pop());   // 2
+
+const strStack = new Stack&lt;string&gt;();
+strStack.push("a");            // 各自独立，互不影响</code></pre>
+
+        <h3>6.3 泛型约束（extends）</h3>
+        <pre class="code"><code>// 问题：直接写 arr[0].length，TS 会报错 —— T 不一定有 length
+// function getLength&lt;T&gt;(arr: T[]): number { return arr[0].length; }  // ❌
+
+// 解决：用 extends 约束 T 必须满足某个形状
+interface HasLength {
+  length: number;
+}
+
+function getLength&lt;T extends HasLength&gt;(value: T): number {
+  return value.length;    // 现在安全了：T 保证有 length
+}
+getLength("hello");        // 5  （string 有 length）
+getLength([1, 2, 3]);      // 3  （数组有 length）
+// getLength(42);          // ❌ number 没有 length
+
+// 约束到「对象键」：keyof 提取键的联合类型
+function getProperty&lt;T, K extends keyof T&gt;(obj: T, key: K): T[K] {
+  return obj[key];
+}
+const user = { id: 1, name: "Tom" };
+getProperty(user, "name");    // string
+getProperty(user, "id");      // number
+// getProperty(user, "age");  // ❌ "age" 不是 user 的键</code></pre>
+
+        <h3>6.4 内置工具类型（泛型的实际主力）</h3>
+        <p>TS 内置了一批基于泛型的工具类型，日常开发使用频率极高。逐个看：</p>
+        <pre class="code"><code>interface Todo {
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
+// Partial&lt;T&gt;：所有属性变可选
+const partialTodo: Partial&lt;Todo&gt; = { title: "只改标题" };
+
+// Required&lt;T&gt;：所有属性变必填
+type RequiredTodo = Required&lt;Todo&gt;;   // 三个属性全必填
+
+// Readonly&lt;T&gt;：所有属性变只读
+const readonlyTodo: Readonly&lt;Todo&gt; = { title: "a", description: "b", completed: false };
+// readonlyTodo.completed = true;     // ❌
+
+// Pick&lt;T, K&gt;：挑出部分属性
+type TodoPreview = Pick&lt;Todo, "title" | "completed">;
+const preview: TodoPreview = { title: "写代码", completed: false };
+
+// Omit&lt;T, K&gt;：剔除部分属性（Pick 的反操作）
+type TodoWithoutDesc = Omit&lt;Todo, "description">;
+
+// Record&lt;K, V&gt;：键 K、值 V 的对象 —— 构建字典神器
+type CatName = "mimi" | "doudou";
+const cats: Record&lt;CatName, string&gt; = { mimi: "咪咪", doudou: "豆豆" };
+
+// Exclude&lt;T, U&gt;：从联合类型中排除
+type T1 = Exclude&lt;"a" | "b" | "c", "a">;   // "b" | "c"
+
+// Extract&lt;T, U&gt;：从联合类型中提取
+type T2 = Extract&lt;"a" | "b" | "c", "a" | "b">;   // "a" | "b"
+
+// NonNullable&lt;T&gt;：去掉 null 和 undefined
+type T3 = NonNullable&lt;string | null | undefined>;  // string
+
+// ReturnType&lt;T&gt;：取函数返回类型
+function createTodo(): Todo { return { title: "x", description: "y", completed: false }; }
+type TodoType = ReturnType&lt;typeof createTodo>;   // Todo
+
+// Parameters&lt;T&gt;：取函数参数类型（元组）
+type AddParams = Parameters&lt;(a: number, b: string) =&gt; void>;  // [number, string]
+
+// Awaited&lt;T&gt;：取 Promise 内部类型
+type P = Awaited&lt;Promise&lt;Promise&lt;string&gt;&gt;&gt;;   // string</code></pre>
+
+        <h3>6.5 实际案例：手写核心工具类型 + 泛型实战</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例 1：手写 myPick / myReadonly —— 理解工具类型原理</div>
+          <pre class="code"><code>// 手写 Pick：keyof 取所有键 → K 约束为键 → 遍历构造新对象
+type MyPick&lt;T, K extends keyof T&gt; = {
+  [P in K]: T[P];      // 映射类型：遍历 K 中的每个键 P，值类型取 T[P]
+};
+type Picked = MyPick&lt;Todo, "title">;   // { title: string }
+
+// 手写 Readonly
+type MyReadonly&lt;T&gt; = {
+  readonly [P in keyof T]: T[P];
+};
+
+// 手写 Partial
+type MyPartial&lt;T&gt; = {
+  [P in keyof T]?: T[P];
+};</code></pre>
+          <div class="box-t" style="margin-top:12px">💻 案例 2：泛型封装的 HTTP 请求 —— 前后端数据层标配</div>
+          <pre class="code"><code>// http.ts —— 泛型让每个接口的响应类型精确绑定
+interface ApiResponse&lt;T&gt; {
+  code: number;
+  message: string;
+  data: T;               // 数据部分是泛型
+}
+
+interface UserInfo {
+  id: number;
+  name: string;
+}
+
+async function get&lt;T&gt;(url: string): Promise&lt;ApiResponse&lt;T&gt;&gt; {
+  const res = await fetch(url);
+  return res.json() as Promise&lt;ApiResponse&lt;T&gt;&gt;;
+}
+
+// 使用：传一个类型参数，返回的 data 就自动是这个类型
+async function main() {
+  const resp = await get&lt;UserInfo&gt;("/api/user/1");
+  const name = resp.data.name;      // ✅ 有智能提示，name 是 string
+  // resp.data.age;                 // ❌ UserInfo 没有 age
+  console.log(`用户：${name}，状态码：${resp.code}`);
+}</code></pre>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>泛型 = 类型参数化；<code class="inline">&lt;T&gt;</code> 用 extends 约束、keyof 取键；内置工具类型是泛型的最大红利，先会用再手写。练习：写一个 <code class="inline">createPair</code> 泛型函数返回 <code class="inline">[T, T]</code>；手写 <code class="inline">MyOmit</code>（提示：用 Exclude 先排除键）。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第7章 ============ -->
+    <article class="chapter" id="ch7">
+      <div class="ch-head">
+        <div class="ch-num">07</div>
+        <div>
+          <h2>高级类型系统（类型编程）</h2>
+          <div class="ch-meta"><span class="tag st2">进阶篇</span><span class="tag time">约 5 小时 ⭐硬核</span><span class="tag time">前置：第 6 章</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>掌握类型守卫与收窄，让联合类型安全使用</li>
+            <li>掌握 keyof / typeof / 索引访问 / 条件类型 / 映射类型 / infer</li>
+            <li>能读懂并写出常见的「类型体操」（类型工具）</li>
+          </ul>
+        </div>
+
+        <h3>7.1 类型守卫与类型收窄</h3>
+        <p>联合类型的值，在「还没确认是哪个分支」前，只能使用所有分支共有的能力。确认的过程叫<b>类型收窄</b>（narrowing），收窄用的判断语句叫<b>类型守卫</b>（type guard）。</p>
+        <pre class="code"><code>type Result = { ok: true; data: string } | { ok: false; error: string };
+
+function handle(r: Result) {
+  if (r.ok) {
+    // 这里 r 被收窄为 { ok: true; data: string }，可以安全用 data
+    console.log(r.data.toUpperCase());
+  } else {
+    // 这里 r 是 { ok: false; error: string }
+    console.error(r.error);
+  }
+}
+
+// 四种常用守卫：
+// ① typeof —— 基础类型判断
+function pad(n: string | number): string {
+  if (typeof n === "number") return String(n).padStart(2, "0");
+  return n.padStart(2, "0");
+}
+
+// ② instanceof —— 类实例判断
+function describe(x: Date | string): string {
+  if (x instanceof Date) return `日期：${x.toISOString()}`;
+  return `文本：${x}`;
+}
+
+// ③ in —— 对象属性判断
+interface Fish { swim(): void }
+interface Bird { fly(): void }
+function move(animal: Fish | Bird) {
+  if ("swim" in animal) animal.swim();   // in 能区分对象形状
+  else animal.fly();
+}
+
+// ④ 自定义类型谓词：is 关键字 —— 复杂判断封装成可复用守卫
+function isFish(animal: Fish | Bird): animal is Fish {
+  return "swim" in animal;
+}
+const pets: (Fish | Bird)[] = [];
+pets.filter(isFish).forEach(f =&gt; f.swim());   // filter 后自动收窄为 Fish[]</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：可辨识联合 + 穷尽检查</div>
+          <p>给联合的每个分支加一个「判别字段」（如 ok、type、kind），switch 后 TS 能精确收窄，配合 never 做穷尽检查——以后加新分支忘了处理，编译器立刻报错：</p>
+          <pre class="code"><code>type Shape =
+  | { kind: "circle"; radius: number }
+  | { kind: "square"; side: number }
+  | { kind: "triangle"; base: number; height: number };
+
+function area(s: Shape): number {
+  switch (s.kind) {
+    case "circle":   return Math.PI * s.radius ** 2;
+    case "square":   return s.side ** 2;
+    case "triangle": return (s.base * s.height) / 2;
+    default:
+      // 如果以后加了新 Shape 分支却没处理，s 会变成 never，这里报错
+      const _exhaustive: never = s;
+      return _exhaustive;
+  }
+}</code></pre>
+        </div>
+
+        <h3>7.2 keyof / typeof / 索引访问类型</h3>
+        <pre class="code"><code>// keyof T：取对象所有键的联合类型
+interface Config { url: string; timeout: number; retries: number }
+type ConfigKey = keyof Config;    // "url" | "timeout" | "retries"
+
+// typeof 值：把「值」变成「类型」（只能用于变量/对象）
+const settings = { url: "/api", timeout: 5000, retries: 3 };
+type SettingsType = typeof settings;   // { url: string; timeout: number; retries: number }
+
+// 索引访问类型 T[K]：取某个键对应的值类型
+type UrlType = Config["url"];             // string
+type MixedType = Config["url" | "timeout"];  // string | number
+type AnyKey = Config[keyof Config];       // string | number —— 所有值类型的联合
+
+// 组合使用：动态安全地访问对象
+function pluck&lt;T, K extends keyof T&gt;(obj: T, keys: K[]): T[K][] {
+  return keys.map(k =&gt; obj[k]);
+}
+pluck(settings, ["url", "timeout"]);   // (string | number)[]</code></pre>
+
+        <h3>7.3 条件类型与 infer</h3>
+        <pre class="code"><code>// 条件类型：T extends U ? X : Y —— 类型的 if/else
+type IsString&lt;T&gt; = T extends string ? "是字符串" : "不是字符串";
+type A = IsString&lt;"hello"&gt;;   // "是字符串"
+type B = IsString&lt;42&gt;;        // "不是字符串"
+
+// 分布式条件类型：联合类型会「拆开逐个判断再合并」
+type ToArray&lt;T&gt; = T extends unknown ? T[] : never;
+type C = ToArray&lt;string | number&gt;;   // string[] | number[]（拆开处理）
+
+// infer：在 extends 里「猜」出一个类型 —— 类型编程的瑞士军刀
+// 手写 ReturnType：猜函数返回类型
+type MyReturnType&lt;T extends (...args: any) =&gt; any&gt; =
+  T extends (...args: any) =&gt; infer R ? R : never;
+type D = MyReturnType&lt;() =&gt; string&gt;;   // string
+
+// 手写 Parameters：猜参数元组
+type MyParameters&lt;T extends (...args: any) =&gt; any&gt; =
+  T extends (...args: infer P) =&gt; any ? P : never;
+type E = MyParameters&lt;(a: number, b: string) =&gt; void&gt;;   // [number, string]
+
+// 经典：解包 Promise
+type Unwrap&lt;T&gt; = T extends Promise&lt;infer U&gt; ? Unwrap&lt;U&gt; : T;
+type F = Unwrap&lt;Promise&lt;Promise&lt;number&gt;&gt;&gt;;   // number（递归解包）</code></pre>
+
+        <h3>7.4 映射类型与模板字面量类型</h3>
+        <pre class="code"><code>// 映射类型：遍历键，逐个改造 —— 前面手写 Partial/Readonly 就是它
+// 进阶：+? / -? 控制可选，as 重映射键
+type Nullable&lt;T&gt; = { [K in keyof T]: T[K] | null };        // 值加 null
+type Immutable&lt;T&gt; = { readonly [K in keyof T]: T[K] };     // 全部只读
+
+// 模板字面量类型：把类型当字符串模板拼接 —— 事件名 / API 路径推断
+type EventName = `on${"click" | "hover"}`;      // "onclick" | "onhover"
+type Endpoint = `/api/${"users" | "orders"}/${string}`;
+const ep: Endpoint = "/api/users/123";           // ✅
+// const ep2: Endpoint = "/api/xxx";            // ❌ 路径不对
+
+// 实战组合：根据对象键自动生成「事件监听器」签名
+type EventMap&lt;T&gt; = {
+  [K in keyof T as `on${Capitalize&lt;string &amp; K&gt;}`]: (payload: T[K]) =&gt; void;
+};
+// Capitalize 是内置模板工具：把首字母大写</code></pre>
+
+        <h3>7.5 实际案例：API 响应与表单状态的类型设计</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例 1：统一 API 响应 → 类型自动推导数据部分</div>
+          <pre class="code"><code>type ApiResult&lt;T&gt; =
+  | { status: "success"; data: T }
+  | { status: "error"; code: number; message: string };
+
+function fetchData&lt;T&gt;(): Promise&lt;ApiResult&lt;T&gt;&gt; {
+  /* 模拟网络请求 */
+  return Promise.resolve({ status: "success", data: {} as T });
+}
+
+type Product = { id: number; title: string; price: number };
+
+async function loadProduct() {
+  const result = await fetchData&lt;Product&gt;();
+  if (result.status === "success") {
+    console.log(result.data.title.toUpperCase());   // ✅ 收窄后 data 是 Product
+  } else {
+    console.error(`错误 ${result.code}：${result.message}`);
+  }
+}</code></pre>
+          <div class="box-t" style="margin-top:12px">💻 案例 2：只读工具 —— 表单状态机（可辨识联合实战）</div>
+          <pre class="code"><code>// 表单的三种状态：编辑中 / 提交中 / 已提交 —— 不同状态携带不同数据
+type FormState =
+  | { phase: "editing"; draft: string; dirty: boolean }
+  | { phase: "submitting"; draft: string; requestId: string }
+  | { phase: "done"; savedAt: Date };
+
+function render(state: FormState): string {
+  switch (state.phase) {
+    case "editing":    return state.dirty ? `草稿（未保存）：${state.draft}` : "无改动";
+    case "submitting": return `提交中，请求号：${state.requestId}`;
+    case "done":       return `已保存于 ${state.savedAt.toLocaleString()}`;
+  }
+}
+
+const s: FormState = { phase: "editing", draft: "写了一半…", dirty: true };
+console.log(render(s));   // 草稿（未保存）：写了一半…</code></pre>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>类型守卫（typeof/instanceof/in/is）让联合类型安全；keyof/typeof/索引访问是「取类型」三板斧；条件类型 + infer + 映射类型是「造类型」核心；可辨识联合 + 穷尽检查是大型 switch 的护身符。练习：手写 <code class="inline">DeepReadonly</code>（递归只读）、<code class="inline">MyExclude</code>。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第8章 ============ -->
+    <article class="chapter" id="ch8">
+      <div class="ch-head">
+        <div class="ch-num">08</div>
+        <div>
+          <h2>模块系统与声明文件</h2>
+          <div class="ch-meta"><span class="tag st2">进阶篇</span><span class="tag time">约 3 小时</span><span class="tag time">前置：第 2 章</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>掌握 ES 模块的导入导出与 TS 的模块解析</li>
+            <li>理解 .d.ts 声明文件的作用，会写简单的声明文件</li>
+            <li>掌握 @types 安装与声明合并</li>
+          </ul>
+        </div>
+
+        <h3>8.1 ES 模块基础</h3>
+        <pre class="code"><code>// ===== math.ts =====
+export const PI = 3.14159;
+export function square(x: number): number { return x * x; }
+export default function cube(x: number): number { return x ** 3; }
+export type Point = { x: number; y: number };
+
+// ===== main.ts =====
+import cube, { PI, square } from "./math";        // 默认 + 命名导入
+import type { Point } from "./math";              // type 导入：只导入类型，编译后被擦除
+import * as math from "./math";                   // 命名空间导入
+console.log(cube(3), square(4), PI, math.PI);     // 27 16 3.14159 3.14159
+
+// ===== re-export（中转导出）=====
+export { square } from "./math";
+export * from "./math";</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：import type 与模块解析</div>
+          <ul>
+            <li><code class="inline">import type</code> 只引入类型，编译后完全消失，避免运行时引用不存在的导出。</li>
+            <li>模块解析：<code class="inline">"./xxx"</code> 相对路径找文件；<code class="inline">"lodash"</code> 包名去 <code class="inline">node_modules</code> 找；tsconfig 的 <code class="inline">moduleResolution</code> 决定查找规则（第 9 章）。</li>
+            <li>早期 TS 的 <code class="inline">namespace</code>（内部模块）已被 ES 模块取代，只需了解：老项目里可能见到 <code class="inline">namespace X { }</code>，新代码一律用 import/export。</li>
+          </ul>
+        </div>
+
+        <h3>8.2 声明文件 .d.ts：给「没有类型的 JS」补类型</h3>
+        <p>纯 JS 库没有类型。TS 用 <code class="inline">.d.ts</code> 文件描述它们的形状——只写类型，没有实现。三个来源：</p>
+        <pre class="code"><code>// ① 大多数流行库：从 DefinitelyTyped 安装，一行搞定
+// npm install -D @types/lodash @types/express @types/node
+import _ from "lodash";        // 装完 @types/lodash 后立即有类型提示
+
+// ② 少数库自带类型（库内直接带 .d.ts）：直接可用
+// 如 axios、zustand、zod —— 无需额外安装
+
+// ③ 冷门库：自己写声明文件
+// legacy.js —— 一个没类型的旧工具库
+// export function greet(name) { return "Hello " + name }
+
+// legacy.d.ts —— 我给它写类型
+export declare function greet(name: string): string;
+
+// ④ 库完全没声明时：临时兜底（本质是把模块声明为 any）
+// 在项目里建 src/types/global.d.ts
+declare module "some-unknown-lib" {
+  const content: any;
+  export default content;
+}</code></pre>
+
+        <h3>8.3 全局类型与声明合并</h3>
+        <pre class="code"><code>// ===== env.d.ts（全局声明：项目里任何文件都能用这些类型，无需 import）=====
+declare global {
+  interface Window {
+    __APP_VERSION__: string;    // 给 Window 加自定义属性
+  }
+  type UUID = string;           // 全局类型别名
+}
+export {};   // 让文件成为模块
+
+// ===== 声明合并：同名 interface 自动合并 =====
+interface User { id: number }
+interface User { name: string }   // 合并后 User = { id; name }
+const u: User = { id: 1, name: "x" };   // ✅ 两处字段都要
+
+// 同名 namespace 与 interface 也会合并（老库常用这种模式）</code></pre>
+        <div class="box scene">
+          <div class="box-t">🎯 应用场景</div>
+          <ul>
+            <li>全局类型：环境变量、Window 扩展、常量枚举 —— 免去到处 import。</li>
+            <li>声明合并：给第三方类型「打补丁」，不用改 node_modules。</li>
+            <li>工具库开发：发布 npm 包时 <code class="inline">declaration: true</code> 自动生成 .d.ts，让用户获得类型提示。</li>
+          </ul>
+        </div>
+
+        <h3>8.4 实际案例：完整写一个工具库模块</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例：日期工具库 —— 模块化 + 类型导出 + 使用</div>
+          <pre class="code"><code>// ===== src/dateUtils.ts =====
+export type DateFormat = "short" | "long";
+
+export function formatDate(date: Date, format: DateFormat = "short"): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return format === "short" ? `${y}-${m}-${d}` : `${y}年${m}月${d}日`;
+}
+
+export function daysBetween(a: Date, b: Date): number {
+  return Math.round((b.getTime() - a.getTime()) / (24 * 3600 * 1000));
+}
+
+// ===== src/index.ts（入口，统一导出）=====
+export * from "./dateUtils";
+export * from "./math";
+
+// ===== 使用方 app.ts =====
+import { formatDate, daysBetween, square } from "./src/index";
+const today = new Date("2026-08-18");
+console.log(formatDate(today, "long"));       // 2026年08月18日
+console.log(daysBetween(today, new Date("2026-08-25")));  // 7
+console.log(square(9));                        // 81</code></pre>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>import/export 是唯一推荐的组织方式；import type 省运行时；<code class="inline">@types/*</code> 装类型、declare module 兜底、declare global 做全局类型；同名 interface 自动合并。练习：给一个老 JS 函数库（比如你同事写的 utils.js）补一份 .d.ts。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第9章 ============ -->
+    <article class="chapter" id="ch9">
+      <div class="ch-head">
+        <div class="ch-num">09</div>
+        <div>
+          <h2>tsconfig.json 深入（工程配置）</h2>
+          <div class="ch-meta"><span class="tag st2">进阶篇</span><span class="tag time">约 2.5 小时</span><span class="tag time">前置：第 8 章</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>理解 tsconfig.json 的结构与 include/exclude</li>
+            <li>掌握 target/module/strict 三大核心区</li>
+            <li>能针对「应用 / 库 / Node」写出合适的配置</li>
+          </ul>
+        </div>
+
+        <h3>9.1 tsconfig.json 是什么</h3>
+        <p>它是 TS 项目的「总配置文件」。执行 <code class="inline">tsc --init</code> 会自动生成一份带全部注释的模板。三个基础字段先记住：</p>
+        <pre class="code"><code>{
+  "compilerOptions": {
+    "target": "ES2022",          // 编译成哪个版本的 JS
+    "module": "ESNext",          // 模块标准
+    "strict": true               // 严格模式总开关
+  },
+  "include": ["src"],            // 编译哪些文件（目录）
+  "exclude": ["node_modules"]    // 排除哪些
+}</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：这三个字段决定了什么</div>
+          <ul>
+            <li><b>target</b>：决定「语法降级程度」。ES2022 适合 Node 18+ 和现代浏览器；老环境用 ES5/ES2015（会把 class、箭头函数都转成老语法）。</li>
+            <li><b>module</b>：决定「模块怎么写进 JS」。浏览器/打包器用 ESNext；Node 项目用 NodeNext（第 8 章说的解析规则也由它管）。</li>
+            <li><b>strict</b>：一开全开，它下面的严格检查项全启用。生产项目务必 true。</li>
+          </ul>
+        </div>
+
+        <h3>9.2 strict 家族逐项拆解（重点）</h3>
+        <table class="tools">
+          <tr><th>选项</th><th>作用</th><th>开了以后会拦住什么</th></tr>
+          <tr><td><code>strictNullChecks</code></td><td>null/undefined 不能随便赋值给其他类型</td><td>消灭「cannot read properties of null」这一类运行时崩溃</td></tr>
+          <tr><td><code>noImplicitAny</code></td><td>参数/变量推断不出类型时，禁止偷偷用 any</td><td>函数参数忘了标类型会报错</td></tr>
+          <tr><td><code>strictPropertyInitialization</code></td><td>类属性必须初始化</td><td>声明了 <code>name: string</code> 却不在构造函数赋值会报错</td></tr>
+          <tr><td><code>noImplicitThis</code></td><td>this 不能隐式 any</td><td>独立函数里用 this 必须显式标注</td></tr>
+          <tr><td><code>strictFunctionTypes</code></td><td>函数参数逆变检查</td><td>更严格地检查函数赋值兼容性</td></tr>
+        </table>
+        <pre class="code"><code>// strictNullChecks 的效果演示：
+let name: string;            // 未赋值
+name = null;                 // ❌ strict 下报错：null 不能赋给 string
+name = undefined;            // ❌ 同上
+
+// 真实痛点：从接口取数据，值可能为 null
+interface ApiUser { name: string | null }
+function show(u: ApiUser) {
+  // u.name.toUpperCase();   // ❌ u.name 可能是 null
+  if (u.name) {
+    return u.name.toUpperCase();   // ✅ 收窄后安全
+  }
+  return "匿名用户";
+}</code></pre>
+
+        <h3>9.3 其他高频选项</h3>
+        <pre class="code"><code>{
+  "compilerOptions": {
+    "outDir": "dist",            // 编译输出目录（默认和源码放一起，建议必配）
+    "rootDir": "src",            // 源码根目录（决定输出目录结构）
+    "sourceMap": true,           // 生成 .map 文件，调试时能看到 TS 源码
+    "declaration": true,         // 生成 .d.ts —— 开发 npm 库时必开
+    "esModuleInterop": true,     // 兼容老 CommonJS 库的默认导入（建议默认开）
+    "resolveJsonModule": true,   // 允许 import json 文件
+    "paths": {                   // 路径别名：@/ 代替 ../../../ 地狱
+      "@/*": ["./src/*"]
+    },
+    "noEmitOnError": true,       // 有类型错误就不生成文件（CI 常用）
+    "isolatedModules": true      // 配合打包器（esbuild/vite）的隔离编译要求
+  }
+}</code></pre>
+
+        <h3>9.4 实际案例：三类项目的标准配置</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例 1：前端应用（Vite + React）</div>
+          <pre class="code"><code>{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",   // 现代打包器专用
+    "strict": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "noEmit": true,                  // 打包交给 vite，tsc 只做检查
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": ["src"]
+}</code></pre>
+          <div class="box-t" style="margin-top:12px">💻 案例 2：Node.js 后端</div>
+          <pre class="code"><code>{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",            // Node 原生 ESM
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true,
+    "esModuleInterop": true
+  },
+  "include": ["src"]
+}</code></pre>
+          <div class="box-t" style="margin-top:12px">💻 案例 3：npm 库（发布给别人的包）</div>
+          <pre class="code"><code>{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "declaration": true,             // 生成 .d.ts 给用户
+    "declarationMap": true,          // 类型跳转体验更好
+    "outDir": "dist",
+    "rootDir": "src",
+    "esModuleInterop": true
+  },
+  "include": ["src"]
+}</code></pre>
+          <div class="box-t" style="margin-top:12px">💻 日常检查命令（CI 里必须跑）</div>
+          <pre class="code"><code>tsc --noEmit        # 只检查类型、不输出文件 —— 发布前必跑，有错就失败</code></pre>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>target/module/strict 是地基；strict 家族挡住一大类空值 bug；库开发开 declaration、应用开发开 noEmit；CI 里用 <code class="inline">tsc --noEmit</code> 把关。练习：用 <code class="inline">tsc --init</code> 生成配置，对照本配置逐项修改，用 <code class="inline">tsc --noEmit</code> 验证。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第10章 ============ -->
+    <article class="chapter" id="ch10">
+      <div class="ch-head">
+        <div class="ch-num">10</div>
+        <div>
+          <h2>工具链与质量保障</h2>
+          <div class="ch-meta"><span class="tag st2">进阶篇</span><span class="tag time">约 3 小时</span><span class="tag time">前置：第 9 章</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>掌握 Vite 从零初始化 TS 项目</li>
+            <li>掌握 ESLint + Prettier 的代码规范配置</li>
+            <li>掌握 Vitest 单元测试与 CI 类型检查</li>
+          </ul>
+        </div>
+
+        <h3>10.1 实操：用 Vite 创建 TS 项目（保姆级步骤）</h3>
+        <div class="box steps">
+          <div class="box-t">⚙️ 操作步骤</div>
+          <ol>
+            <li>执行：<code class="inline">npm create vite@latest my-app -- --template vanilla-ts</code>（或 react-ts / vue-ts 等模板）。</li>
+            <li>进入目录并安装依赖：<code class="inline">cd my-app &amp;&amp; npm install</code>。</li>
+            <li>启动开发服务器：<code class="inline">npm run dev</code>，浏览器打开提示的地址。</li>
+            <li>看目录结构：<code class="inline">src/main.ts</code>、<code class="inline">tsconfig.json</code>、<code class="inline">vite.config.ts</code> 已经配好，直接开写。</li>
+            <li>构建：<code class="inline">npm run build</code>（内部会先执行 <code class="inline">tsc -b</code> 类型检查，再打包）。</li>
+          </ol>
+        </div>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：tsc 与打包器（vite/esbuild）的分工</div>
+          <p>Vite 用 esbuild 转译 TS（快，但不做类型检查），用 tsc 做类型检查。所以构建脚本通常是 <code class="inline">tsc -b &amp;&amp; vite build</code>：<b>先查类型，再打包</b>。日常开发时 esbuild 只管把 TS 变 JS 跑起来，类型错误由编辑器实时提示。</p>
+        </div>
+
+        <h3>10.2 ESLint + Prettier：代码规范</h3>
+        <pre class="code"><code>// ① 安装
+// npm install -D eslint typescript-eslint prettier eslint-config-prettier
+
+// ② eslint.config.js（新版 flat config）
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+
+export default tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",   // any 出现时给警告
+      "@typescript-eslint/no-unused-vars": "error",   // 未使用变量报错
+    },
+  },
+);
+
+// ③ .prettierrc.json
+{
+  "semi": true,
+  "singleQuote": false,
+  "trailingComma": "all",
+  "printWidth": 100
+}
+
+// ④ 一键修复：npx eslint . --fix   +   npx prettier --write .</code></pre>
+        <div class="box scene">
+          <div class="box-t">🎯 应用场景</div>
+          <p>ESLint 管「代码对不对」（未用变量、any 滥用、空 catch 等逻辑隐患），Prettier 管「代码好不好看」（缩进、引号、分号）。两者配合 + 保存时自动格式化，团队代码风格统一，review 只谈业务不谈格式。</p>
+        </div>
+
+        <h3>10.3 Vitest：单元测试</h3>
+        <pre class="code"><code>// ① 安装：npm install -D vitest
+// ② 被测函数（src/price.ts）
+export function calcTotal(price: number, count: number, discount = 1): number {
+  if (price &lt; 0 || count &lt; 0) throw new Error("价格或数量不能为负");
+  return Math.round(price * count * discount * 100) / 100;
+}
+
+// ③ 测试文件（src/price.test.ts）
+import { describe, it, expect } from "vitest";
+import { calcTotal } from "./price";
+
+describe("calcTotal 计算订单金额", () =&gt; {
+  it("正常计算", () =&gt; {
+    expect(calcTotal(9.9, 3)).toBe(29.7);
+  });
+  it("应用折扣", () =&gt; {
+    expect(calcTotal(100, 2, 0.8)).toBe(160);
+  });
+  it("负数抛错", () =&gt; {
+    expect(() =&gt; calcTotal(-1, 1)).toThrow("不能为负");
+  });
+});
+
+// ④ 运行：npx vitest run    （npm test）</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：为什么 TS 还要写测试</div>
+          <p>类型检查管「类型对不对」，测试管「逻辑对不对」——两者互补。TS 帮你消灭一类错误（类型不匹配），测试帮你消灭另一类（算法算错、边界条件没处理）。严谨项目两者都要。</p>
+        </div>
+
+        <h3>10.4 实际案例：完整的 CI 质量流水线</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例：GitHub Actions —— 每次提交自动检查</div>
+          <pre class="code"><code># .github/workflows/ci.yml
+name: CI
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - run: npx tsc --noEmit        # ① 类型检查不过 = 构建失败
+      - run: npx eslint .            # ② 规范不过 = 构建失败
+      - run: npm test                # ③ 测试不过 = 构建失败</code></pre>
+          <p>三关全过才允许合并代码 —— 团队从此「类型错误、规范问题、逻辑 bug」都在合并前被机器拦截。</p>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>Vite 帮你把环境配齐；tsc 查类型、eslint 查规范、vitest 查逻辑，三层防线；CI 自动化执行。练习：用 vite 建个 vanilla-ts 项目，写一个工具函数 + 两个测试用例，跑通 npm test。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第11章 ============ -->
+    <article class="chapter" id="ch11">
+      <div class="ch-head">
+        <div class="ch-num">11</div>
+        <div>
+          <h2>装饰器与元编程</h2>
+          <div class="ch-meta"><span class="tag st3">高级篇</span><span class="tag time">约 2.5 小时</span><span class="tag time">前置：第 5 章</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>理解装饰器是什么、解决什么问题</li>
+            <li>掌握类 / 方法 / 属性 / 参数装饰器及装饰器工厂</li>
+            <li>了解装饰器在框架（NestJS/Angular）中的应用原理</li>
+          </ul>
+        </div>
+
+        <h3>11.1 什么是装饰器</h3>
+        <p>装饰器（Decorator）是「给类、方法、属性附加额外行为的语法」。不改变代码本身，而是<b>包装</b>它：记录日志、加权限校验、绑定 this、注入依赖…… 它是 AOP（面向切面编程）思想的实现。</p>
+        <pre class="code"><code>// 先启用（装饰器目前是实验特性，需要 tsconfig 打开）：
+// { "compilerOptions": { "experimentalDecorators": true } }
+
+// 最直观的例子：类方法装饰器 —— 自动记录日志
+function log(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  const original = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    console.log(`[LOG] 调用 ${propertyKey}，参数：`, args);
+    const result = original.apply(this, args);
+    console.log(`[LOG] ${propertyKey} 返回：`, result);
+    return result;
+  };
+}
+
+class Calculator {
+  @log            // 用法：@装饰器 写在方法上面
+  add(a: number, b: number): number {
+    return a + b;
+  }
+}
+
+const calc = new Calculator();
+calc.add(2, 3);
+// [LOG] 调用 add，参数： [ 2, 3 ]
+// [LOG] add 返回： 5</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：装饰器是怎么生效的</div>
+          <ul>
+            <li>方法装饰器接收 3 个参数：<b>target</b>（类的原型）、<b>propertyKey</b>（方法名）、<b>descriptor</b>（属性描述符）。</li>
+            <li>本质：装饰器函数在<b>类定义时</b>执行，通过替换 descriptor.value 包装原方法 —— 运行时「原方法被包了一层」。用户代码无感知，行为却被增强。</li>
+            <li>执行顺序：多个装饰器<b>从下往上</b>应用、<b>从上往下</b>执行（洋葱模型）；类装饰器最后执行。</li>
+          </ul>
+        </div>
+
+        <h3>11.2 装饰器工厂（带参数的装饰器）</h3>
+        <pre class="code"><code>// 装饰器工厂：外层函数接收参数，返回真正的装饰器
+function delay(ms: number) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const original = descriptor.value;
+    descriptor.value = function (...args: any[]) {
+      console.log(`等待 ${ms}ms...`);
+      return new Promise(resolve =&gt; {
+        setTimeout(() =&gt; resolve(original.apply(this, args)), ms);
+      });
+    };
+  };
+}
+
+class Service {
+  @delay(1000)
+  fetchData(): string {
+    return "数据已返回";
+  }
+}
+// 用法：@delay(1000) —— 工厂函数先跑，返回的装饰器再作用到方法上</code></pre>
+
+        <h3>11.3 属性装饰器与参数装饰器（了解）</h3>
+        <pre class="code"><code>// 属性装饰器：只有 target 和属性名两个参数（没有 descriptor）
+function observable(target: any, propertyKey: string) {
+  console.log(`属性 ${propertyKey} 被标记为响应式`);
+}
+
+class Model {
+  @observable
+  name = "default";
+}
+
+// 参数装饰器：给参数打标记，配合 reflect-metadata 做依赖注入
+function required(target: any, method: string, paramIndex: number) {
+  console.log(`参数 #${paramIndex} 必填`);
+}
+
+class Api {
+  save(@required data: string) { /* ... */ }
+}</code></pre>
+        <div class="box scene">
+          <div class="box-t">🎯 应用场景</div>
+          <ul>
+            <li><b>NestJS</b>：<code class="inline">@Controller()</code>、<code class="inline">@Get()</code>、<code class="inline">@Injectable()</code> —— 路由和依赖注入全靠装饰器声明，代码极其清爽。</li>
+            <li><b>Angular</b>：<code class="inline">@Component()</code>、<code class="inline">@Input()</code> 同理。</li>
+            <li>自己的项目：日志、鉴权、重试、缓存、参数校验 —— 用装饰器把横切逻辑从业务代码里剥离。</li>
+          </ul>
+        </div>
+
+        <h3>11.4 实际案例：装饰器实现「必填校验 + 日志」</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例：给一个表单提交类加校验与日志</div>
+          <pre class="code"><code>// validate.ts —— 参数校验装饰器
+function validate(...requiredIndexes: number[]) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const original = descriptor.value;
+    descriptor.value = function (...args: any[]) {
+      for (const idx of requiredIndexes) {
+        if (args[idx] === undefined || args[idx] === null || args[idx] === "") {
+          throw new Error(`参数 #${idx} 不能为空`);
+        }
+      }
+      return original.apply(this, args);
+    };
+  };
+}
+
+function logMethod(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  const original = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    console.log(`[操作] ${propertyKey}(${args.join(", ")})`);
+    const result = original.apply(this, args);
+    console.log(`[操作] 完成`);
+    return result;
+  };
+}
+
+class OrderService {
+  @logMethod
+  @validate(0, 1)   // 第 0、1 个参数必填；多个装饰器从下往上应用
+  placeOrder(userId: string, productId: string, quantity = 1) {
+    return `订单创建成功：${userId} 购买了 ${productId} x${quantity}`;
+  }
+}
+
+const svc = new OrderService();
+console.log(svc.placeOrder("U-001", "P-888", 2));
+// [操作] placeOrder(U-001, P-888, 2)
+// [操作] 完成
+// 订单创建成功：U-001 购买了 P-888 x2
+
+try {
+  svc.placeOrder("", "P-888");   // ❌ 校验装饰器先抛错，日志不执行
+} catch (e) {
+  console.log("拦截到：", (e as Error).message);
+}</code></pre>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>装饰器 = 不入侵业务代码的「行为包装器」；方法装饰器改 descriptor 是最常用形态；工厂给装饰器加参数；框架路由/注入/校验底层就是它。练习：写一个 <code class="inline">@retry(3)</code> 装饰器——方法抛错时自动重试 3 次。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第12章 ============ -->
+    <article class="chapter" id="ch12">
+      <div class="ch-head">
+        <div class="ch-num">12</div>
+        <div>
+          <h2>异步编程与类型</h2>
+          <div class="ch-meta"><span class="tag st3">高级篇</span><span class="tag time">约 2.5 小时</span><span class="tag time">前置：第 6 章</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>掌握 Promise&lt;T&gt; 与 async/await 的类型推导</li>
+            <li>掌握 Promise.all / allSettled / race 的返回类型差异</li>
+            <li>能封装带类型的异步工具（请求、超时、并发控制）</li>
+          </ul>
+        </div>
+
+        <h3>12.1 Promise&lt;T&gt; 与 async/await</h3>
+        <pre class="code"><code>// Promise 是泛型：Promise&lt;T&gt; 表示「未来会拿到一个 T」
+function fetchUser(): Promise&lt;{ id: number; name: string }&gt; {
+  return fetch("/api/user").then(r =&gt; r.json());
+}
+
+// async 函数：返回值自动包成 Promise，await 自动「拆包」取类型
+async function loadUser() {
+  const user = await fetchUser();   // user 自动推断为 { id: number; name: string }
+  console.log(user.name.toUpperCase());   // ✅ 类型安全
+  return user;                      // 返回类型自动推导为 Promise&lt;{...}&gt;
+}
+
+// async 函数的三种返回形态
+async function a(): Promise&lt;number&gt; { return 42; }          // 直接返回
+async function b(): Promise&lt;number&gt; { return Promise.resolve(42); }  // 返回 Promise 会自动展平
+async function c(): Promise&lt;void&gt; { console.log("无返回"); } // 不返回</code></pre>
+        <div class="box concept">
+          <div class="box-t">🧠 基本原理：async 的类型「管道」</div>
+          <p><code class="inline">await</code> 把 <code class="inline">Promise&lt;T&gt;</code> 拆成 <code class="inline">T</code>；<code class="inline">async</code> 函数把返回的 <code class="inline">T</code> 包回 <code class="inline">Promise&lt;T&gt;</code>（返回 Promise 时自动展平一层）。类型沿着这条管道自动流动，你只需要给「源头」（API 返回）标对类型，后面全是自动的。</p>
+        </div>
+
+        <h3>12.2 并发：all / allSettled / race</h3>
+        <pre class="code"><code>// Promise.all：全部成功才继续，任一失败整体失败；返回「元组类型」
+const [users, orders] = await Promise.all([
+  fetch("/api/users").then(r =&gt; r.json()) as Promise&lt;User[]&gt;,
+  fetch("/api/orders").then(r =&gt; r.json()) as Promise&lt;Order[]&gt;,
+]);
+// users: User[]，orders: Order[] —— 类型各归各的
+
+// Promise.allSettled：不抛错，逐个返回成功/失败结果 —— 适合批量任务
+const results = await Promise.allSettled([
+  uploadFile("a.png"),
+  uploadFile("b.png"),
+  uploadFile("c.png"),
+]);
+for (const r of results) {
+  if (r.status === "fulfilled") console.log("成功：", r.value);
+  else console.log("失败：", r.reason);
+}
+
+// Promise.race：谁先完成用谁 —— 超时控制
+const data = await Promise.race([
+  fetchData(),
+  new Promise&lt;never&gt;((_, reject) =&gt; setTimeout(() =&gt; reject(new Error("超时")), 3000)),
+]);</code></pre>
+
+        <h3>12.3 错误处理与 unknown</h3>
+        <pre class="code"><code>// try/catch 里 catch 的 e 默认是 unknown（strict 下）
+try {
+  await riskyCall();
+} catch (e) {
+  // e 是 unknown，不能直接 e.message —— 必须先收窄
+  if (e instanceof Error) {
+    console.error(e.message);          // ✅ 标准错误对象
+  } else if (typeof e === "string") {
+    console.error(e);                  // ✅ 有些库直接抛字符串
+  } else {
+    console.error("未知错误", e);
+  }
+}
+
+// 实战封装：统一的「结果对象」替代 try/catch 满天飞
+type AsyncResult&lt;T&gt; = { ok: true; data: T } | { ok: false; error: string };
+
+async function safeCall&lt;T&gt;(fn: () =&gt; Promise&lt;T&gt;): Promise&lt;AsyncResult&lt;T&gt;&gt; {
+  try {
+    return { ok: true, data: await fn() };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "未知错误" };
+  }
+}
+
+const result = await safeCall(() =&gt; fetchData());
+if (result.ok) {
+  console.log(result.data);    // ✅ 类型安全
+} else {
+  console.error(result.error);
+}</code></pre>
+
+        <h3>12.4 实际案例：带类型 + 超时 + 重试的请求封装</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例：生产级 request 工具</div>
+          <pre class="code"><code>// request.ts
+interface RequestOptions {
+  timeout?: number;        // 超时毫秒
+  retries?: number;        // 失败重试次数
+}
+
+async function request&lt;T&gt;(
+  url: string,
+  options: RequestOptions = {}
+): Promise&lt;T&gt; {
+  const { timeout = 5000, retries = 1 } = options;
+
+  const attempt = async (): Promise&lt;T&gt; =&gt; {
+    // 超时 + 请求 竞速
+    const res = await Promise.race([
+      fetch(url),
+      new Promise&lt;never&gt;((_, reject) =&gt;
+        setTimeout(() =&gt; reject(new Error(`请求超时（${timeout}ms）`)), timeout)
+      ),
+    ]);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return (await res.json()) as T;    // 调用方指定 T，这里断言
+  };
+
+  // 重试逻辑
+  for (let i = 0; i &lt; retries; i++) {
+    try {
+      return await attempt();
+    } catch (e) {
+      if (i === retries - 1) throw e;  // 最后一次失败直接抛
+      console.warn(`第 ${i + 1} 次失败，重试中...`);
+    }
+  }
+  throw new Error("不可达");
+}
+
+// 使用：类型由你指定，全链路安全
+interface Weather { city: string; temp: number }
+const weather = await request&lt;Weather&gt;("/api/weather?city=sz", { timeout: 3000, retries: 2 });
+console.log(`${weather.city} ${weather.temp}°C`);   // ✅ 有完整类型提示</code></pre>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>await 拆包、async 打包，类型自动流动；并发场景 all（要全成）、allSettled（容忍失败）、race（要最快）；catch 的 e 是 unknown 要收窄；用 AsyncResult 统一错误处理。练习：写一个 <code class="inline">withTimeout</code> 泛型函数（传入 Promise 和毫秒数，超时返回失败）。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第13章 ============ -->
+    <article class="chapter" id="ch13">
+      <div class="ch-head">
+        <div class="ch-num">13</div>
+        <div>
+          <h2>框架与运行时集成</h2>
+          <div class="ch-meta"><span class="tag st3">高级篇</span><span class="tag time">约 3.5 小时</span><span class="tag time">前置：第 6、12 章</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>掌握 React + TS 的组件、Hooks、事件类型</li>
+            <li>掌握 Node.js + Express + TS 的后端开发</li>
+            <li>理解状态管理与类型的配合</li>
+          </ul>
+        </div>
+
+        <h3>13.1 React + TypeScript：组件的 Props 与 State</h3>
+        <pre class="code"><code>// ===== src/components/UserCard.tsx =====
+import { useState } from "react";
+
+// ① Props 类型：接口定义组件对外契约
+interface UserCardProps {
+  id: number;
+  name: string;
+  email: string;
+  onFollow?: (id: number) =&gt; void;      // 可选回调：事件类型
+}
+
+// ② 函数组件：参数是 Props，返回值 JSX
+export function UserCard({ id, name, email, onFollow }: UserCardProps) {
+  // ③ useState 泛型：状态类型自动推导，也可显式指定
+  const [followed, setFollowed] = useState(false);
+  // 显式：const [count, setCount] = useState&lt;number&gt;(0);
+
+  return (
+    &lt;div className="card"&gt;
+      &lt;h3&gt;{name}&lt;/h3&gt;
+      &lt;p&gt;{email}&lt;/p&gt;
+      &lt;button
+        onClick={() =&gt; {
+          setFollowed(!followed);
+          onFollow?.(id);
+        }}
+      &gt;
+        {followed ? "已关注" : "关注"}
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+// ④ 使用方：类型错误立即暴露（比如 email 写成数字）
+// &lt;UserCard id={1} name="张三" email={123} /&gt;   // ❌ 类型不匹配
+
+// ⑤ 自定义 Hook：泛型让返回值类型精确
+export function useLocalStorage&lt;T&gt;(key: string, initial: T) {
+  const [value, setValue] = useState&lt;T&gt;(() =&gt; {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : initial;
+  });
+  const update = (next: T) =&gt; {
+    setValue(next);
+    localStorage.setItem(key, JSON.stringify(next));
+  };
+  return [value, update] as const;   // 元组：类型是 [T, (next: T) =&gt; void]
+}
+
+// 使用：泛型自动带出类型
+const [theme, setTheme] = useLocalStorage&lt;"light" | "dark"&gt;("theme", "light");
+setTheme("dark");      // ✅
+// setTheme("blue");   // ❌ 不在联合里</code></pre>
+
+        <h3>13.2 Node.js + Express + TS：后端接口</h3>
+        <pre class="code"><code>// ===== server.ts =====
+import express from "express";
+
+interface TodoItem {
+  id: number;
+  title: string;
+  done: boolean;
+}
+
+// 模拟数据库
+let todos: TodoItem[] = [
+  { id: 1, title: "学习 TS", done: false },
+  { id: 2, title: "写教程", done: true },
+];
+
+const app = express();
+app.use(express.json());
+
+// GET /todos —— 返回带类型的数据
+app.get("/todos", (_req, res) =&gt; {
+  res.json(todos);
+});
+
+// POST /todos —— body 有类型约束
+app.post("/todos", (req, res) =&gt; {
+  const { title } = req.body as { title: string };   // 手动收窄 body
+  if (!title) return res.status(400).json({ error: "title 必填" });
+  const todo: TodoItem = { id: todos.length + 1, title, done: false };
+  todos.push(todo);
+  res.status(201).json(todo);
+});
+
+// PATCH /todos/:id —— 参数和 body 都有类型
+app.patch("/todos/:id", (req, res) =&gt; {
+  const id = Number(req.params.id);
+  const { done } = req.body as { done: boolean };
+  const todo = todos.find(t =&gt; t.id === id);
+  if (!todo) return res.status(404).json({ error: "不存在" });
+  todo.done = done;
+  res.json(todo);
+});
+
+app.listen(3000, () =&gt; console.log("服务已启动：http://localhost:3000"));</code></pre>
+        <div class="box scene">
+          <div class="box-t">🎯 应用场景</div>
+          <ul>
+            <li>前后端共享类型：把接口定义放共享包（<code class="inline">shared/types.ts</code>），前端后 end 同时引用，改一处两边同步。</li>
+            <li>校验库（zod）与类型联动：zod 的 schema 可以推导出 TS 类型，运行时校验 + 编译期类型「一份定义两处使用」。</li>
+            <li>状态管理（zustand/redux）：store 的 state/action 全类型化，组件取值自动提示。</li>
+          </ul>
+        </div>
+
+        <h3>13.3 实际案例：共享类型 + zod 校验</h3>
+        <div class="box case">
+          <div class="box-t">💻 案例：一份定义，运行时校验 + 编译期类型同时生效</div>
+          <pre class="code"><code>// shared/user.ts —— 前后端共用
+import { z } from "zod";
+
+// zod schema：运行时校验规则
+export const UserSchema = z.object({
+  id: z.number(),
+  name: z.string().min(1, "名字不能为空"),
+  age: z.number().min(0).max(150),
+});
+
+// 从 schema 推导 TS 类型：z.infer —— 编译期类型
+export type User = z.infer&lt;typeof UserSchema&gt;;
+// 等价手写：type User = { id: number; name: string; age: number }
+
+// 前端：解析不确定的外部数据（unknown → User）
+const raw: unknown = JSON.parse(localStorage.getItem("user") ?? "{}");
+const parsed = UserSchema.parse(raw);    // 校验失败抛错，成功返回 User
+console.log(parsed.name);                // ✅ 类型安全
+
+// 后端：校验请求体
+app.post("/users", (req, res) =&gt; {
+  try {
+    const user = UserSchema.parse(req.body);   // 不合格直接拦截
+    res.status(201).json(user);
+  } catch (e) {
+    res.status(400).json({ error: "数据不合法" });
+  }
+});</code></pre>
+        </div>
+
+        <div class="summary"><b>本章小结：</b>React 用接口定义 Props、泛型定义 Hook；Express 手动收窄 body/params；zod 让「运行时校验」与「编译期类型」共享一份定义 —— 这是现代全栈 TS 的黄金组合。练习：给上面的 Todo 后端补一个 DELETE 接口，并给前端加一个删除按钮。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第14章 ============ -->
+    <article class="chapter" id="ch14">
+      <div class="ch-head">
+        <div class="ch-num">14</div>
+        <div>
+          <h2>设计模式与最佳实践</h2>
+          <div class="ch-meta"><span class="tag st3">高级篇</span><span class="tag time">约 3 小时</span><span class="tag time">前置：全部基础章节</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>掌握类型驱动开发思想（先定类型，再写实现）</li>
+            <li>会用 TS 实现常用设计模式</li>
+            <li>掌握把旧 JS 项目渐进迁移到 TS 的完整流程</li>
+          </ul>
+        </div>
+
+        <h3>14.1 类型驱动开发（Type-Driven Development）</h3>
+        <p>核心心法：<b>先定义「数据长什么样」，再写「逻辑怎么处理」</b>。类型先行，实现只是把类型变成代码。</p>
+        <div class="box steps">
+          <div class="box-t">⚙️ 实操步骤（写任何功能都适用）</div>
+          <ol>
+            <li><b>定义类型</b>：这个功能的输入、输出、中间状态各是什么形状？（interface / type / 联合）</li>
+            <li><b>定义签名</b>：函数参数、返回类型先写出来。</li>
+            <li><b>编译看错</b>：让 tsc 告诉你哪里对不上 —— 类型即测试。</li>
+            <li><b>填充实现</b>：在类型框架内填逻辑。</li>
+            <li><b>补边界</b>：联合分支、null 情况在类型上就可见，逐个处理。</li>
+          </ol>
+        </div>
+        <pre class="code"><code>// 示例：先类型后实现 —— 计算快递运费
+// ① 类型先行
+type Region = "同城" | "省内" | "跨省";
+type Package = { weightKg: number; region: Region; fragile: boolean };
+type FeeResult = { feeCents: number; note: string };
+
+// ② 签名先行
+function calcShipping(pkg: Package): FeeResult { /* ③ 再填充 */ }
+
+// ③ 实现
+function calcShipping(pkg: Package): FeeResult {
+  let feeCents = pkg.weightKg * 1000;
+  if (pkg.region === "同城") feeCents *= 0.8;
+  if (pkg.region === "跨省") feeCents *= 1.5;
+  if (pkg.fragile) feeCents += 500;
+  return { feeCents: Math.round(feeCents), note: `${pkg.region}·${pkg.fragile ? "易碎" : "普通"}` };
+}</code></pre>
+
+        <h3>14.2 常见设计模式（TS 版）</h3>
+        <pre class="code"><code>// ① 单例模式：全局唯一实例（配置中心、日志器）
+class Logger {
+  private static instance: Logger | null = null;
+  private constructor() {}     // 构造函数私有：外部无法 new
+  static get(): Logger {
+    if (!Logger.instance) Logger.instance = new Logger();
+    return Logger.instance;
+  }
+  log(msg: string) { console.log(`[LOG] ${msg}`); }
+}
+Logger.get().log("单例工作正常");   // 全项目只有这一个实例
+
+// ② 策略模式：算法可替换 —— TS 里就是「函数作为策略」
+type SortStrategy = (arr: number[]) =&gt; number[];
+const bubbleSort: SortStrategy = (arr) =&gt; [...arr].sort((a, b) =&gt; a - b);
+const quickSort: SortStrategy = (arr) =&gt; [...arr].sort((a, b) =&gt; b - a);
+function sortWith(arr: number[], strategy: SortStrategy) {
+  return strategy(arr);
+}
+sortWith([3, 1, 2], bubbleSort);   // [1, 2, 3]
+sortWith([3, 1, 2], quickSort);    // [3, 2, 1]
+
+// ③ 观察者模式：事件总线
+type Listener&lt;T&gt; = (payload: T) =&gt; void;
+class EventBus {
+  private listeners = new Map&lt;string, Listener&lt;unknown&gt;[]&gt;();
+  on&lt;T&gt;(event: string, fn: Listener&lt;T&gt;) {
+    const list = this.listeners.get(event) ?? [];
+    list.push(fn as Listener&lt;unknown&gt;);
+    this.listeners.set(event, list);
+  }
+  emit&lt;T&gt;(event: string, payload: T) {
+    this.listeners.get(event)?.forEach(fn =&gt; (fn as Listener&lt;T&gt;)(payload));
+  }
+}
+const bus = new EventBus();
+bus.on&lt;string&gt;("notify", msg =&gt; console.log(`收到：${msg}`));
+bus.emit("notify", "有人下单了");</code></pre>
+
+        <h3>14.3 渐进式迁移：把老 JS 项目改成 TS</h3>
+        <div class="box steps">
+          <div class="box-t">⚙️ 实操步骤（不伤筋动骨）</div>
+          <ol>
+            <li><b>加 tsconfig</b>：先开 <code class="inline">allowJs: true</code>、<code class="inline">checkJs: false</code>，JS 文件照常编译，项目先「能跑」。</li>
+            <li><b>把 .js 逐个改 .ts</b>：先改入口、公共工具、接口层 —— 收益最高的文件优先。</li>
+            <li><b>逐步开 strict</b>：先 <code class="inline">strict: false</code>，再分项打开 strictNullChecks 等，逐个修复报错。</li>
+            <li><b>补类型声明</b>：第三方库装 @types，内部遗留模块写 .d.ts 兜底。</li>
+            <li><b>最后收紧</b>：关掉 allowJs，strict 全开，tsc --noEmit 进 CI。</li>
+          </ol>
+        </div>
+        <div class="box warn">
+          <div class="box-t">⚠️ 迁移红线</div>
+          <p>别一次性全量迁移。每改一个文件就跑一次测试、提交一次。用 <code class="inline">// @ts-nocheck</code> 给暂时没迁完的文件免责，但要限期清理。</p>
+        </div>
+
+        <h3>14.4 代码规范清单（团队落地用）</h3>
+        <pre class="code"><code>// ✅ 该做的
+// 1. 类型命名：接口用 I 开头？—— 不要，直接 User、Order（官方风格）
+// 2. 能用联合不用枚举（enum 有运行时成本，联合类型零成本）
+// 3. 回调返回值类型标 void（防意外使用返回值）
+type Handler = (e: Event) =&gt; void;
+// 4. 复杂类型用类型别名收敛，避免重复长类型
+// 5. 第三方数据（API/JSON）先解析校验再当类型用（unknown → zod）
+
+// ❌ 别做的
+// 1. 到处 any —— 每个 any 都是漏网之鱼
+// 2. as 断言满天飞 —— 掩盖问题而不是解决问题
+// 3. 大而全的 interface —— 按「最小使用面」拆分
+// 4. 复制粘贴类型 —— 用 Pick/Omit/extends 复用
+// 5. 忽略编译错误 —— 有红点就修，别靠运行侥幸</code></pre>
+
+        <div class="summary"><b>本章小结：</b>类型先行 = 最高性价比的开发方式；策略模式在 TS 里就是类型化的函数参数；老项目迁移走「allowJs → 逐个改 → 逐步 strict」渐进路线；规范清单是团队 Review 的检查表。练习：把你写过的任何一个 JS 小项目，按迁移步骤改成 TS。</div>
+      </div>
+    </article>
+
+    <!-- ============ 第15章 ============ -->
+    <article class="chapter" id="ch15">
+      <div class="ch-head">
+        <div class="ch-num">15</div>
+        <div>
+          <h2>综合实战项目</h2>
+          <div class="ch-meta"><span class="tag st3">高级篇</span><span class="tag time">约 6 小时 ⭐结业项目</span><span class="tag time">前置：全部章节</span></div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <h3>学习目标</h3>
+        <div class="goal">
+          <ul>
+            <li>独立完成一个完整的 CLI 记账工具（含测试、打包）</li>
+            <li>体验「类型先行 → 实现 → 测试 → 发布」的完整流程</li>
+          </ul>
+        </div>
+
+        <h3>15.1 项目需求</h3>
+        <p>做一个命令行记账工具 <code class="inline">ledger</code>：支持「记一笔、查账单、算结余、删除」，数据存本地 JSON 文件。这一个小项目会用到本教程几乎全部知识点。</p>
+
+        <h3>15.2 实操：完整项目搭建（保姆级步骤）</h3>
+        <div class="box steps">
+          <div class="box-t">⚙️ 操作步骤</div>
+          <ol>
+            <li><code class="inline">mkdir ledger &amp;&amp; cd ledger &amp;&amp; npm init -y</code></li>
+            <li><code class="inline">npm install -D typescript tsx vitest @types/node</code></li>
+            <li><code class="inline">tsc --init</code> 后按第 9 章 Node 配置修改 tsconfig.json（target ES2022、module NodeNext、strict true、outDir dist、rootDir src）。</li>
+            <li>按下面的目录结构写代码：</li>
+          </ol>
+          <pre class="code"><code>ledger/
+├── src/
+│   ├── types.ts        # 类型定义
+│   ├── store.ts        # 数据存取（JSON 文件）
+│   ├── commands.ts     # 业务命令
+│   ├── main.ts         # CLI 入口
+│   └── commands.test.ts # 单元测试
+└── package.json</code></pre>
+        </div>
+
+        <h3>15.3 实际案例：完整代码</h3>
+        <div class="box case">
+          <div class="box-t">💻 代码 1/4：types.ts —— 类型先行（类型驱动开发演示）</div>
+          <pre class="code"><code>// ===== src/types.ts =====
+export type Category = "餐饮" | "交通" | "购物" | "居住" | "娱乐" | "其他";
+
+export interface Record {
+  id: string;
+  amountCents: number;       // 金额统一用「分」
+  category: Category;
+  note?: string;
+  createdAt: string;         // ISO 时间
+}
+
+export interface LedgerDB {
+  records: Record[];
+}
+
+// 命令的输入输出类型
+export type AddInput = { amount: number; category: Category; note?: string };
+export type Summary = { totalCents: number; byCategory: Partial&lt;Record&lt;Category, number&gt;&gt;; count: number };</code></pre>
+          <div class="box-t" style="margin-top:12px">💻 代码 2/4：store.ts —— 数据存取（Node + 文件 IO + 类型）</div>
+          <pre class="code"><code>// ===== src/store.ts =====
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { LedgerDB, Record } from "./types";
+import { randomUUID } from "node:crypto";
+
+const DATA_DIR = join(process.cwd(), "data");
+const DATA_FILE = join(DATA_DIR, "ledger.json");
+
+function defaultDB(): LedgerDB {
+  return { records: [] };
+}
+
+export function loadDB(): LedgerDB {
+  try {
+    const raw = readFileSync(DATA_FILE, "utf-8");
+    return JSON.parse(raw) as LedgerDB;   // 真实项目建议用 zod 校验
+  } catch {
+    return defaultDB();                   // 文件不存在/损坏 → 空库
+  }
+}
+
+export function saveDB(db: LedgerDB): void {
+  mkdirSync(DATA_DIR, { recursive: true });
+  writeFileSync(DATA_FILE, JSON.stringify(db, null, 2));
+}
+
+export function newRecord(input: { amountCents: number; category: Record["category"]; note?: string }): Record {
+  return {
+    id: randomUUID(),
+    amountCents: input.amountCents,
+    category: input.category,
+    note: input.note,
+    createdAt: new Date().toISOString(),
+  };
+}</code></pre>
+          <div class="box-t" style="margin-top:12px">💻 代码 3/4：commands.ts —— 业务逻辑（纯函数，方便测试）</div>
+          <pre class="code"><code>// ===== src/commands.ts =====
+import { LedgerDB, Record, Summary, AddInput, Category } from "./types";
+
+export function addRecord(db: LedgerDB, input: AddInput): Record {
+  const amountCents = Math.round(input.amount * 100);
+  if (amountCents &lt;= 0) throw new Error("金额必须大于 0");
+  const record = {
+    id: crypto.randomUUID(),
+    amountCents,
+    category: input.category,
+    note: input.note,
+    createdAt: new Date().toISOString(),
+  };
+  db.records.push(record);
+  return record;
+}
+
+export function deleteRecord(db: LedgerDB, id: string): boolean {
+  const idx = db.records.findIndex(r =&gt; r.id === id);
+  if (idx === -1) return false;
+  db.records.splice(idx, 1);
+  return true;
+}
+
+export function summarize(db: LedgerDB): Summary {
+  const totalCents = db.records.reduce((s, r) =&gt; s + r.amountCents, 0);
+  const byCategory: Partial&lt;Record&lt;Category, number&gt;&gt; = {};
+  for (const r of db.records) {
+    byCategory[r.category] = (byCategory[r.category] ?? 0) + r.amountCents;
+  }
+  return { totalCents, byCategory, count: db.records.length };
+}
+
+export function formatSummary(s: Summary): string {
+  const lines = Object.entries(s.byCategory)
+    .sort((a, b) =&gt; b[1] - a[1])
+    .map(([cat, cents]) =&gt; `  ${cat.padEnd(4)} ¥${((cents ?? 0) / 100).toFixed(2)}`);
+  return [
+    `共 ${s.count} 笔，总支出 ¥${(s.totalCents / 100).toFixed(2)}`,
+    ...lines,
+  ].join("\n");
+}</code></pre>
+          <div class="box-t" style="margin-top:12px">💻 代码 4/4：main.ts + 测试 —— CLI 入口与验证</div>
+          <pre class="code"><code>// ===== src/main.ts（CLI 入口）=====
+import { loadDB, saveDB, newRecord } from "./store";
+import { addRecord, deleteRecord, summarize, formatSummary } from "./commands";
+
+const [cmd, ...args] = process.argv.slice(2);
+const db = loadDB();
+
+switch (cmd) {
+  case "add": {
+    const [amount, category] = args;
+    if (!amount || !category) { console.error("用法：ledger add &lt;金额&gt; &lt;分类&gt; [备注]"); process.exit(1); }
+    const record = addRecord(db, {
+      amount: Number(amount),
+      category: category as import("./types").Category,
+      note: args[2],
+    });
+    saveDB(db);
+    console.log(`已记账：¥${(record.amountCents / 100).toFixed(2)}（${record.category}）`);
+    break;
+  }
+  case "rm": {
+    const ok = deleteRecord(db, args[0]);
+    if (ok) { saveDB(db); console.log("已删除"); }
+    else console.error("记录不存在");
+    break;
+  }
+  case "summary":
+    console.log(formatSummary(summarize(db)));
+    break;
+  default:
+    console.log("命令：add / rm / summary");
+}
+
+// ===== src/commands.test.ts（单元测试）=====
+import { describe, it, expect } from "vitest";
+import { addRecord, summarize, deleteRecord } from "./commands";
+
+describe("记账工具", () =&gt; {
+  it("添加记录并汇总", () =&gt; {
+    const db = { records: [] };
+    addRecord(db, { amount: 25.5, category: "餐饮" });
+    addRecord(db, { amount: 100, category: "交通" });
+    const s = summarize(db);
+    expect(s.totalCents).toBe(12550);   // 25.5*100 + 100*100
+    expect(s.count).toBe(2);
+  });
+  it("金额非法抛错", () =&gt; {
+    const db = { records: [] };
+    expect(() =&gt; addRecord(db, { amount: -1, category: "餐饮" })).toThrow();
+  });
+  it("删除记录", () =&gt; {
+    const db = { records: [] };
+    const r = addRecord(db, { amount: 10, category: "娱乐" });
+    expect(deleteRecord(db, r.id)).toBe(true);
+    expect(db.records).toHaveLength(0);
+  });
+});
+
+// 跑起来：
+// npx tsx src/main.ts add 25.5 餐饮 午餐
+// npx tsx src/main.ts summary
+// npx vitest run</code></pre>
+        </div>
+
+        <h3>15.4 打包与发布（可选进阶）</h3>
+        <pre class="code"><code>// package.json 增加
+{
+  "bin": { "ledger": "dist/main.js" },   // 全局命令
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "start": "node dist/main.js"
+  }
+}
+
+// 打包并全局安装试用
+// npm run build && npm link
+// ledger add 50 购物 新键盘</code></pre>
+
+        <div class="summary"><b>本章小结（结业）：</b>这个项目串起了全部知识点——类型先行设计（types.ts）、泛型与工具类型（Record&lt;Category, number&gt;）、模块化（import/export）、Node 集成、严格模式、单元测试、CLI 打包。做完它，你已经具备用 TS 独立开发真实工具的能力。<b>接下来可以挑战：</b>给项目加 zod 校验、加按月份统计、发布到 npm。</div>
+      </div>
+    </article>
+
+    <!-- ============ 附录 ============ -->
+    <section class="appendix" id="appendix">
+      <h2>附录</h2>
+
+      <h3>A. 内置工具类型速查表</h3>
+      <table class="tools">
+        <tr><th>工具类型</th><th>作用</th><th>示例</th></tr>
+        <tr><td><code>Partial&lt;T&gt;</code></td><td>全部属性可选</td><td><code>Partial&lt;Config&gt;</code></td></tr>
+        <tr><td><code>Required&lt;T&gt;</code></td><td>全部属性必填</td><td><code>Required&lt;Config&gt;</code></td></tr>
+        <tr><td><code>Readonly&lt;T&gt;</code></td><td>全部属性只读</td><td><code>Readonly&lt;Config&gt;</code></td></tr>
+        <tr><td><code>Pick&lt;T, K&gt;</code></td><td>挑出指定键</td><td><code>Pick&lt;User, "id" | "name"&gt;</code></td></tr>
+        <tr><td><code>Omit&lt;T, K&gt;</code></td><td>剔除指定键</td><td><code>Omit&lt;User, "password"&gt;</code></td></tr>
+        <tr><td><code>Record&lt;K, V&gt;</code></td><td>键 K 值 V 的对象</td><td><code>Record&lt;"a" | "b", number&gt;</code></td></tr>
+        <tr><td><code>Exclude&lt;T, U&gt;</code></td><td>从联合中排除</td><td><code>Exclude&lt;"a" | "b", "a"&gt;</code></td></tr>
+        <tr><td><code>Extract&lt;T, U&gt;</code></td><td>从联合中提取</td><td><code>Extract&lt;"a" | "b", "a"&gt;</code></td></tr>
+        <tr><td><code>NonNullable&lt;T&gt;</code></td><td>去掉 null/undefined</td><td><code>NonNullable&lt;string | null&gt;</code></td></tr>
+        <tr><td><code>ReturnType&lt;T&gt;</code></td><td>取函数返回类型</td><td><code>ReturnType&lt;typeof fn&gt;</code></td></tr>
+        <tr><td><code>Parameters&lt;T&gt;</code></td><td>取函数参数元组</td><td><code>Parameters&lt;typeof fn&gt;</code></td></tr>
+        <tr><td><code>InstanceType&lt;T&gt;</code></td><td>取类的实例类型</td><td><code>InstanceType&lt;typeof Foo&gt;</code></td></tr>
+        <tr><td><code>Awaited&lt;T&gt;</code></td><td>取 Promise 内部类型</td><td><code>Awaited&lt;Promise&lt;string&gt;&gt;</code></td></tr>
+        <tr><td><code>Uppercase/Lowercase/Capitalize/Uncapitalize</code></td><td>字符串大小写转换</td><td><code>Capitalize&lt;"hello"&gt; → "Hello"</code></td></tr>
+      </table>
+
+      <h3>B. TS 与 JS 常用差异速查</h3>
+      <table class="tools">
+        <tr><th>场景</th><th>JavaScript</th><th>TypeScript</th></tr>
+        <tr><td>变量类型</td><td>运行时才知道</td><td>声明时标注/推断，编译期检查</td></tr>
+        <tr><td>函数参数</td><td>传啥都行</td><td>标注类型，传错编译报错</td></tr>
+        <tr><td>对象字段</td><td>随意增删</td><td>接口约束，多了少了都报错</td></tr>
+        <tr><td>null 处理</td><td>运行到才崩</td><td>strictNullChecks 编译期拦截</td></tr>
+        <tr><td>重构</td><td>人肉搜索</td><td>编译器全量提示</td></tr>
+        <tr><td>IDE 提示</td><td>无（黑盒）</td><td>全量智能提示</td></tr>
+        <tr><td>运行</td><td>直接运行</td><td>先 tsc/打包器转译再运行</td></tr>
+      </table>
+
+      <h3>C. 学习资源推荐</h3>
+      <ul>
+        <li><b>官方文档</b>：typescriptlang.org/docs —— 权威且免费，中英文都有</li>
+        <li><b>TS Playground</b>：typescriptlang.org/play —— 浏览器里练类型，无需安装</li>
+        <li><b>type-challenges</b>：github.com/type-challenges/type-challenges —— 类型体操题库，由浅入深</li>
+        <li><b>总论文章</b>：《TypeScript 完全指南》（any/unknown/never 深度解读）</li>
+        <li><b>社区</b>：知乎/掘金搜「TypeScript 类型体操」「TS 工具类型」系列专栏</li>
+        <li><b>实战源码</b>：去 GitHub 找一个中大型 TS 开源项目（如 zustand、zod）读源码</li>
+      </ul>
+
+      <h3>D. 面试高频考点清单</h3>
+      <ul>
+        <li>TS 和 JS 的关系？编译原理？（第 1 章）</li>
+        <li>any 与 unknown 的区别？什么时候用哪个？（第 2 章）</li>
+        <li>interface 与 type 的区别与选型？（第 3 章）</li>
+        <li>函数重载、可选/默认/剩余参数？（第 4 章）</li>
+        <li>抽象类和接口的区别？private/protected？（第 5 章）</li>
+        <li>泛型是什么？手写 Partial/Pick？（第 6 章）</li>
+        <li>类型守卫有哪几种？可辨识联合？infer 是什么？（第 7 章）</li>
+        <li>strict 模式包含哪些检查？（第 9 章）</li>
+        <li>装饰器的作用与实现原理？（第 11 章）</li>
+        <li>Promise.all 和 allSettled 的区别？（第 12 章）</li>
+        <li>怎么把 JS 项目迁移到 TS？（第 14 章）</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>TypeScript 保姆级学习教程 · 循序渐进 · 深入浅出</footer>
+
+<div id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+
+<script>
+  // 阅读进度条
+  const bar = document.getElementById("progress");
+  addEventListener("scroll", () => {
+    const h = document.documentElement;
+    const p = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    bar.style.width = (p * 100) + "%";
+    document.getElementById("toTop").classList.toggle("show", h.scrollTop > 600);
+  }, { passive: true });
+
+  // 侧边导航高亮
+  const links = [...document.querySelectorAll("nav.sidebar a")];
+  const map = new Map(links.map(a => [a.getAttribute("href").slice(1), a]));
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(a => a.classList.remove("active"));
+        const a = map.get(e.target.id);
+        if (a) a.classList.add("active");
+      }
+    });
+  }, { rootMargin: "-15% 0px -70% 0px" });
+  links.forEach(a => {
+    const el = document.getElementById(a.getAttribute("href").slice(1));
+    if (el) io.observe(el);
+  });
+</script>
+</body>
+</html>
